@@ -22,10 +22,3 @@ Bem-vindo à **Leitura Amiga API**! Esta API foi desenvolvida para gerenciar um 
 - **Empréstimo de livros** 📚: Empreste livros e acompanhe o status do empréstimo.
 - **Doação de livros** 🎁: Doe livros que você não precisa mais.
 
-## 🛠️ Como Executar
-
-1. **Clone o repositório**:
-   ```bash
-   git clone https://github.com/isabelafagundes/leituramiga-api-QUARKUS.git
-   cd leituramiga-api-QUARKUS
-
