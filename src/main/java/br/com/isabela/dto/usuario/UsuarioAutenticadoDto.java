@@ -1,6 +1,6 @@
-package br.com.isabela.dto;
+package br.com.isabela.dto.usuario;
 
-import br.com.isabela.model.Usuario;
+import br.com.isabela.model.usuario.Usuario;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection

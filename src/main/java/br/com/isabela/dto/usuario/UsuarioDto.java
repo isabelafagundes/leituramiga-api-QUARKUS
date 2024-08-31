@@ -1,6 +1,6 @@
-package br.com.isabela.dto;
+package br.com.isabela.dto.usuario;
 
-import br.com.isabela.model.TipoUsuario;
+import br.com.isabela.model.usuario.TipoUsuario;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -12,7 +12,7 @@ public class UsuarioDto {
     public String email;
     public TipoUsuario tipoUsuario;
 
-    public static UsuarioDto deDomain(
+    public static UsuarioDto deModel(
             String nome,
             String username,
             String email,

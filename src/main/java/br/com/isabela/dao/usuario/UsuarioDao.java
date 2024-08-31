@@ -1,7 +1,8 @@
-package br.com.isabela.dao;
+package br.com.isabela.dao.usuario;
 
-import br.com.isabela.model.Usuario;
-import br.com.isabela.dto.CriacaoUsuarioDto;
+import br.com.isabela.dao.FabricaDeConexoes;
+import br.com.isabela.model.usuario.Usuario;
+import br.com.isabela.dto.usuario.CriacaoUsuarioDto;
 import br.com.isabela.service.autenticacao.HashService;
 import br.com.isabela.service.autenticacao.LogService;
 import br.com.isabela.service.autenticacao.CodigoUtil;

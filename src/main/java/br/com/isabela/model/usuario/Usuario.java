@@ -1,4 +1,4 @@
-package br.com.isabela.model;
+package br.com.isabela.model.usuario;
 
 public class Usuario {
 

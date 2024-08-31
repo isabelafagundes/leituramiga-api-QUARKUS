@@ -1,7 +1,7 @@
 package br.com.isabela.service.autenticacao;
 
-import br.com.isabela.dto.UsuarioAutenticadoDto;
-import br.com.isabela.model.Usuario;
+import br.com.isabela.dto.usuario.UsuarioAutenticadoDto;
+import br.com.isabela.model.usuario.Usuario;
 import br.com.isabela.model.exception.RefreshTokenInvalido;
 import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.build.Jwt;

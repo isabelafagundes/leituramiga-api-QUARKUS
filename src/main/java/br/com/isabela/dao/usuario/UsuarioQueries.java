@@ -1,4 +1,4 @@
-package br.com.isabela.dao;
+package br.com.isabela.dao.usuario;
 
 public class UsuarioQueries {
 

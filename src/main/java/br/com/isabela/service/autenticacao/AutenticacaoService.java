@@ -1,10 +1,10 @@
 package br.com.isabela.service.autenticacao;
 
-import br.com.isabela.dto.CriacaoUsuarioDto;
-import br.com.isabela.dto.UsuarioAutenticadoDto;
-import br.com.isabela.dto.UsuarioDto;
-import br.com.isabela.dao.UsuarioDao;
-import br.com.isabela.model.Usuario;
+import br.com.isabela.dto.usuario.CriacaoUsuarioDto;
+import br.com.isabela.dto.usuario.UsuarioAutenticadoDto;
+import br.com.isabela.dto.usuario.UsuarioDto;
+import br.com.isabela.dao.usuario.UsuarioDao;
+import br.com.isabela.model.usuario.Usuario;
 import br.com.isabela.model.exception.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -54,7 +54,7 @@ public class AutenticacaoService {
             Usuario usuario = obterUsuario(email);
             validarUsuarioAtivo(usuario);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
-            return UsuarioDto.deDomain(usuario.getNome(), usuario.getUsername(), usuario.getEmail(), usuario.getTipoUsuario());
+            return UsuarioDto.deModel(usuario.getNome(), usuario.getUsername(), usuario.getEmail(), usuario.getTipoUsuario());
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do usuário de email " + md5Email, e);
             throw e;

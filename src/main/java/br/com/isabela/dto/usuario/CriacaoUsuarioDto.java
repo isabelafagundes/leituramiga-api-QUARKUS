@@ -1,4 +1,4 @@
-package br.com.isabela.dto;
+package br.com.isabela.dto.usuario;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

@@ -1,10 +1,10 @@
-package br.com.isabela.controller;
+package br.com.isabela.controller.usuario;
 
 import br.com.isabela.model.exception.*;
-import br.com.isabela.dto.CriacaoUsuarioDto;
-import br.com.isabela.dto.LoginDto;
-import br.com.isabela.dto.UsuarioAutenticadoDto;
-import br.com.isabela.dto.UsuarioDto;
+import br.com.isabela.dto.usuario.CriacaoUsuarioDto;
+import br.com.isabela.dto.usuario.LoginDto;
+import br.com.isabela.dto.usuario.UsuarioAutenticadoDto;
+import br.com.isabela.dto.usuario.UsuarioDto;
 import br.com.isabela.service.autenticacao.AutenticacaoService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
