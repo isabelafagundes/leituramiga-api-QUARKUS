@@ -4,19 +4,34 @@ public class Livro {
     private Integer id;
     private String titulo;
     private String autor;
-    private String editora;
-    private Integer ano;
-    private String isbn;
     private String descricao;
     private String categoria;
-    private String estadoFisico;
-    private String dataPublicacao;
-    private String dataUltimaPublicacao;
+    private String estado_fisico;
+    private String data_ultima_solicitacao;
 
+    private Integer codigo_cidade;
+    private Integer codigo_instituicao;
     private Integer emailUsuario;
     private Integer codigoUltimaSolicitacao;
     private Integer codigoCategoria;
     private Integer codigoStatusLivro;
+
+
+    public Integer getCodigo_cidade() {
+        return codigo_cidade;
+    }
+
+    public void setCodigo_cidade(Integer codigo_cidade) {
+        this.codigo_cidade = codigo_cidade;
+    }
+
+    public Integer getCodigo_instituicao() {
+        return codigo_instituicao;
+    }
+
+    public void setCodigo_instituicao(Integer codigo_instituicao) {
+        this.codigo_instituicao = codigo_instituicao;
+    }
 
     public Integer getEmailUsuario() {
         return emailUsuario;
@@ -57,24 +72,18 @@ public class Livro {
             Integer id,
             String titulo,
             String autor,
-            String editora, Integer ano,
-            String isbn,
             String descricao,
             String categoria,
             String estadoFisico,
-            String dataPublicacao,
-            String dataUltimaPublicacao){
+            String dataUltimaSolicitacao, String fisico, String ultimaSolicitacao){
         Livro livro = new Livro();
         livro.id = id;
         livro.titulo = titulo;
         livro.autor = autor;
-        livro.ano = ano;
-        livro.isbn = isbn;
         livro.descricao = descricao;
         livro.categoria = categoria;
-        livro.estadoFisico = estadoFisico;
-        livro.dataPublicacao = dataPublicacao;
-        livro.dataUltimaPublicacao = dataUltimaPublicacao;
+        livro.estado_fisico = estadoFisico;
+        livro.data_ultima_solicitacao = dataUltimaSolicitacao;
         return livro;
     }
 
@@ -102,30 +111,6 @@ public class Livro {
         this.autor = autor;
     }
 
-    public String getEditora() {
-        return editora;
-    }
-
-    public void setEditora(String editora) {
-        this.editora = editora;
-    }
-
-    public Integer getAno() {
-        return ano;
-    }
-
-    public void setAno(Integer ano) {
-        this.ano = ano;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
     public String getDescricao() {
         return descricao;
     }
@@ -143,26 +128,18 @@ public class Livro {
     }
 
     public String getEstadoFisico() {
-        return estadoFisico;
+        return estado_fisico;
     }
 
-    public void setEstadoFisico(String estadoFisico) {
-        this.estadoFisico = estadoFisico;
+    public void setEstadoFisico(String estado_fisico) {
+        this.estado_fisico = estado_fisico;
     }
 
-    public String getDataPublicacao() {
-        return dataPublicacao;
+    public String getData_ultima_solicitacao() {
+        return data_ultima_solicitacao;
     }
 
-    public void setDataPublicacao(String dataPublicacao) {
-        this.dataPublicacao = dataPublicacao;
-    }
-
-    public String getDataUltimaPublicacao() {
-        return dataUltimaPublicacao;
-    }
-
-    public void setDataUltimaPublicacao(String dataUltimaPublicacao) {
-        this.dataUltimaPublicacao = dataUltimaPublicacao;
+    public void setData_ultima_solicitacao(String data_ultima_solicitacao) {
+        this.data_ultima_solicitacao = data_ultima_solicitacao;
     }
 }

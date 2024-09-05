@@ -6,14 +6,10 @@ public class LivroDto {
     public Integer id;
     public String titulo;
     public String autor;
-    public String editora;
-    public Integer ano;
-    public String isbn;
     public String descricao;
     public String categoria;
     public String estadoFisico;
-    public String dataPublicacao;
-    public String dataUltimaPublicacao;
+    public String data_ultima_solicitacao;
 
     public static LivroDto deModel(
         Livro livro
@@ -23,14 +19,10 @@ public class LivroDto {
         dto.id = livro.getId();
         dto.titulo = livro.getTitulo();
         dto.autor = livro.getAutor();
-        dto.editora = livro.getEditora();
-        dto.ano = livro.getAno();
-        dto.isbn = livro.getIsbn();
         dto.descricao = livro.getDescricao();
         dto.categoria = livro.getCategoria();
         dto.estadoFisico = livro.getEstadoFisico();
-        dto.dataPublicacao = livro.getDataPublicacao();
-        dto.dataUltimaPublicacao = livro.getDataUltimaPublicacao();
+        dto.data_ultima_solicitacao = livro.getData_ultima_solicitacao();
 
         return dto;
     }
@@ -63,30 +55,6 @@ public class LivroDto {
         this.autor = autor;
     }
 
-    public String getEditora() {
-        return editora;
-    }
-
-    public void setEditora(String editora) {
-        this.editora = editora;
-    }
-
-    public Integer getAno() {
-        return ano;
-    }
-
-    public void setAno(Integer ano) {
-        this.ano = ano;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
     public String getDescricao() {
         return descricao;
     }
@@ -111,20 +79,12 @@ public class LivroDto {
         this.estadoFisico = estadoFisico;
     }
 
-    public String getDataPublicacao() {
-        return dataPublicacao;
+    public String getdata_ultima_solicitacao() {
+        return data_ultima_solicitacao;
     }
 
-    public void setDataPublicacao(String dataPublicacao) {
-        this.dataPublicacao = dataPublicacao;
-    }
-
-    public String getDataUltimaPublicacao() {
-        return dataUltimaPublicacao;
-    }
-
-    public void setDataUltimaPublicacao(String dataUltimaPublicacao) {
-        this.dataUltimaPublicacao = dataUltimaPublicacao;
+    public void setdata_ultima_solicitacao(String data_ultima_solicitacao) {
+        this.data_ultima_solicitacao = data_ultima_solicitacao;
     }
 
 }

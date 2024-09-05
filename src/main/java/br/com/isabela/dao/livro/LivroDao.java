@@ -2,6 +2,7 @@ package br.com.isabela.dao.livro;
 
 import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.endereco.EnderecoDao;
+import br.com.isabela.dao.endereco.EnderecoQueries;
 import br.com.isabela.dto.livro.LivroDto;
 import br.com.isabela.model.livro.Livro;
 import br.com.isabela.service.autenticacao.LogService;
@@ -23,15 +24,27 @@ public class LivroDao {
     LogService logService;
 
     public Livro obterLivroUsuario(String livroId) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
+        logService.iniciar(LivroDao.class.getName(), "Iniciando busca do livro");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_ID);
         pstmt.setString(1, livroId);
         ResultSet resultado = pstmt.executeQuery();
-        Livro livro = new Livro();
-        if (resultado.next()) livro = obterLivroDeResult(resultado);
+        Livro num = new Livro();
+        if (resultado.next()) num = obterLivroDeResult(resultado);
+        logService.sucesso(LivroDao.class.getName(), "Busca do livro finalizada");
+        return num;
+    }
+
+    public Livro obterNumeroLivro(String livroUsuario) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
+        Connection conexao = bd.obterConexao();
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
+        pstmt.setString(1, livroUsuario);
+        ResultSet resultado = pstmt.executeQuery();
+        Livro usu = new Livro();
+        if (resultado.next()) usu = obterLivroDeResult(resultado);
         logService.sucesso(LivroDao.class.getName(), "Busca do livro do usuário finalizada");
-        return livro;
+        return usu;
     }
 
     public Livro obterLivroituloDeResult(String livroTitulo) throws SQLException {
@@ -58,8 +71,6 @@ public class LivroDao {
         return categoria;
     }
 
-
-
     public void salvarLivro(LivroDto livro) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando o salvamento do livro");
         Connection conexao = bd.obterConexao();
@@ -69,53 +80,36 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
     }
 
-    public void deletarLivro(String nomeLivro, Integer usuarioId) throws SQLException {
-        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + nomeLivro);
+    public void deletarLivro(int deletarLivro) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + deletarLivro);
         Connection conexao = bd.obterConexao();
-
-        String query = usuarioId != null ? LivroQueries.DELETAR_LIVRO_POR_USUARIO : LivroQueries.DELETAR_LIVRO;
-        PreparedStatement pstmt = conexao.prepareStatement(query);
-
-        if(usuarioId != null) {
-            pstmt.setInt(1, usuarioId);
-        } else {
-            pstmt.setString(1, nomeLivro);
-        }
-
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.DELETAR_LIVRO);
+        pstmt.setInt(1, deletarLivro);
         pstmt.executeUpdate();
-        logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + nomeLivro);
+        logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + deletarLivro);
     }
 
 
-    public boolean validarExistenciaLivro(int numeroLivro) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação de existência de livros no código ");
+    public boolean validarExistenciaLivro(String validarLivro) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação da existência do livro");
         Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_EXISTENCIA);
-        pstmt.setInt(1, numeroLivro);
+        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_EXISTENCIA);
+        pstmt.setString(1, validarLivro);
         ResultSet resultado = pstmt.executeQuery();
-
-        if (resultado.next()) {
-            int quantidade = resultado.getInt(1);
-            logService.sucesso(LivroDao.class.getName(), "Validação de existência do livro no código ");
-            return quantidade > 0;
-
-        } else {
-            return false;
-        }
+        resultado.next();
+        int qtd = resultado.getInt(1);
+        logService.sucesso(EnderecoDao.class.getName(), "Validação do livro existente finalizada");
+        return qtd > 0;
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, LivroDto livro) throws SQLException {
         pstmt.setInt(1, livro.getId());
         pstmt.setString(2, livro.getTitulo());
         pstmt.setString(3, livro.getAutor());
-        pstmt.setString(4, livro.getEditora());
-        pstmt.setInt(5, livro.getAno());
-        pstmt.setString(6, livro.getIsbn());
         pstmt.setString(7, livro.getDescricao());
         pstmt.setString(8, livro.getCategoria());
         pstmt.setString(9, livro.getEstadoFisico());
-        pstmt.setString(10, livro.getDataPublicacao());
-        pstmt.setString(11, livro.getDataUltimaPublicacao());
+        pstmt.setString(11, livro.getdata_ultima_solicitacao());
 
     }
 
@@ -126,13 +120,11 @@ public class LivroDao {
                 resultado.getString("titulo"),
                 resultado.getString("autor"),
                 resultado.getString("editora"),
-                resultado.getInt("ano"),
                 resultado.getString("isbn"),
                 resultado.getString("descricao"),
                 resultado.getString("categoria"),
                 resultado.getString("estadoFisico"),
-                resultado.getString("dataPublicacao"),
-                resultado.getString("dataUltimaPublicacao")
+                resultado.getString("dataUltimaSolicitacao")
         );
     }
 
