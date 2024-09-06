@@ -27,13 +27,18 @@ public class LivroQueries {
                     "         INNER JOIN instituicao_ensino ON instituicao_ensino.codigo_instituicao = usuario.codigo_instituicao\n" +
                     "         INNER JOIN cidade ON cidade.codigo_cidade = livro.codigo_cidade\n" +
                     "WHERE livro.codigo_livro = ?;";
+
     public static final String OBTER_LIVRO_POR_TITULO =
             "SELECT * FROM livro "
                     + "WHERE livro_titulo = ?;";
 
     public static final String OBTER_LIVRO_POR_CATEGORIA =
-            "SELECT * FROM livro "
-                    + "WHERE livro_categoria = ?;";
+            "SELECT livro.codigo_livro\n" +
+                    "    categoria.codigo_categoria\n" +
+                    "    categoria.descricao\n" +
+                    "FROM livro\n" +
+                    "        INNER JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria \n" +
+                    "WHERE categoria.descricao = ?;";
 
     public static final String OBTER_LIVRO_POR_USUARIO =
             "SELECT livro.codigo_livro,\n" +
@@ -52,9 +57,9 @@ public class LivroQueries {
                     "WHERE usuario.email_usuario = ?;";
 
     public static final String SALVAR_LIVRO =
-            "INSERT INTO livro (codigo_livro, titulo, autor, descricao, categoria, estado_fisico, data_ultima_solicitacao) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
-                    + "ON DUPLICATE KEY UPDATE titulo = ?, autor = ?, editora = ?, ano = ?, isbn = ?, descricao = ?, categoria = ?, estadoFisico = ?, dataPublicacao = ?, datasUltimaPublicacao = ?;";
+            "INSERT INTO livro (codigo_livro, nome_usuario, titulo, autor, descricao, categoria, estado_fisico, nome_instituicao, nome_cidade, data_ultima_solicitacao) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
+                    + "ON DUPLICATE KEY UPDATE nome_usuario = ?, titulo = ?, autor = ?, descricao = ?, categoria = ?, estado_fisico = ?, nome_instituicao = ?, nome_cidade = ?, data_ultima_solicitacao = ?;";
 
     public static final String DELETAR_LIVRO =
             "DELETE FROM livro"

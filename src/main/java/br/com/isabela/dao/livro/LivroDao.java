@@ -37,12 +37,11 @@ public class LivroDao {
         return livro;
     }
 
-    //todo: renomear "livroUsuario" para "emailUsuario"
-    public Livro obterLivroPorUsuario(String livroUsuario) throws SQLException {
+    public Livro obterLivroPorUsuario(String emailUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
-        pstmt.setString(1, livroUsuario);
+        pstmt.setString(1, emailUsuario);
         ResultSet resultado = pstmt.executeQuery();
         Livro livro = new Livro();
         if (resultado.next()) livro = obterLivroDeResult(resultado);
@@ -92,12 +91,11 @@ public class LivroDao {
         logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + numeroLivro);
     }
 
-    //todo: Trocar String validarLivro por int numeroLivro
-    public boolean validarExistenciaLivro(String validarLivro) throws SQLException {
+    public boolean validarExistenciaLivro(int numeroLivro) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação da existência do livro");
         Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_EXISTENCIA);
-        pstmt.setString(1, validarLivro);
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_EXISTENCIA);
+        pstmt.setInt(1, numeroLivro);
         ResultSet resultado = pstmt.executeQuery();
         resultado.next();
         int qtd = resultado.getInt(1);
@@ -132,24 +130,25 @@ public class LivroDao {
         pstmt.setString(3, livro.getAutor());
         pstmt.setString(7, livro.getDescricao());
         pstmt.setString(8, livro.getCategoria());
-        pstmt.setString(9, livro.getEstadoFisico());
-        pstmt.setString(11, livro.getdata_ultima_solicitacao());
+        pstmt.setString(9, livro.getEstado_fisico());
+        pstmt.setString(10, livro.getNome_instituicao());
+        pstmt.setString(11, livro.getNome_cidade());
+        pstmt.setString(12, livro.getData_ultima_solicitacao());
     }
 
-    //todo: usar underline no nome das colunas ex: estado_fisico
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {
         return Livro.carregar(
                 resultado.getInt("id"),
+                resultado.getString("nome_usuario"),
                 resultado.getString("titulo"),
                 resultado.getString("autor"),
-                resultado.getString("editora"),
-                resultado.getString("isbn"),
                 resultado.getString("descricao"),
                 resultado.getString("categoria"),
-                resultado.getString("estadoFisico"),
-                resultado.getString("dataUltimaSolicitacao")
+                resultado.getString("estado_fisico"),
+                resultado.getString("nome_instituicao"),
+                resultado.getString("nome_cidade"),
+                resultado.getString("data_ultima_solicitacao")
         );
     }
 
-
-}//fim do código
+}
