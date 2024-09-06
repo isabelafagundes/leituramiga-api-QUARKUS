@@ -34,7 +34,7 @@ public class UsuarioQueries {
     public static final String ALTERAR_SENHA =
             "UPDATE usuario SET senha = ?, codigo_alteracao = null WHERE email_usuario = ?;";
 
-    public static final String ALTERAR_email_usuario =
+    public static final String OBTER_USUARIO_POR_EMAIL =
             "UPDATE usuario SET email_usuario = ? WHERE email_usuario = ?;";
 
     public static final String VERIFICAR_USERNAME =
