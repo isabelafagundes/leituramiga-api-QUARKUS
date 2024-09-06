@@ -1,5 +1,6 @@
 package br.com.isabela.model.livro;
 
+//todo: Adicionar nome da cidade, nome da instituição, nome usuário, codigo da cidade
 public class Livro {
     private Integer id;
     private String titulo;
