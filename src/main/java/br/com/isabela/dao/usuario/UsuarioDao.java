@@ -207,7 +207,7 @@ public class UsuarioDao {
                     resultado.getString("nome"),
                     resultado.getString("username"),
                     resultado.getString("senha"),
-                    resultado.getString("email"),
+                    resultado.getString("email_usuario"),
                     resultado.getInt("tipo_usuario"),
                     resultado.getInt("tentativas"),
                     resultado.getBoolean("bloqueado"),
