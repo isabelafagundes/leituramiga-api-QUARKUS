@@ -2,7 +2,6 @@ package br.com.isabela.dao.livro;
 
 import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.endereco.EnderecoDao;
-import br.com.isabela.dao.endereco.EnderecoQueries;
 import br.com.isabela.dto.livro.LivroDto;
 import br.com.isabela.model.livro.Livro;
 import br.com.isabela.service.autenticacao.LogService;
