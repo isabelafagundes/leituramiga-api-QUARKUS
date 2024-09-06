@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ApplicationScoped
@@ -35,6 +37,7 @@ public class LivroDao {
         return livro;
     }
 
+    //todo: renomear "livroUsuario" para "emailUsuario"
     public Livro obterLivroPorUsuario(String livroUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
         Connection conexao = bd.obterConexao();
@@ -102,6 +105,27 @@ public class LivroDao {
         return qtd > 0;
     }
 
+    public List<Livro> obterLivrosPaginados(int pagina, int tamanhoPagina, String pesquisa, int numeroCategoria, int numeroInstituicao, int numeroCidade) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livros paginados");
+        Connection conexao = bd.obterConexao();
+        String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", LivroQueries.FILTROS_LIVRO);
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVROS_PAGINADOS);
+        pstmt.setString(1, pesquisa);
+        pstmt.setString(2, pesquisa);
+        pstmt.setString(3, pesquisa);
+        pstmt.setString(4, pesquisa);
+        pstmt.setInt(5, numeroInstituicao);
+        pstmt.setInt(6, numeroCategoria);
+        pstmt.setInt(7, numeroCidade);
+        pstmt.setInt(8, pagina * tamanhoPagina);
+        pstmt.setInt(9, tamanhoPagina);
+        ResultSet resultado = pstmt.executeQuery();
+        List<Livro> livros = new ArrayList<>();
+        while (resultado.next()) livros.add(obterLivroDeResult(resultado));
+        logService.sucesso(LivroDao.class.getName(), "Busca de livros paginados finalizada");
+        return livros;
+    }
+
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, LivroDto livro) throws SQLException {
         pstmt.setInt(1, livro.getId());
         pstmt.setString(2, livro.getTitulo());
@@ -112,7 +136,7 @@ public class LivroDao {
         pstmt.setString(11, livro.getdata_ultima_solicitacao());
     }
 
-//todo: usar underline no nome das colunas ex: estado_fisico
+    //todo: usar underline no nome das colunas ex: estado_fisico
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {
         return Livro.carregar(
                 resultado.getInt("id"),
