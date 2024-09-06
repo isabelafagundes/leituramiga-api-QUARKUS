@@ -23,31 +23,31 @@ public class LivroDao {
     @Inject
     LogService logService;
 
-    public Livro obterLivroUsuario(String livroId) throws SQLException {
+    public Livro obterLivroPorNumero(String livroId) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca do livro");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_ID);
         pstmt.setString(1, livroId);
         ResultSet resultado = pstmt.executeQuery();
-        Livro num = new Livro();
-        if (resultado.next()) num = obterLivroDeResult(resultado);
+        Livro livro = new Livro();
+        if (resultado.next()) livro = obterLivroDeResult(resultado);
         logService.sucesso(LivroDao.class.getName(), "Busca do livro finalizada");
-        return num;
+        return livro;
     }
 
-    public Livro obterNumeroLivro(String livroUsuario) throws SQLException {
+    public Livro obterLivroPorUsuario(String livroUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
         pstmt.setString(1, livroUsuario);
         ResultSet resultado = pstmt.executeQuery();
-        Livro usu = new Livro();
-        if (resultado.next()) usu = obterLivroDeResult(resultado);
+        Livro livro = new Livro();
+        if (resultado.next()) livro = obterLivroDeResult(resultado);
         logService.sucesso(LivroDao.class.getName(), "Busca do livro do usuário finalizada");
-        return usu;
+        return livro;
     }
 
-    public Livro obterLivroituloDeResult(String livroTitulo) throws SQLException {
+    public Livro obterLivroPorTitulo(String livroTitulo) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro por titulo");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_TITULO);
@@ -59,7 +59,7 @@ public class LivroDao {
         return titulo;
     }
 
-    public Livro obterLivroCategoriaDeResult(String livroCategoria) throws SQLException {
+    public Livro obterLivroPorCategoria(String livroCategoria) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro por categoria");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_CATEGORIA);
@@ -80,16 +80,16 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
     }
 
-    public void deletarLivro(int deletarLivro) throws SQLException {
-        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + deletarLivro);
+    public void deletarLivro(int numeroLivro) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + numeroLivro);
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.DELETAR_LIVRO);
-        pstmt.setInt(1, deletarLivro);
+        pstmt.setInt(1, numeroLivro);
         pstmt.executeUpdate();
-        logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + deletarLivro);
+        logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + numeroLivro);
     }
 
-
+    //todo: Trocar String validarLivro por int numeroLivro
     public boolean validarExistenciaLivro(String validarLivro) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação da existência do livro");
         Connection conexao = bd.obterConexao();
@@ -110,10 +110,9 @@ public class LivroDao {
         pstmt.setString(8, livro.getCategoria());
         pstmt.setString(9, livro.getEstadoFisico());
         pstmt.setString(11, livro.getdata_ultima_solicitacao());
-
     }
 
-
+//todo: usar underline no nome das colunas ex: estado_fisico
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {
         return Livro.carregar(
                 resultado.getInt("id"),
