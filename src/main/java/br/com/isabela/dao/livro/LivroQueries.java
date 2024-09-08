@@ -29,13 +29,14 @@ public class LivroQueries {
                     "WHERE livro.codigo_livro = ?;";
 
     public static final String OBTER_LIVRO_POR_TITULO =
-            "SELECT * FROM livro "
-                    + "WHERE livro_titulo = ?;";
+            "SELECT codigo_livro, nome " +
+                    "FROM livro " +
+                    "WHERE nome = ?;";
 
     public static final String OBTER_LIVRO_POR_CATEGORIA =
-            "SELECT livro.codigo_livro\n" +
-                    "    categoria.codigo_categoria\n" +
-                    "    categoria.descricao\n" +
+            "SELECT livro.codigo_livro,\n" +
+                    "    categoria.codigo_categoria,\n" +
+                    "    categoria.descricao,\n" +
                     "FROM livro\n" +
                     "        INNER JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria \n" +
                     "WHERE categoria.descricao = ?;";
