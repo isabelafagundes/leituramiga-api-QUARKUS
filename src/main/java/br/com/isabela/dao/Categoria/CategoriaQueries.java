@@ -6,5 +6,6 @@ public class CategoriaQueries {
             "SELECT categoria.codigo_categoria,\n" +
                     "       categoria.descricao\n" +
                     "FROM categoria\n" +
-                    "WHERE categoria.codigo_categoria =?;";
+                    "WHERE categoria.codigo_categoria =?;" +
+                    "ORDER BY categoria.codigo_categoria ASC;";
 }
