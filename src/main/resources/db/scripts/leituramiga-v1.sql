@@ -45,6 +45,16 @@ CREATE TABLE IF NOT EXISTS livro
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)
 );
 
+CREATE TABLE IF NOT EXISTS comentario
+(
+    codigo_comentario           INTEGER PRIMARY KEY AUTO_INCREMENT,
+    descricao                   VARCHAR(120) NOT NULL,
+    data_criacao                VARCHAR(40),
+    hora_criacao                VARCHAR(40),
+    email_usuario               VARCHAR(256) NOT NULL,
+
+    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
+);
 
 CREATE TABLE IF NOT EXISTS cidade
 (
