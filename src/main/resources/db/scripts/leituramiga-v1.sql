@@ -45,13 +45,21 @@ CREATE TABLE IF NOT EXISTS livro
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)
 );
 
+CREATE TABLE IF NOT EXISTS imagem_livro
+(
+    codigo_imagem_livro INTEGER PRIMARY KEY AUTO_INCREMENT,
+    imagem              VARCHAR(256),
+    codigo_livro        INTEGER NOT NULL,
+    FOREIGN KEY (codigo_livro) REFERENCES livro (codigo_livro)
+);
+
 CREATE TABLE IF NOT EXISTS comentario
 (
-    codigo_comentario           INTEGER PRIMARY KEY AUTO_INCREMENT,
-    descricao                   VARCHAR(120) NOT NULL,
-    data_criacao                VARCHAR(40),
-    hora_criacao                VARCHAR(40),
-    email_usuario               VARCHAR(256) NOT NULL,
+    codigo_comentario INTEGER PRIMARY KEY AUTO_INCREMENT,
+    descricao         VARCHAR(120) NOT NULL,
+    data_criacao      VARCHAR(40),
+    hora_criacao      VARCHAR(40),
+    email_usuario     VARCHAR(256) NOT NULL,
 
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
 );
@@ -76,4 +84,40 @@ CREATE TABLE IF NOT EXISTS endereco
     email_usuario      VARCHAR(260) NOT NULL,
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_cidade) REFERENCES cidade (codigo_cidade)
+);
+
+CREATE TABLE IF NOT EXISTS solicitacao
+(
+    codigo_solicitacao        INTEGER PRIMARY KEY AUTO_INCREMENT,
+    data_criacao              VARCHAR(10) NOT NULL,
+    hora_criacao              VARCHAR(8)  NOT NULL,
+    data_atualizacao          VARCHAR(10) NOT NULL,
+    hora_atualizacao          VARCHAR(8)  NOT NULL,
+    data_entrega              VARCHAR(10) NOT NULL,
+    hora_entrega              VARCHAR(8)  NOT NULL,
+    data_devolucao            VARCHAR(10),
+    hora_devolucao            VARCHAR(8),
+    data_aceite               VARCHAR(10),
+    hora_aceite               VARCHAR(8),
+    motivo_recusa             VARCHAR(120),
+    informacoes_adicionais    VARCHAR(256),
+    codigo_tipo_solicitacao   INTEGER     NOT NULL,
+    codigo_status_solicitacao INTEGER     NOT NULL,
+    email_usuario             VARCHAR(256),
+    codigo_forma_entrega      INTEGER     NOT NULL,
+    codigo_endereco           INTEGER     NOT NULL,
+    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
+    FOREIGN KEY (codigo_endereco) REFERENCES endereco (codigo_endereco)
+);
+
+CREATE TABLE IF NOT EXISTS notificacao
+(
+    codigo_notificacao INTEGER PRIMARY KEY AUTO_INCREMENT,
+    hora_criacao       VARCHAR(8)   NOT NULL,
+    data_criacao       VARCHAR(10)  NOT NULL,
+    descricao          VARCHAR(120) NOT NULL,
+    codigo_solicitacao INTEGER      NOT NULL,
+    email_usuario      VARCHAR(256) NOT NULL,
+    FOREIGN KEY (codigo_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
+    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
 );

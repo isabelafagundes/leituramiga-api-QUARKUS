@@ -1,7 +1,9 @@
 package br.com.isabela.dto.categoria;
 
 import br.com.isabela.model.categoria.Categoria;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class CategoriaDto {
     public int id;
     public String nome_categoria;

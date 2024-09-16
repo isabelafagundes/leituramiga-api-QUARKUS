@@ -1,7 +1,9 @@
 package br.com.isabela.dto.livro;
 
 import br.com.isabela.model.livro.Livro;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class LivroDto {
     public Integer id;
     public String nome_usuario;
@@ -15,7 +17,7 @@ public class LivroDto {
     public String data_ultima_solicitacao;
 
     public static LivroDto deModel(
-        Livro livro
+            Livro livro
     ) {
         LivroDto dto = new LivroDto();
 

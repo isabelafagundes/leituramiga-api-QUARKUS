@@ -1,9 +1,11 @@
 package br.com.isabela.dto.endereco;
 
 import br.com.isabela.model.endereco.Endereco;
-import br.com.isabela.model.usuario.Usuario;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class EnderecoDto {
+
     public Integer id;
     public String logradouro;
     public String complemento;

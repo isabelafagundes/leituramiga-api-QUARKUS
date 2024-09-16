@@ -1,7 +1,9 @@
 package br.com.isabela.dto.comentario;
 
 import br.com.isabela.model.comentario.Comentario;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class ComentarioDto {
     public int id;
     public String descricao;
