@@ -98,7 +98,7 @@ public class LivroDao {
         ResultSet resultado = pstmt.executeQuery();
         resultado.next();
         int qtd = resultado.getInt(1);
-        logService.sucesso(EnderecoDao.class.getName(), "Validação do livro existente finalizada");
+        logService.sucesso(EnderecoDao.class.getName(), "Sucesso na validação de existência do livro");
         return qtd > 0;
     }
 
@@ -119,7 +119,7 @@ public class LivroDao {
         ResultSet resultado = pstmt.executeQuery();
         List<Livro> livros = new ArrayList<>();
         while (resultado.next()) livros.add(obterLivroDeResult(resultado));
-        logService.sucesso(LivroDao.class.getName(), "Busca de livros paginados finalizada");
+        logService.sucesso(LivroDao.class.getName(), "Sucesso em obter os livros paginados");
         return livros;
     }
 
@@ -133,6 +133,16 @@ public class LivroDao {
         pstmt.setString(10, livro.getNome_instituicao());
         pstmt.setString(11, livro.getNome_cidade());
         pstmt.setString(12, livro.getData_ultima_solicitacao());
+    }
+
+    public void salvarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando o salvamento da imagem do livro de código" + codigoLivro);
+        Connection conexao = bd.obterConexao();
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_IMAGEM);
+        pstmt.setString(1, caminhoImagem);
+        pstmt.setInt(2, codigoLivro);
+        pstmt.executeQuery();
+        logService.sucesso(LivroDao.class.getName(), "Sucesso em salvar a imagem do livro de código " + codigoLivro);
     }
 
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {

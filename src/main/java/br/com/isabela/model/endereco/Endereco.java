@@ -7,8 +7,8 @@ public class Endereco {
     private String bairro;
     private String cep;
     private String nomeCidade;
-
     private Integer codigoCidade;
+    private String estado;
 
     public Integer getCodigoCidade() {
         return codigoCidade;
@@ -22,15 +22,6 @@ public class Endereco {
         this.nomeCidade = nomeCidade;
     }
 
-    public String getNomeEstado() {
-        return nomeEstado;
-    }
-
-    public void setNomeEstado(String nomeEstado) {
-        this.nomeEstado = nomeEstado;
-    }
-
-    private String nomeEstado;
     private String emailUsuario;
 
     public Endereco() {
@@ -43,8 +34,8 @@ public class Endereco {
             String bairro,
             String cep,
             String nomeCidade,
-            String nomeEstado,
-            String emailUsuario) {
+            String emailUsuario,
+            String estado) {
         Endereco endereco = new Endereco();
         endereco.id = id;
         endereco.logradouro = logradouro;
@@ -52,9 +43,22 @@ public class Endereco {
         endereco.bairro = bairro;
         endereco.cep = cep;
         endereco.nomeCidade = nomeCidade;
-        endereco.nomeEstado = nomeEstado;
         endereco.emailUsuario = emailUsuario;
+        endereco.estado = estado;
+
         return endereco;
+    }
+
+    public void setCodigoCidade(Integer codigoCidade) {
+        this.codigoCidade = codigoCidade;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public Integer getId() {

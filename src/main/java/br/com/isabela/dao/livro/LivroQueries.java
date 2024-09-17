@@ -96,4 +96,7 @@ public class LivroQueries {
                     "OR categoria.numero = ?\n" +
                     "OR livro.codigo_cidade = ?;";
 
+    public static String SALVAR_IMAGEM = "INSERT INTO imagem_livro (imagem, codigo_livro) " +
+            "VALUES (?, ?)";
+
 }

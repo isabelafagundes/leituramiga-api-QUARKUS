@@ -6,10 +6,11 @@ import br.com.isabela.model.endereco.Endereco;
 import br.com.isabela.model.exception.EnderecoNaoExistente;
 import br.com.isabela.service.autenticacao.HashService;
 import br.com.isabela.service.autenticacao.LogService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.SQLException;
-
+@ApplicationScoped
 public class EnderecoService {
 
     @Inject

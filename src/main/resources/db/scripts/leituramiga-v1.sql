@@ -102,10 +102,11 @@ CREATE TABLE IF NOT EXISTS solicitacao
     motivo_recusa             VARCHAR(120),
     informacoes_adicionais    VARCHAR(256),
     codigo_tipo_solicitacao   INTEGER     NOT NULL,
-    codigo_status_solicitacao INTEGER     NOT NULL,
+    codigo_status_solicitacao INTEGER     NOT NULL DEFAULT 2,
     email_usuario             VARCHAR(256),
     codigo_forma_entrega      INTEGER     NOT NULL,
     codigo_endereco           INTEGER     NOT NULL,
+    codigo_rastreio_correio   VARCHAR(120),
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_endereco) REFERENCES endereco (codigo_endereco)
 );

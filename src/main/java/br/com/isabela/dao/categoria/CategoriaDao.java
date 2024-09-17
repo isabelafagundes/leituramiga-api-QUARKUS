@@ -1,12 +1,9 @@
-package br.com.isabela.dao.Categoria;
+package br.com.isabela.dao.categoria;
 
 import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.livro.LivroDao;
-import br.com.isabela.dao.livro.LivroQueries;
 import br.com.isabela.dto.categoria.CategoriaDto;
-import br.com.isabela.dto.livro.LivroDto;
 import br.com.isabela.model.categoria.Categoria;
-import br.com.isabela.model.livro.Livro;
 import br.com.isabela.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

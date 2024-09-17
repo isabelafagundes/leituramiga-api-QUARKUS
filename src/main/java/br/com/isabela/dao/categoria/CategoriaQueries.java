@@ -1,4 +1,4 @@
-package br.com.isabela.dao.Categoria;
+package br.com.isabela.dao.categoria;
 
 public class CategoriaQueries {
 
