@@ -5,8 +5,8 @@ public enum TipoSolicitacao {
     TROCA(2, "Troca"),
     DOACAO(3, "Doação");
 
-    private final int id;
-    private final String descricao;
+    public final int id;
+    public final String descricao;
 
     TipoSolicitacao(int id, String descricao) {
         this.id = id;

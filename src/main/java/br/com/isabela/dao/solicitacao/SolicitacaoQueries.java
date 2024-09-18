@@ -100,7 +100,7 @@ public class SolicitacaoQueries {
             "data_atualizacao = ?, " +
             "hora_atualizacao = ?, " +
             "motivo_recusa = ?, " +
-            "codigo_status_solicitacao = " +  TipoStatusSolicitacao.RECUSADA.id +
+            "codigo_status_solicitacao = " + TipoStatusSolicitacao.RECUSADA.id +
             ", WHERE codigo_solicitacao = ?";
 
     public static final String ACEITAR_SOLICITACAO = "UPDATE solicitacao SET " +
@@ -111,13 +111,51 @@ public class SolicitacaoQueries {
             "codigo_status_solicitacao = " + TipoStatusSolicitacao.EM_ANDAMENTO.id +
             ", WHERE codigo_solicitacao = ?";
 
-
     public static final String CANCELAR_SOLICITACAO = "UPDATE solicitacao SET " +
             "data_atualizacao = ?, " +
             "hora_atualizacao = ?, " +
             "codigo_status_solicitacao = ?, " +
             "motivo_recusa = " + TipoStatusSolicitacao.CANCELADA.id +
             ", WHERE codigo_solicitacao = ?";
+
+    public static final String SOLICITACAO_EXISTE = "SELECT " +
+            "COUNT(1) FROM solicitacao " +
+            "WHERE solicitacao.codigo_solicitacao = ?" +
+            "AND solicitacao.email_usuario = ?";
+
+    public static final String SOLICITACAO_EM_ABERTO = "SELECT " +
+            "COUNT (1) FROM solicitacao " +
+            "WHERE solicitacao.status = 1 " +
+            "OR solicitacao.status = 2" +
+            "AND solicitacao.email_usuario = ?" +
+            "AND solicitacao.codigo_tipo_solicitacao = ?";
+
+    public static final String SOLICITACAO_DENTRO_PRAZO_ENTREGA = "SELECT " +
+            "COUNT (1) FROM solicitacao " +
+            "WHERE solicitacao.data_entrega >= ? " +
+            "AND solicitacao.hora_entrega <= ? " +
+            "AND solicitacao.numero = ?";
+
+    public static final String SOLICITACAO_DENTRO_PRAZO_DEVOLUCAO = "SELECT " +
+            "COUNT (1) FROM solicitacao " +
+            "WHERE solicitacao.data_devolucao >= ? " +
+            "AND solicitacao.hora_devolucao <= ? " +
+            "AND solicitacao.numero = ?";
+
+
+    public static final String CADASTRAR_LIVRO_SOLICITACAO = "INSERT INTO livro_solicitacao (" +
+            "codigo_solicitacao, " +
+            "codigo_livro, " +
+            "codigo_status_livro_solicitacao " +
+            ") VALUES (?,?,?) ";
+
+    public static final String OBTER_LIVROS_SOLICITACAO = "SELECT " +
+            "livro_solicitacao.codigo_livro, " +
+            "livro_solicitacao.codigo_status_livro_solicitacao " +
+            "FROM livro_solicitacao " +
+            "WHERE livro_solicitacao.codigo_solicitacao = ? " +
+            "AND livro_solicitacao.email_usuario = ?";
+
 
 
 }

@@ -103,12 +103,26 @@ CREATE TABLE IF NOT EXISTS solicitacao
     informacoes_adicionais    VARCHAR(256),
     codigo_tipo_solicitacao   INTEGER     NOT NULL,
     codigo_status_solicitacao INTEGER     NOT NULL DEFAULT 2,
+    email_usuario_criador     VARCHAR(256),
     email_usuario             VARCHAR(256),
     codigo_forma_entrega      INTEGER     NOT NULL,
     codigo_endereco           INTEGER     NOT NULL,
     codigo_rastreio_correio   VARCHAR(120),
+    FOREIGN KEY (email_usuario_criador) REFERENCES usuario (email_usuario),
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_endereco) REFERENCES endereco (codigo_endereco)
+);
+
+
+CREATE TABLE IF NOT EXISTS livro_solicitacao
+(
+    codigo_livro_solicitacao INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_solicitacao       INTEGER      NOT NULL,
+    codigo_livro             INTEGER      NOT NULL,
+    email_usuario            VARCHAR(256) NOT NULL,
+    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
+    FOREIGN KEY (codigo_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
+    FOREIGN KEY (codigo_livro) REFERENCES livro (codigo_livro)
 );
 
 CREATE TABLE IF NOT EXISTS notificacao
