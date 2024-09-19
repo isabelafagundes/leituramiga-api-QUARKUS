@@ -21,8 +21,8 @@ public class Solicitacao {
     private String informacoesAdicionais;
     private int codigoTipoSolicitacao;
     private int codigoStatusSolicitacao;
-    private String emailUsuarioCriador;
-    private String emailUsuarioProprietario;
+    private String emailUsuarioSolicitante;
+    private String emailUsuarioReceptor;
     private int codigoFormaEntrega;
     private String codigoRastreioCorreio;
     private Endereco endereco;
@@ -72,18 +72,18 @@ public class Solicitacao {
         solicitacao.setInformacoesAdicionais(informacoesAdicionais);
         solicitacao.setCodigoTipoSolicitacao(codigoTipoSolicitacao);
         solicitacao.setCodigoStatusSolicitacao(codigoStatusSolicitacao);
-        solicitacao.setEmailUsuarioCriador(emailUsuarioCriador);
+        solicitacao.setEmailUsuarioSolicitante(emailUsuarioCriador);
         solicitacao.setCodigoFormaEntrega(codigoFormaEntrega);
         solicitacao.setCodigoRastreioCorreio(codigoRastreioCorreio);
         solicitacao.setEndereco(endereco);
         solicitacao.setLivrosUsuarioCriador(livrosUsuarioCriador);
         solicitacao.setLivrosTroca(livrosTroca);
-        solicitacao.setEmailUsuarioProprietario(emailUsuarioProprietario);
+        solicitacao.setEmailUsuarioReceptor(emailUsuarioProprietario);
         return solicitacao;
     }
 
-    public void setEmailUsuarioProprietario(String emailUsuarioProprietario) {
-        this.emailUsuarioProprietario = emailUsuarioProprietario;
+    public void setEmailUsuarioReceptor(String emailUsuarioReceptor) {
+        this.emailUsuarioReceptor = emailUsuarioReceptor;
     }
 
     public List<LivroSolicitacao> getLivrosUsuarioCriador() {
@@ -222,12 +222,12 @@ public class Solicitacao {
         this.codigoStatusSolicitacao = codigoStatusSolicitacao;
     }
 
-    public String getEmailUsuarioCriador() {
-        return emailUsuarioCriador;
+    public String getEmailUsuarioSolicitante() {
+        return emailUsuarioSolicitante;
     }
 
-    public void setEmailUsuarioCriador(String emailUsuarioCriador) {
-        this.emailUsuarioCriador = emailUsuarioCriador;
+    public void setEmailUsuarioSolicitante(String emailUsuarioSolicitante) {
+        this.emailUsuarioSolicitante = emailUsuarioSolicitante;
     }
 
     public int getCodigoFormaEntrega() {
@@ -250,8 +250,8 @@ public class Solicitacao {
         return endereco;
     }
 
-    public String getEmailUsuarioProprietario() {
-        return emailUsuarioProprietario;
+    public String getEmailUsuarioReceptor() {
+        return emailUsuarioReceptor;
     }
 
     public void setEndereco(Endereco endereco) {

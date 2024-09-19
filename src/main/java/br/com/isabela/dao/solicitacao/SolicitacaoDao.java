@@ -27,11 +27,23 @@ public class SolicitacaoDao {
     LogService logService;
 
 
-    public List<Solicitacao> obterSolicitacoesPaginadas(Integer pagina, Integer quantidade) throws SQLException {
+    public List<Solicitacao> obterSolicitacaoPendentes() throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_PENDENTE);
+            ResultSet rs = ps.executeQuery();
+            List<Solicitacao> solicitacoes = new ArrayList<>();
+            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs));
+            return solicitacoes;
+        }
+    }
+
+    public List<Solicitacao> obterSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_ANDAMENTO_PAGINADAS);
             ps.setInt(1, (pagina - 1) * quantidade);
             ps.setInt(2, quantidade);
+            ps.setString(3, email);
+            ps.setString(4, email);
             ResultSet rs = ps.executeQuery();
             List<Solicitacao> solicitacoes = new ArrayList<>();
             while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs));
@@ -53,17 +65,75 @@ public class SolicitacaoDao {
         }
     }
 
+    public void cadastrarSolicitacao(Solicitacao solicitacao, Integer codigoEndereco) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cadastro da solicitação");
+            PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CADASTRAR_SOLICITACAO);
+            DataHora dataHora = DataHora.hoje();
+            pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+            pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+            pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
+            pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
+            pstmt.setString(5, solicitacao.getDataEntrega());
+            pstmt.setString(6, solicitacao.getHoraEntrega());
+            pstmt.setString(7, solicitacao.getDataDevolucao());
+            pstmt.setString(8, solicitacao.getHoraDevolucao());
+            pstmt.setString(9, null);
+            pstmt.setString(10, null);
+            pstmt.setString(11, null);
+            pstmt.setString(12, solicitacao.getInformacoesAdicionais());
+            pstmt.setInt(13, solicitacao.getCodigoTipoSolicitacao());
+            pstmt.setInt(14, solicitacao.getCodigoStatusSolicitacao());
+            pstmt.setString(15, solicitacao.getEmailUsuarioReceptor());
+            pstmt.setString(16, solicitacao.getEmailUsuarioSolicitante());
+            pstmt.setInt(17, solicitacao.getCodigoFormaEntrega());
+            pstmt.setInt(18, codigoEndereco);
+            pstmt.setString(19, solicitacao.getCodigoRastreioCorreio());
+            pstmt.executeQuery();
+            logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação cadastrada com sucesso");
+        }
+    }
+
+    public void atualizarSolicitacao(Solicitacao solicitacao) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a atualização da solicitação");
+            PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ATUALIZAR_SOLICITACAO);
+            DataHora dataHora = DataHora.hoje();
+            pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+            pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+            pstmt.setString(3, solicitacao.getDataEntrega());
+            pstmt.setString(4, solicitacao.getHoraEntrega());
+            pstmt.setString(5, solicitacao.getDataDevolucao());
+            pstmt.setString(6, solicitacao.getHoraDevolucao());
+            pstmt.setString(7, solicitacao.getDataAceite());
+            pstmt.setString(8, solicitacao.getHoraAceite());
+            pstmt.setString(9, solicitacao.getMotivoRecusa());
+            pstmt.setString(10, solicitacao.getInformacoesAdicionais());
+            pstmt.setInt(11, solicitacao.getCodigoTipoSolicitacao());
+            pstmt.setInt(12, solicitacao.getCodigoStatusSolicitacao());
+            pstmt.setString(13, solicitacao.getEmailUsuarioSolicitante());
+            pstmt.setString(14, solicitacao.getEmailUsuarioReceptor());
+            pstmt.setInt(15, solicitacao.getCodigoFormaEntrega());
+            pstmt.setInt(16, solicitacao.getEndereco().getCodigo());
+            pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
+            pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
+            pstmt.executeQuery();
+            logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação atualizada com sucesso");
+        }
+    }
+
     private Solicitacao obterSolicitacaoComLivros(Solicitacao solicitacao) throws SQLException {
-        List<LivroSolicitacao> livroSolicitacao = obterLivrosSolicitacaoUsuarioCriador(solicitacao.getEmailUsuarioCriador(), solicitacao.getCodigoSolicitacao());
-        logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + solicitacao.getCodigoSolicitacao() + " do usuário " + solicitacao.getEmailUsuarioCriador());
+        List<LivroSolicitacao> livroSolicitacao = obterLivrosSolicitacaoUsuarioCriador(solicitacao.getEmailUsuarioSolicitante(), solicitacao.getCodigoSolicitacao());
+        logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + solicitacao.getCodigoSolicitacao() + " do usuário " + solicitacao.getEmailUsuarioSolicitante());
         solicitacao.setLivrosUsuarioCriador(livroSolicitacao);
         if (solicitacao.getCodigoTipoSolicitacao() == TipoSolicitacao.TROCA.id) {
-            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + solicitacao.getCodigoSolicitacao() + " do usuário " + solicitacao.getEmailUsuarioProprietario());
-            livroSolicitacao = obterLivrosSolicitacaoUsuarioCriador(solicitacao.getEmailUsuarioProprietario(), solicitacao.getCodigoSolicitacao());
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + solicitacao.getCodigoSolicitacao() + " do usuário " + solicitacao.getEmailUsuarioReceptor());
+            livroSolicitacao = obterLivrosSolicitacaoUsuarioCriador(solicitacao.getEmailUsuarioReceptor(), solicitacao.getCodigoSolicitacao());
             solicitacao.setLivrosTroca(livroSolicitacao);
         }
         return solicitacao;
     }
+
 
     public void recusarSolicitacao(Integer codigo, String motivoRecusa) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
@@ -82,6 +152,7 @@ public class SolicitacaoDao {
 
     public void cancelarSolicitacao(Integer codigo, String motivoRecusa) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cancelamento da solicitação de código " + codigo);
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CANCELAR_SOLICITACAO);
             DataHora dataHora = DataHora.hoje();
             pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
@@ -89,6 +160,7 @@ public class SolicitacaoDao {
             pstmt.setString(3, motivoRecusa);
             pstmt.setInt(4, codigo);
             pstmt.executeQuery();
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso no cancelamento da solicitação de código " + codigo);
         }
     }
 
@@ -118,6 +190,76 @@ public class SolicitacaoDao {
             while (rs.next()) livros.add(obterLivroSolicitacaoDeResult(rs));
             logService.sucesso(SolicitacaoDao.class.getName(), "Livros da solicitação " + codigoSolicitacao + " do usuário " + emailUsuario + " obtidos com sucesso");
             return livros;
+        }
+    }
+
+    public boolean validarExistenciaSolicitacao(Integer codigo) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência da solicitação de código " + codigo);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_EXISTE);
+            ps.setInt(1, codigo);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência da solicitação de código " + codigo);
+            return existe;
+        }
+    }
+
+    public boolean validarSolicitacaoAberta(Integer numero) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência de solicitação aberta de código " + numero);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_EM_ABERTO);
+            ps.setInt(1, numero);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência de solicitação aberta de código " + numero);
+            return existe;
+        }
+    }
+
+    public boolean validarSolicitacaoPendente(Integer codigo) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência de solicitação pendente de código " + codigo);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_PENDENTE);
+            ps.setInt(1, codigo);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência de solicitação pendente de código " + codigo);
+            return existe;
+        }
+    }
+
+    public boolean validarSolicitacaoDentroPrazoEntrega(Integer numero) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência de solicitação dentro do prazo de entrega");
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_DENTRO_PRAZO_ENTREGA);
+            DataHora dataHora = DataHora.hoje();
+            ps.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+            ps.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+            ps.setInt(3, numero);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência de solicitação dentro do prazo de entrega");
+            return existe;
+        }
+    }
+
+    public boolean validarSolicitacaoDentroPrazoDevolucao(String dataDevolucao, String horaDevolucao, Integer numero) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência de solicitação dentro do prazo de devolução");
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_DENTRO_PRAZO_DEVOLUCAO);
+            ps.setString(1, dataDevolucao);
+            ps.setString(2, horaDevolucao);
+            ps.setInt(3, numero);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência de solicitação dentro do prazo de devolução");
+            return existe;
         }
     }
 

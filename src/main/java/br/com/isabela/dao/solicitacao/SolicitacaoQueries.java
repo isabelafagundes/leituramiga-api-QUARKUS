@@ -4,7 +4,7 @@ import br.com.isabela.model.solicitacao.TipoStatusSolicitacao;
 
 public class SolicitacaoQueries {
 
-    public static final String SALVAR_SOLICITACAO = "INSERT INTO solicitacao (" +
+    public static final String CADASTRAR_SOLICITACAO = "INSERT INTO solicitacao (" +
             "data_criacao, " +
             "hora_criacao, " +
             "data_atualizacao, " +
@@ -20,10 +20,11 @@ public class SolicitacaoQueries {
             "codigo_tipo_solicitacao, " +
             "codigo_status_solicitacao, " +
             "email_usuario, " +
+            "email_usuario_criador, " +
             "codigo_forma_entrega, " +
             "codigo_endereco, " +
             "codigo_rastreio_correio" +
-            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 
     public static final String ATUALIZAR_SOLICITACAO = "UPDATE solicitacao SET " +
@@ -39,6 +40,7 @@ public class SolicitacaoQueries {
             "informacoes_adicionais = ?, " +
             "codigo_tipo_solicitacao = ?, " +
             "codigo_status_solicitacao = ?, " +
+            "email_usuario_criador = ?, " +
             "email_usuario = ?, " +
             "codigo_forma_entrega = ?, " +
             "codigo_endereco = ?, " +
@@ -78,6 +80,12 @@ public class SolicitacaoQueries {
             "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
             "WHERE solicitacao.codigo_solicitacao = ? ";
 
+    public static final String OBTER_SOLICITACOES_PENDENTE =
+            "SELECT usuario.nome_usuario," +
+                    "FROM usuario INNER JOIN solicitacao ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
+                    "WHERE solicitacao.codigo_status_solicitacao = 2 " +
+                    "AND solicitacao.codigo_solicitacao = ?";
+
     public static final String OBTER_SOLICITACOES_ANDAMENTO_PAGINADAS =
             "SELECT solicitacao.codigo_solicitacao," +
                     "solicitacao.data_entrega," +
@@ -91,10 +99,10 @@ public class SolicitacaoQueries {
                     "solicitacao.codigo_forma_entrega," +
                     "solicitacao.codigo_endereco," +
                     "solicitacao.codigo_rastreio_correio " +
-                    "FROM solicitacao WHERE solicitacao.codigo_status_solicitacao = 1 " +
+                    "FROM solicitacao WHERE solicitacao.codigo_status_solicitacao = 2 " +
                     "ORDER BY solicitacao.data_entrega DESC, solicitacao.hora_entrega DESC " +
+                    "WHERE solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?" +
                     "LIMIT ? OFFSET ? ";
-
 
     public static final String RECUSAR_SOLICITACAO = "UPDATE solicitacao SET " +
             "data_atualizacao = ?, " +
@@ -120,15 +128,18 @@ public class SolicitacaoQueries {
 
     public static final String SOLICITACAO_EXISTE = "SELECT " +
             "COUNT(1) FROM solicitacao " +
-            "WHERE solicitacao.codigo_solicitacao = ?" +
-            "AND solicitacao.email_usuario = ?";
+            "WHERE solicitacao.codigo_solicitacao = ?";
 
     public static final String SOLICITACAO_EM_ABERTO = "SELECT " +
             "COUNT (1) FROM solicitacao " +
             "WHERE solicitacao.status = 1 " +
             "OR solicitacao.status = 2" +
-            "AND solicitacao.email_usuario = ?" +
             "AND solicitacao.codigo_tipo_solicitacao = ?";
+
+    public static final String SOLICITACAO_PENDENTE = "SELECT " +
+            "COUNT (1) FROM solicitacao " +
+            "WHERE solicitacao.codigo_solicitacao = ? " +
+            "AND solicitacao.codigo_status_solicitacao = 2";
 
     public static final String SOLICITACAO_DENTRO_PRAZO_ENTREGA = "SELECT " +
             "COUNT (1) FROM solicitacao " +
@@ -155,7 +166,6 @@ public class SolicitacaoQueries {
             "FROM livro_solicitacao " +
             "WHERE livro_solicitacao.codigo_solicitacao = ? " +
             "AND livro_solicitacao.email_usuario = ?";
-
 
 
 }

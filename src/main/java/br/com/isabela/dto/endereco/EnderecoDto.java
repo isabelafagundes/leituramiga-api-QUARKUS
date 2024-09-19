@@ -14,7 +14,7 @@ public class EnderecoDto {
     public String nomeCidade;
 
     public Integer codigoCidade;
-
+    public String estado;
     public String emailUsuario;
 
     public static EnderecoDto deModel(
@@ -22,7 +22,8 @@ public class EnderecoDto {
     ) {
         EnderecoDto dto = new EnderecoDto();
 
-        dto.id = endereco.getId();
+        dto.id = endereco.getCodigo();
+        dto.estado = endereco.getEstado();
         dto.logradouro = endereco.getLogradouro();
         dto.complemento = endereco.getComplemento();
         dto.bairro = endereco.getBairro();
@@ -66,5 +67,9 @@ public class EnderecoDto {
 
     public Integer getCodigoCidade() {
         return codigoCidade;
+    }
+
+    public String getEstado() {
+        return estado;
     }
 }

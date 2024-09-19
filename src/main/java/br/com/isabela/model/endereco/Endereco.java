@@ -1,7 +1,9 @@
 package br.com.isabela.model.endereco;
 
+import br.com.isabela.dto.endereco.EnderecoDto;
+
 public class Endereco {
-    private Integer id;
+    private Integer codigo;
     private String logradouro;
     private String complemento;
     private String bairro;
@@ -27,6 +29,19 @@ public class Endereco {
     public Endereco() {
     }
 
+    public static Endereco deDto(EnderecoDto enderecoDto) {
+        Endereco endereco = new Endereco();
+        endereco.logradouro = enderecoDto.getLogradouro();
+        endereco.complemento = enderecoDto.getComplemento();
+        endereco.bairro = enderecoDto.getBairro();
+        endereco.cep = enderecoDto.getCep();
+        endereco.nomeCidade = enderecoDto.getNomeCidade();
+        endereco.codigoCidade = enderecoDto.getCodigoCidade();
+        endereco.estado = enderecoDto.getEstado();
+        endereco.emailUsuario = enderecoDto.getEmailUsuario();
+        return endereco;
+    }
+
     public static Endereco carregar(
             Integer id,
             String logradouro,
@@ -37,7 +52,7 @@ public class Endereco {
             String emailUsuario,
             String estado) {
         Endereco endereco = new Endereco();
-        endereco.id = id;
+        endereco.codigo = id;
         endereco.logradouro = logradouro;
         endereco.complemento = complemento;
         endereco.bairro = bairro;
@@ -61,12 +76,12 @@ public class Endereco {
         this.estado = estado;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getCodigo() {
+        return codigo;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCodigo(Integer codigo) {
+        this.codigo = codigo;
     }
 
     public String getLogradouro() {
