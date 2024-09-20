@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class ComentarioDto {
-    public int id;
+    public Integer id;
     public String descricao;
     public String data_criacao;
     public String hora_criacao;
@@ -27,11 +27,11 @@ public class ComentarioDto {
     }
 
 
-        public int getId () {
+        public Integer getId () {
             return id;
         }
 
-        public void setId ( int id){
+        public void setId ( Integer id){
             this.id = id;
         }
 

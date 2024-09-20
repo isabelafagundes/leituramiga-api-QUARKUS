@@ -2,7 +2,7 @@ package br.com.isabela.model.comentario;
 
 public class Comentario {
 
-    private int id;
+    private Integer id;
     private String descricao;
     private String data_criacao;
     private String hora_criacao;
@@ -43,11 +43,11 @@ public class Comentario {
         return comentario;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
