@@ -15,6 +15,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 
+import java.util.List;
+
 @RequestScoped
 @Path("/api")
 public class SolicitacaoController {
@@ -94,4 +96,43 @@ public class SolicitacaoController {
     }
 
 
+    @GET
+    @Authenticated
+    @Path("/solicitaoes")
+    public Response obterSolicitacoesPaginadas(@QueryParam("pagina") Integer pagina, @QueryParam("tamanhoPagina") Integer tamanhoPagina) {
+        try {
+            List<SolicitacaoDto> solicitacoes = service.obterSolicitacoesPaginadas(pagina, tamanhoPagina, email);
+            return Response.ok(solicitacoes).build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @POST
+    @Authenticated
+    @Path("/solicitacao")
+    public Response cadastrarSolicitacao(SolicitacaoDto dto) {
+        try {
+            service.cadastrarSolicitacao(dto);
+            return Response.ok().build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @POST
+    @Authenticated
+    @Path("/solicitacao/{id}/atualizar")
+    public Response atualizarSolicitacao(@PathParam("id") Integer numero, SolicitacaoDto dto) {
+        try {
+            service.atualizarSoliciacao(dto);
+            return Response.ok().build();
+        } catch (SolicitacaoNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -79,19 +79,19 @@ public class SolicitacaoService {
         }
     }
 
-    public List<Solicitacao> obterSolicitacoesPaginadas(Integer pagina, Integer tamanhoPagina, String email) throws SQLException {
+    public List<SolicitacaoDto> obterSolicitacoesPaginadas(Integer pagina, Integer tamanhoPagina, String email) throws SQLException {
         try {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de solicitações paginadas");
             List<Solicitacao> solicitacoes = solicitacaoDao.obterSolicitacoesPaginadas(pagina, tamanhoPagina, email);
             logService.sucesso(SolicitacaoService.class.getName(), "Busca de solicitações paginadas finalizada");
-            return solicitacoes;
+            return solicitacoes.stream().map(SolicitacaoDto::deModel).toList();
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca de solicitações paginadas", e);
             throw e;
         }
     }
 
-    public void cadastrarSolicitacao(Solicitacao solicitacao) throws SQLException {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {
         try {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
             Integer endereco = 0;
@@ -111,7 +111,7 @@ public class SolicitacaoService {
         }
     }
 
-    public void atualizarSoliciacao(Solicitacao solicitacao) throws SQLException, SolicitacaoNaoExistente {
+    public void atualizarSoliciacao(SolicitacaoDto solicitacao) throws SQLException, SolicitacaoNaoExistente {
         try {
             validarExistenciaSolicitacao(solicitacao.getCodigoSolicitacao());
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de solicitação de código " + solicitacao.getCodigoSolicitacao());

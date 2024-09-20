@@ -1,6 +1,7 @@
 package br.com.isabela.dao.solicitacao;
 
 import br.com.isabela.dao.FabricaDeConexoes;
+import br.com.isabela.dto.solicitacao.SolicitacaoDto;
 import br.com.isabela.model.DataHora;
 import br.com.isabela.model.endereco.Endereco;
 import br.com.isabela.model.livro.LivroSolicitacao;
@@ -68,7 +69,7 @@ public class SolicitacaoDao {
         }
     }
 
-    public void cadastrarSolicitacao(Solicitacao solicitacao, Integer codigoEndereco) throws SQLException {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cadastro da solicitação");
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CADASTRAR_SOLICITACAO);
@@ -97,7 +98,7 @@ public class SolicitacaoDao {
         }
     }
 
-    public void atualizarSolicitacao(Solicitacao solicitacao) throws SQLException {
+    public void atualizarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a atualização da solicitação");
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ATUALIZAR_SOLICITACAO);
@@ -108,8 +109,8 @@ public class SolicitacaoDao {
             pstmt.setString(4, solicitacao.getHoraEntrega());
             pstmt.setString(5, solicitacao.getDataDevolucao());
             pstmt.setString(6, solicitacao.getHoraDevolucao());
-            pstmt.setString(7, solicitacao.getDataAceite());
-            pstmt.setString(8, solicitacao.getHoraAceite());
+            pstmt.setString(7, null);
+            pstmt.setString(8, null);
             pstmt.setString(9, solicitacao.getMotivoRecusa());
             pstmt.setString(10, solicitacao.getInformacoesAdicionais());
             pstmt.setInt(11, solicitacao.getCodigoTipoSolicitacao());
@@ -117,7 +118,7 @@ public class SolicitacaoDao {
             pstmt.setString(13, solicitacao.getEmailUsuarioSolicitante());
             pstmt.setString(14, solicitacao.getEmailUsuarioReceptor());
             pstmt.setInt(15, solicitacao.getCodigoFormaEntrega());
-            pstmt.setInt(16, solicitacao.getEndereco().getCodigo());
+            pstmt.setInt(16, solicitacao.getEndereco().getId());
             pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
             pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
             pstmt.executeQuery();

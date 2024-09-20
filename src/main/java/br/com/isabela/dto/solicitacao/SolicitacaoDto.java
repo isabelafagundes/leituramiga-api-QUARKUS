@@ -48,4 +48,67 @@ public class SolicitacaoDto {
         return dto;
     }
 
+    public Integer getCodigoSolicitacao() {
+        return codigoSolicitacao;
+    }
+
+    public String getDataEntrega() {
+        return dataEntrega;
+    }
+
+    public String getHoraEntrega() {
+        return horaEntrega;
+    }
+
+    public String getDataDevolucao() {
+        return dataDevolucao;
+    }
+
+    public String getHoraDevolucao() {
+        return horaDevolucao;
+    }
+
+    public String getMotivoRecusa() {
+        return motivoRecusa;
+    }
+
+    public String getInformacoesAdicionais() {
+        return informacoesAdicionais;
+    }
+
+    public Integer getCodigoTipoSolicitacao() {
+        return codigoTipoSolicitacao;
+    }
+
+    public Integer getCodigoStatusSolicitacao() {
+        return codigoStatusSolicitacao;
+    }
+
+    public String getEmailUsuarioSolicitante() {
+        return emailUsuarioSolicitante;
+    }
+
+    public String getEmailUsuarioReceptor() {
+        return emailUsuarioReceptor;
+    }
+
+    public Integer getCodigoFormaEntrega() {
+        return codigoFormaEntrega;
+    }
+
+    public String getCodigoRastreioCorreio() {
+        return codigoRastreioCorreio;
+    }
+
+    public EnderecoDto getEndereco() {
+        return endereco;
+    }
+
+    public List<LivroSolicitacaoDto> getLivrosUsuarioSolicitante() {
+        return livrosUsuarioSolicitante;
+    }
+
+    public List<LivroSolicitacaoDto> getLivrosTroca() {
+        return livrosTroca;
+    }
 }
