@@ -40,10 +40,13 @@ public class SolicitacaoDao {
     public List<Solicitacao> obterSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_ANDAMENTO_PAGINADAS);
+            DataHora dataHora = DataHora.hoje();
             ps.setInt(1, (pagina - 1) * quantidade);
             ps.setInt(2, quantidade);
             ps.setString(3, email);
             ps.setString(4, email);
+            ps.setString(5, dataHora.dataFormatada("yyyy-MM-dd"));
+            ps.setString(6, dataHora.dataFormatada("HH:mm:ss"));
             ResultSet rs = ps.executeQuery();
             List<Solicitacao> solicitacoes = new ArrayList<>();
             while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs));

@@ -2,6 +2,7 @@ package br.com.isabela.service.solicitacao;
 
 import br.com.isabela.dao.endereco.EnderecoDao;
 import br.com.isabela.dao.solicitacao.SolicitacaoDao;
+import br.com.isabela.dto.solicitacao.SolicitacaoDto;
 import br.com.isabela.model.endereco.Endereco;
 import br.com.isabela.model.exception.solicitacao.SolicitacaoExcedeuPrazoEntrega;
 import br.com.isabela.model.exception.solicitacao.SolicitacaoNaoAberta;
@@ -65,13 +66,13 @@ public class SolicitacaoService {
         }
     }
 
-    public Solicitacao obterSolicitacao(Integer codigo) throws SQLException, SolicitacaoNaoExistente {
+    public SolicitacaoDto obterSolicitacao(Integer codigo) throws SQLException, SolicitacaoNaoExistente {
         try {
             validarExistenciaSolicitacao(codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de solicitação de código " + codigo);
             Solicitacao solicitacao = solicitacaoDao.obterSolicitacaoPorCodigo(codigo);
             logService.sucesso(SolicitacaoService.class.getName(), "Busca de solicitação finalizada de código " + codigo);
-            return solicitacao;
+            return SolicitacaoDto.deModel(solicitacao);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca de solicitação de código " + codigo, e);
             throw e;

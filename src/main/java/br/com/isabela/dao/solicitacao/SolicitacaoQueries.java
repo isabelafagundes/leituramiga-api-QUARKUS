@@ -102,6 +102,7 @@ public class SolicitacaoQueries {
                     "FROM solicitacao WHERE solicitacao.codigo_status_solicitacao = 2 " +
                     "ORDER BY solicitacao.data_entrega DESC, solicitacao.hora_entrega DESC " +
                     "WHERE solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?" +
+                    "AND solicitacao.data_entrega <= ?  AND solicitacao.hora_entrega <= ?" +
                     "LIMIT ? OFFSET ? ";
 
     public static final String RECUSAR_SOLICITACAO = "UPDATE solicitacao SET " +

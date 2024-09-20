@@ -9,7 +9,7 @@ public class Solicitacao {
     private Integer codigoSolicitacao;
     private String dataCriacao;
     private String horaCriacao;
-    private String dataAtualiacao;
+    private String dataAtualizacao;
     private String horaAtualizacao;
     private String dataEntrega;
     private String horaEntrega;
@@ -46,11 +46,11 @@ public class Solicitacao {
             String horaAceite,
             String motivoRecusa,
             String informacoesAdicionais,
-            int codigoTipoSolicitacao,
-            int codigoStatusSolicitacao,
+            Integer codigoTipoSolicitacao,
+            Integer codigoStatusSolicitacao,
             String emailUsuarioCriador,
             String emailUsuarioProprietario,
-            int codigoFormaEntrega,
+            Integer codigoFormaEntrega,
             String codigoRastreioCorreio,
             Endereco endereco,
             List<LivroSolicitacao> livrosUsuarioCriador,
@@ -60,7 +60,7 @@ public class Solicitacao {
         solicitacao.setCodigoSolicitacao(codigoSolicitacao);
         solicitacao.setDataCriacao(dataCriacao);
         solicitacao.setHoraCriacao(horaCriacao);
-        solicitacao.setDataAtualiacao(dataAtualiacao);
+        solicitacao.setDataAtualizacao(dataAtualiacao);
         solicitacao.setHoraAtualizacao(horaAtualizacao);
         solicitacao.setDataEntrega(dataEntrega);
         solicitacao.setHoraEntrega(horaEntrega);
@@ -126,12 +126,12 @@ public class Solicitacao {
         this.horaCriacao = horaCriacao;
     }
 
-    public String getDataAtualiacao() {
-        return dataAtualiacao;
+    public String getDataAtualizacao() {
+        return dataAtualizacao;
     }
 
-    public void setDataAtualiacao(String dataAtualiacao) {
-        this.dataAtualiacao = dataAtualiacao;
+    public void setDataAtualizacao(String dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 
     public String getHoraAtualizacao() {
