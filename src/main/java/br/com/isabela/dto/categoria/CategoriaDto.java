@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class CategoriaDto {
-    public int id;
+    public Integer id;
     public String nome_categoria;
     public String descricao_categoria;
 
@@ -25,11 +25,11 @@ public class CategoriaDto {
 
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

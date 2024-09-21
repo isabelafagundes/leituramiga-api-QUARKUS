@@ -1,7 +1,7 @@
 package br.com.isabela.model.categoria;
 
 public class Categoria {
-    private int id;
+    private Integer id;
     private String nome_categoria;
     private String descricao_categoria;
 
@@ -9,7 +9,7 @@ public class Categoria {
     }
 
     public static Categoria carregar(
-            int id,
+            Integer id,
             String nome_categoria,
             String descricao_categoria) {
         Categoria categoria = new Categoria();
@@ -19,11 +19,11 @@ public class Categoria {
         return categoria;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
