@@ -19,11 +19,11 @@ public class Solicitacao {
     private String horaAceite;
     private String motivoRecusa;
     private String informacoesAdicionais;
-    private int codigoTipoSolicitacao;
-    private int codigoStatusSolicitacao;
+    private Integer codigoTipoSolicitacao;
+    private Integer codigoStatusSolicitacao;
     private String emailUsuarioSolicitante;
     private String emailUsuarioReceptor;
-    private int codigoFormaEntrega;
+    private Integer codigoFormaEntrega;
     private String codigoRastreioCorreio;
     private Endereco endereco;
     private List<LivroSolicitacao> livrosUsuarioCriador;
@@ -48,8 +48,8 @@ public class Solicitacao {
             String informacoesAdicionais,
             Integer codigoTipoSolicitacao,
             Integer codigoStatusSolicitacao,
-            String emailUsuarioCriador,
-            String emailUsuarioProprietario,
+            String emailUsuarioSolicitante,
+            String emailUsuarioReceptor,
             Integer codigoFormaEntrega,
             String codigoRastreioCorreio,
             Endereco endereco,
@@ -72,13 +72,13 @@ public class Solicitacao {
         solicitacao.setInformacoesAdicionais(informacoesAdicionais);
         solicitacao.setCodigoTipoSolicitacao(codigoTipoSolicitacao);
         solicitacao.setCodigoStatusSolicitacao(codigoStatusSolicitacao);
-        solicitacao.setEmailUsuarioSolicitante(emailUsuarioCriador);
+        solicitacao.setEmailUsuarioSolicitante(emailUsuarioSolicitante);
         solicitacao.setCodigoFormaEntrega(codigoFormaEntrega);
         solicitacao.setCodigoRastreioCorreio(codigoRastreioCorreio);
         solicitacao.setEndereco(endereco);
         solicitacao.setLivrosUsuarioCriador(livrosUsuarioCriador);
         solicitacao.setLivrosTroca(livrosTroca);
-        solicitacao.setEmailUsuarioReceptor(emailUsuarioProprietario);
+        solicitacao.setEmailUsuarioReceptor(emailUsuarioReceptor);
         return solicitacao;
     }
 

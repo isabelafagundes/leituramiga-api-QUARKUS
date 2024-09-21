@@ -3,15 +3,22 @@
 
 CREATE TABLE IF NOT EXISTS usuario
 (
-    email_usuario    VARCHAR(260) PRIMARY KEY,
-    nome             VARCHAR(120) NOT NULL,
-    username         VARCHAR(40)  NOT NULL,
-    tipo_usuario     INT                   DEFAULT 1,
-    senha            VARCHAR(260),
-    ativo            BIT          NOT NULL DEFAULT 1,
-    tentativas       INT          NOT NULL DEFAULT 3,
-    bloqueado        BIT          NOT NULL DEFAULT 0,
-    codigo_alteracao VARCHAR(260)
+    email_usuario      VARCHAR(260) PRIMARY KEY,
+    nome               VARCHAR(40) NOT NULL,
+    username           VARCHAR(30) NOT NULL,
+    tipo_usuario       INTEGER              DEFAULT 1,
+    celular            VARCHAR(11),
+    senha              VARCHAR(60),
+    descricao          VARCHAR(120),
+    imagem             VARCHAR(256),
+    ativo              BIT         NOT NULL DEFAULT 1,
+    tentativas         INTEGER     NOT NULL DEFAULT 3,
+    bloqueado          BIT         NOT NULL DEFAULT 0,
+    codigo_alteracao   VARCHAR(260),
+    codigo_instituicao INTEGER,
+    codigo_endereco    INTEGER,
+    FOREIGN KEY (codigo_instituicao) REFERENCES instituicao (codigo_instituicao),
+    FOREIGN KEY (codigo_endereco) REFERENCES  endereco (codigo_endereco)
 );
 
 
@@ -47,7 +54,7 @@ CREATE TABLE IF NOT EXISTS livro
 
 CREATE TABLE IF NOT EXISTS imagem_livro
 (
-    codigo_imagem_livro INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_imagem_livro BIGINT PRIMARY KEY AUTO_INCREMENT,
     imagem              VARCHAR(256),
     codigo_livro        INTEGER NOT NULL,
     FOREIGN KEY (codigo_livro) REFERENCES livro (codigo_livro)
@@ -55,13 +62,13 @@ CREATE TABLE IF NOT EXISTS imagem_livro
 
 CREATE TABLE IF NOT EXISTS comentario
 (
-    codigo_comentario INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_comentario BIGINT PRIMARY KEY AUTO_INCREMENT,
     descricao         VARCHAR(120) NOT NULL,
     data_criacao      VARCHAR(40),
     hora_criacao      VARCHAR(40),
-    email_usuario     VARCHAR(256) NOT NULL,
-
-    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
+    email_usuario_criador     VARCHAR(256) NOT NULL,
+    email_usuario_perfil VARCHAR(256) NOT NULL,
+    FOREIGN KEY (email_usuario_criador) REFERENCES usuario (email_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS cidade
@@ -88,7 +95,7 @@ CREATE TABLE IF NOT EXISTS endereco
 
 CREATE TABLE IF NOT EXISTS solicitacao
 (
-    codigo_solicitacao        INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_solicitacao        BIGINT PRIMARY KEY AUTO_INCREMENT,
     data_criacao              VARCHAR(10) NOT NULL,
     hora_criacao              VARCHAR(8)  NOT NULL,
     data_atualizacao          VARCHAR(10) NOT NULL,
@@ -116,7 +123,7 @@ CREATE TABLE IF NOT EXISTS solicitacao
 
 CREATE TABLE IF NOT EXISTS livro_solicitacao
 (
-    codigo_livro_solicitacao INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_livro_solicitacao BIGINT PRIMARY KEY AUTO_INCREMENT,
     codigo_solicitacao       INTEGER      NOT NULL,
     codigo_livro             INTEGER      NOT NULL,
     email_usuario            VARCHAR(256) NOT NULL,
@@ -127,7 +134,7 @@ CREATE TABLE IF NOT EXISTS livro_solicitacao
 
 CREATE TABLE IF NOT EXISTS notificacao
 (
-    codigo_notificacao INTEGER PRIMARY KEY AUTO_INCREMENT,
+    codigo_notificacao BIGINT PRIMARY KEY AUTO_INCREMENT,
     hora_criacao       VARCHAR(8)   NOT NULL,
     data_criacao       VARCHAR(10)  NOT NULL,
     descricao          VARCHAR(120) NOT NULL,
@@ -135,4 +142,10 @@ CREATE TABLE IF NOT EXISTS notificacao
     email_usuario      VARCHAR(256) NOT NULL,
     FOREIGN KEY (codigo_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
+);
+
+CREATE TABLE IF NOT EXISTS instituicao (
+    codigo_instituicao BIGINT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(60),
+    sigla VARCHAR(10)
 );

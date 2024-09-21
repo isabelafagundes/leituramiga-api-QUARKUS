@@ -19,8 +19,8 @@ public class SolicitacaoQueries {
             "informacoes_adicionais, " +
             "codigo_tipo_solicitacao, " +
             "codigo_status_solicitacao, " +
-            "email_usuario, " +
-            "email_usuario_criador, " +
+            "email_usuario_receptor, " +
+            "email_usuario_solicitante, " +
             "codigo_forma_entrega, " +
             "codigo_endereco, " +
             "codigo_rastreio_correio" +
@@ -40,8 +40,8 @@ public class SolicitacaoQueries {
             "informacoes_adicionais = ?, " +
             "codigo_tipo_solicitacao = ?, " +
             "codigo_status_solicitacao = ?, " +
-            "email_usuario_criador = ?, " +
-            "email_usuario = ?, " +
+            "email_usuario_solicitante = ?, " +
+            "email_usuario_recepetor = ?, " +
             "codigo_forma_entrega = ?, " +
             "codigo_endereco = ?, " +
             "codigo_rastreio_correio = ? " +
@@ -63,7 +63,8 @@ public class SolicitacaoQueries {
             "solicitacao.informacoes_adicionais," +
             "solicitacao.codigo_tipo_solicitacao," +
             "solicitacao.codigo_status_solicitacao," +
-            "solicitacao.email_usuario," +
+            "solicitacao.email_usuario_solicitante," +
+            "solicitacao.email_usuario_receptor," +
             "solicitacao.codigo_forma_entrega," +
             "solicitacao.codigo_endereco," +
             "solicitacao.codigo_rastreio_correio " +
@@ -95,7 +96,8 @@ public class SolicitacaoQueries {
                     "solicitacao.informacoes_adicionais," +
                     "solicitacao.codigo_tipo_solicitacao," +
                     "solicitacao.codigo_status_solicitacao," +
-                    "solicitacao.email_usuario," +
+                    "solicitacao.email_usuario_solicitante," +
+                    "solicitacao.email_usuario_receptor," +
                     "solicitacao.codigo_forma_entrega," +
                     "solicitacao.codigo_endereco," +
                     "solicitacao.codigo_rastreio_correio " +

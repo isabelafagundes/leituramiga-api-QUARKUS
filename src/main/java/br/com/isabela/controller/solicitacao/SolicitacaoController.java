@@ -135,4 +135,6 @@ public class SolicitacaoController {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 }
