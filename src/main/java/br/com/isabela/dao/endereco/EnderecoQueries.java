@@ -11,9 +11,18 @@ public class EnderecoQueries {
                     + "WHERE email_usuario = ? AND endereco_principal = 1;";
 
     public static final String SALVAR_ENDERECO =
-            "INSERT INTO endereco (codigo_endereco, logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) "
-                    + "ON DUPLICATE KEY UPDATE logradouro = ?, complemento = ?, bairro = ?, cep = ?, codigo_cidade = ?, endereco_principal = ?;";
+            "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
+                    "ON DUPLICATE KEY UPDATE " +
+                    "logradouro = VALUES(logradouro), " +
+                    "complemento = VALUES(complemento), " +
+                    "bairro = VALUES(bairro), " +
+                    "cep = VALUES(cep), " +
+                    "codigo_cidade = VALUES(codigo_cidade), " +
+                    "endereco_principal = VALUES(endereco_principal), " +
+                    "numero = VALUES(numero);";
+
+
     public static final String EXCLUIR_ENDERECO =
             "DELETE FROM endereco WHERE codigo_endereco = ?;";
 

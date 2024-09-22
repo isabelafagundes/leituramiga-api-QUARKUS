@@ -118,7 +118,7 @@ public class SolicitacaoDao {
             pstmt.setString(13, solicitacao.getEmailUsuarioSolicitante());
             pstmt.setString(14, solicitacao.getEmailUsuarioReceptor());
             pstmt.setInt(15, solicitacao.getCodigoFormaEntrega());
-            pstmt.setInt(16, solicitacao.getEndereco().getId());
+            pstmt.setInt(16, solicitacao.getEndereco().getCodigoEndereco());
             pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
             pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
             pstmt.executeQuery();
@@ -316,7 +316,8 @@ public class SolicitacaoDao {
                 result.getString("cep"),
                 result.getString("nome_cidade"),
                 result.getString("email_usuario"),
-                result.getString("estado")
+                result.getString("estado"),
+                result.getString("numero")
         );
     }
 }

@@ -36,16 +36,16 @@ public class EnderecoDao {
 
     public Integer salvarEndereco(EnderecoDto endereco) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando salvamento de endereço");
+        String[] generatedColumns = {"codigo_endereco"}; // Coluna que contém o ID auto-incrementado
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.SALVAR_ENDERECO);
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.SALVAR_ENDERECO, generatedColumns);
             definirParametrosDeSalvamento(pstmt, endereco);
-            ResultSet result = pstmt.executeQuery();
-            logService.sucesso(EnderecoDao.class.getName(), "Salvamento de endereço finalizado");
-            Integer idEndereco = 0;
-            while (result.next()) idEndereco = result.getInt(1);
-            return idEndereco;
+            pstmt.executeUpdate();
+            int idGerado = 0;
+            return idGerado;
         }
     }
+
 
     public void deletarEndereco(int numeroEndereco) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão de endereço de numero " + numeroEndereco);
@@ -78,12 +78,7 @@ public class EnderecoDao {
         pstmt.setInt(5, endereco.getCodigoCidade());
         pstmt.setString(6, endereco.getEmailUsuario());
         pstmt.setBoolean(7, true);
-        pstmt.setString(8, endereco.getLogradouro());
-        pstmt.setString(9, endereco.getComplemento());
-        pstmt.setString(10, endereco.getBairro());
-        pstmt.setString(11, endereco.getCep());
-        pstmt.setInt(12, endereco.getCodigoCidade());
-        pstmt.setBoolean(13, true);
+        pstmt.setString(8, endereco.getNumero());
     }
 
 
@@ -96,7 +91,8 @@ public class EnderecoDao {
                 resultado.getString("cep"),
                 resultado.getString("nome_cidade"),
                 resultado.getString("nome_estado"),
-                resultado.getString("email_usuario")
+                resultado.getString("email_usuario"),
+                resultado.getString("numero")
         );
     }
 

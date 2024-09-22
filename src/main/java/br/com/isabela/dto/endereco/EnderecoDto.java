@@ -12,7 +12,7 @@ public class EnderecoDto {
     public String bairro;
     public String cep;
     public String nomeCidade;
-
+    public String numero;
     public Integer codigoCidade;
     public String estado;
     public String emailUsuario;
@@ -21,23 +21,35 @@ public class EnderecoDto {
             Endereco endereco
     ) {
         EnderecoDto dto = new EnderecoDto();
-
         dto.id = endereco.getCodigo();
         dto.estado = endereco.getEstado();
         dto.logradouro = endereco.getLogradouro();
         dto.complemento = endereco.getComplemento();
         dto.bairro = endereco.getBairro();
         dto.cep = endereco.getCep();
+        dto.numero = endereco.getNumero();
         dto.nomeCidade = endereco.getNomeCidade();
         dto.codigoCidade = endereco.getCodigoCidade();
-
         return dto;
+    }
+
+    public static Endereco paraModel(EnderecoDto dto) {
+        Endereco endereco = new Endereco();
+        endereco.setCodigo(dto.id);
+        endereco.setEstado(dto.estado);
+        endereco.setLogradouro(dto.logradouro);
+        endereco.setComplemento(dto.complemento);
+        endereco.setBairro(dto.bairro);
+        endereco.setCep(dto.cep);
+        endereco.setNomeCidade(dto.nomeCidade);
+        endereco.setCodigoCidade(dto.codigoCidade);
+        return endereco;
     }
 
     public EnderecoDto() {
     }
 
-    public Integer getId() {
+    public Integer getCodigoEndereco() {
         return id;
     }
 
@@ -71,5 +83,13 @@ public class EnderecoDto {
 
     public String getEstado() {
         return estado;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getNumero() {
+        return numero;
     }
 }

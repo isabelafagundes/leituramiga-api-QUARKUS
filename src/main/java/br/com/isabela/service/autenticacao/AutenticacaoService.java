@@ -1,5 +1,6 @@
 package br.com.isabela.service.autenticacao;
 
+import br.com.isabela.dao.endereco.EnderecoDao;
 import br.com.isabela.dto.usuario.CriacaoUsuarioDto;
 import br.com.isabela.dto.usuario.UsuarioAutenticadoDto;
 import br.com.isabela.dto.usuario.UsuarioDto;
@@ -23,6 +24,9 @@ public class AutenticacaoService {
 
     @Inject
     UsuarioDao dao;
+
+    @Inject
+    EnderecoDao enderecoDao;
 
     @Inject
     TokenService service;
@@ -90,7 +94,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException {
+    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente {
         String md5Email = HashService.obterMd5Email(usuarioDto.email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o usuário de email " + md5Email);
@@ -99,7 +103,10 @@ public class AutenticacaoService {
             if (existencia) throw new UsuarioExistente();
             String senhaCriptografada = obterSenhaCriptografada(usuarioDto.senha);
             usuarioDto.setSenha(senhaCriptografada);
+            if (dao.validarExistencia(usuarioDto.getEmail(), null)) throw new UsuarioNaoExistente();
+            if (dao.validarUsername(usuarioDto.getUsername())) throw new UsernameExiste();
             dao.salvarUsuario(usuarioDto);
+            if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de salvar o usuário de email " + md5Email, e);
@@ -107,10 +114,12 @@ public class AutenticacaoService {
         }
     }
 
-    public void salvarUsuario(CriacaoUsuarioDto usuarioDto) throws SQLException, ClassNotFoundException {
+    public void salvarUsuario(CriacaoUsuarioDto usuarioDto) throws SQLException, UsernameExiste, UsuarioNaoExistente {
         String md5Email = HashService.obterMd5Email(usuarioDto.email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o usuário de email " + md5Email);
+            if (dao.validarExistencia(usuarioDto.getEmail(), null)) throw new UsuarioNaoExistente();
+            if (dao.validarUsername(usuarioDto.getUsername())) throw new UsernameExiste();
             dao.salvarUsuario(usuarioDto);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
         } catch (Exception e) {

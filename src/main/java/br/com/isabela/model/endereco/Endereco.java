@@ -6,6 +6,7 @@ public class Endereco {
     private Integer codigo;
     private String logradouro;
     private String complemento;
+    private String numero;
     private String bairro;
     private String cep;
     private String nomeCidade;
@@ -39,6 +40,7 @@ public class Endereco {
         endereco.codigoCidade = enderecoDto.getCodigoCidade();
         endereco.estado = enderecoDto.getEstado();
         endereco.emailUsuario = enderecoDto.getEmailUsuario();
+        endereco.numero = enderecoDto.getNumero();
         return endereco;
     }
 
@@ -50,7 +52,8 @@ public class Endereco {
             String cep,
             String nomeCidade,
             String emailUsuario,
-            String estado) {
+            String estado,
+            String numero) {
         Endereco endereco = new Endereco();
         endereco.codigo = id;
         endereco.logradouro = logradouro;
@@ -60,7 +63,7 @@ public class Endereco {
         endereco.nomeCidade = nomeCidade;
         endereco.emailUsuario = emailUsuario;
         endereco.estado = estado;
-
+        endereco.numero = numero;
         return endereco;
     }
 
@@ -118,6 +121,10 @@ public class Endereco {
 
     public String getEmailUsuario() {
         return emailUsuario;
+    }
+
+    public String getNumero() {
+        return numero;
     }
 
     public void setEmailUsuario(String emailUsuario) {

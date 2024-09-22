@@ -29,24 +29,26 @@ public class UsuarioDao {
 
     public Usuario obterUsuario(String login) throws SQLException {
         String md5Login = HashService.obterMd5Email(login);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Login);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL);
-        pstmt.setString(1, login);
-        pstmt.setString(2, login);
-        ResultSet resultado = pstmt.executeQuery();
-        Usuario usuario = null;
-        if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Login);
-        return usuario;
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Login);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
+            pstmt.setString(1, login);
+            pstmt.setString(2, login);
+            ResultSet resultado = pstmt.executeQuery();
+            Usuario usuario = null;
+            if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Login);
+            return usuario;
+        }
     }
 
 
     public void salvarUsuario(CriacaoUsuarioDto usuario) throws SQLException {
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);
-        definirParametros(pstmt, usuario);
-        pstmt.executeUpdate();
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);
+            definirParametros(pstmt, usuario);
+            pstmt.executeUpdate();
+        }
     }
 
     public void definirParametros(PreparedStatement pstmt, CriacaoUsuarioDto usuario) throws SQLException {
@@ -55,8 +57,10 @@ public class UsuarioDao {
         pstmt.setString(3, usuario.email);
         pstmt.setInt(4, usuario.tipoUsuario);
         pstmt.setString(5, usuario.senha);
-        pstmt.setString(6, usuario.nome);
-        pstmt.setString(7, usuario.username);
+        pstmt.setString(6, usuario.celular);
+        pstmt.setString(7, usuario.descricao);
+        pstmt.setString(8, usuario.imagem);
+        pstmt.setInt(9, usuario.codigoInstituicao);
     }
 
     public void desativarUsuario(String email) throws SQLException {
@@ -133,16 +137,17 @@ public class UsuarioDao {
         String md5Login = HashService.obterMd5Email(email);
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de alteração da senha do usuário de email " + md5Login);
 
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL);
-        pstmt.setString(1, email);
-        pstmt.setString(2, email);
-        ResultSet resultado = pstmt.executeQuery();
-        Usuario usuario = null;
-        if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
-        Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de alteração da senha do usuário de email " + md5Login);
-        return codigoCorreto;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_EMAIL_USUARIO);
+            pstmt.setString(1, email);
+            pstmt.setString(2, email);
+            ResultSet resultado = pstmt.executeQuery();
+            Usuario usuario = null;
+            if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+            Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de alteração da senha do usuário de email " + md5Login);
+            return codigoCorreto;
+        }
     }
 
     public void atualizarTentativas(String login, boolean resetarTentativas) throws SQLException, ClassNotFoundException {
@@ -172,47 +177,53 @@ public class UsuarioDao {
     }
 
     private void atualizarTentativasUsuario(Integer tentativas, String login) throws SQLException {
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_TENTATIVAS);
-        pstmt.setInt(1, tentativas);
-        pstmt.setString(2, login);
-        pstmt.executeUpdate();
-        pstmt.close();
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_TENTATIVAS);
+            pstmt.setInt(1, tentativas);
+            pstmt.setString(2, login);
+            pstmt.executeUpdate();
+        }
     }
 
     private void bloquearUsuario(String login) throws SQLException {
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.BLOQUEAR_USUARIO);
-        pstmt.setInt(1, 1); // 1 significa bloqueado
-        pstmt.setString(2, login);
-        pstmt.executeUpdate();
-        pstmt.close();
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.BLOQUEAR_USUARIO);
+            pstmt.setBoolean(1, true);
+            pstmt.setString(2, login);
+            pstmt.executeUpdate();
+        }
     }
 
 
     public Boolean validarUsername(String username) throws SQLException {
-        String md5Username = HashService.obterMd5Email(username);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação da existencia do username " + md5Username);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_USERNAME);
-        pstmt.setString(1, username);
-        ResultSet resultado = pstmt.executeQuery();
-        Boolean existencia = resultado.next() && resultado.getBoolean(1);
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação da existência do username " + md5Username);
-        return existencia;
+        try (Connection conexao = bd.obterConexao()) {
+            String md5Username = HashService.obterMd5Email(username);
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação da existencia do username " + md5Username);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_USERNAME);
+            pstmt.setString(1, username);
+            ResultSet resultado = pstmt.executeQuery();
+            Boolean existencia = resultado.next() && resultado.getBoolean(1);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação da existência do username " + md5Username);
+            return existencia;
+        }
     }
 
     private Usuario obterUsuarioDeResultSet(ResultSet resultado) throws SQLException {
-            return Usuario.carregar(
-                    resultado.getString("nome"),
-                    resultado.getString("username"),
-                    resultado.getString("senha"),
-                    resultado.getString("email_usuario"),
-                    resultado.getInt("tipo_usuario"),
-                    resultado.getInt("tentativas"),
-                    resultado.getBoolean("bloqueado"),
-                    resultado.getBoolean("ativo"),
-                    resultado.getString("codigo_alteracao")
-            );
+        return Usuario.carregar(
+                resultado.getString("nome"),
+                resultado.getString("username"),
+                resultado.getString("senha"),
+                resultado.getString("email_usuario"),
+                resultado.getInt("tipo_usuario"),
+                resultado.getInt("tentativas"),
+                resultado.getBoolean("bloqueado"),
+                resultado.getBoolean("ativo"),
+                resultado.getString("codigo_alteracao"),
+                resultado.getString("celular"),
+                resultado.getString("descricao"),
+                resultado.getString("imagem"),
+                resultado.getInt("codigo_instituicao"),
+                null
+        );
     }
 }

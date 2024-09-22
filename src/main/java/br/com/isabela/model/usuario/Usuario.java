@@ -1,4 +1,5 @@
 package br.com.isabela.model.usuario;
+import br.com.isabela.model.endereco.Endereco;
 
 public class Usuario {
 
@@ -11,6 +12,11 @@ public class Usuario {
     private boolean bloqueado;
     private Integer tentativas;
     private String codigoAlteracao;
+    private String celular;
+    private String descricao;
+    private String imagem;
+    private Integer codigoInstituicao;
+    private Endereco endereco;
 
     public Usuario() {}
 
@@ -23,7 +29,12 @@ public class Usuario {
             Integer tentativas,
             boolean bloqueado,
             boolean ativo,
-            String codigoAlteracao
+            String codigoAlteracao,
+            String celular,
+            String descricao,
+            String imagem,
+            Integer codigoInstituicao,
+            Endereco endereco
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -35,6 +46,12 @@ public class Usuario {
         usuario.tentativas = tentativas;
         usuario.bloqueado = bloqueado;
         usuario.codigoAlteracao = codigoAlteracao;
+        usuario.celular = celular;
+        usuario.descricao = descricao;
+        usuario.imagem = imagem;
+        usuario.codigoInstituicao = codigoInstituicao;
+        usuario.endereco = endereco;
+
         return usuario;
     }
 
@@ -88,6 +105,26 @@ public class Usuario {
 
     public Integer getTentativas() {
         return tentativas;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public String getImagem() {
+        return imagem;
+    }
+
+    public Integer getCodigoInstituicao() {
+        return codigoInstituicao;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
     }
 
     public String getCodigoAlteracao() {
