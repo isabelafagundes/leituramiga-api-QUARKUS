@@ -11,7 +11,6 @@ import br.com.isabela.service.autenticacao.HashService;
 import br.com.isabela.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import liquibase.util.MD5Util;
 
 import java.sql.SQLException;
 import java.util.List;
