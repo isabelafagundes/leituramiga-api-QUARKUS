@@ -36,13 +36,20 @@ public class EnderecoDao {
 
     public Integer salvarEndereco(EnderecoDto endereco) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando salvamento de endereço");
-        String[] generatedColumns = {"codigo_endereco"}; // Coluna que contém o ID auto-incrementado
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.SALVAR_ENDERECO, generatedColumns);
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.INSERIR_ENDERECO, PreparedStatement.RETURN_GENERATED_KEYS);
             definirParametrosDeSalvamento(pstmt, endereco);
-            pstmt.executeUpdate();
-            int idGerado = 0;
-            return idGerado;
+            int linhasAfetadas = pstmt.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                try (ResultSet result = pstmt.getGeneratedKeys()) {
+                    if (result.next()) {
+                        Integer idGerado = result.getInt(1);
+                        return idGerado;
+                    }
+                }
+            }
+            return null;
         }
     }
 
@@ -84,7 +91,7 @@ public class EnderecoDao {
 
     public Endereco obterEnderecoDeResult(ResultSet resultado) throws SQLException {
         return Endereco.carregar(
-                resultado.getInt("id"),
+                resultado.getInt("codigo_endereco"),
                 resultado.getString("logradouro"),
                 resultado.getString("complemento"),
                 resultado.getString("bairro"),

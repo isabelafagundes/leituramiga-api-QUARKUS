@@ -106,7 +106,8 @@ public class AutenticacaoService {
             if (dao.validarExistencia(usuarioDto.getEmail(), null)) throw new UsuarioNaoExistente();
             if (dao.validarUsername(usuarioDto.getUsername())) throw new UsernameExiste();
             dao.salvarUsuario(usuarioDto);
-            if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco);
+            Integer numeroEndereco = 0;
+            if (usuarioDto.endereco != null) numeroEndereco = enderecoDao.salvarEndereco(usuarioDto.endereco);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de salvar o usuário de email " + md5Email, e);

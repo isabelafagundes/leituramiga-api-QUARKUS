@@ -3,18 +3,7 @@ package br.com.isabela.dao.usuario;
 public class UsuarioQueries {
 
     public static final String OBTER_USUARIO_POR_EMAIL_E_USUARIO =
-            "SELECT usuario.email_usuario," +
-                    "usuario.nome," +
-                    "usuario.username," +
-                    "usuario.tipo_usuario, " +
-                    "usuario.celular," +
-                    "usuario.descricao, " +
-                    "usuario.imagem," +
-                    "usuario.ativo," +
-                    "usuario.tentativas," +
-                    "usuario.bloqueado," +
-                    "usuario.codigo_instituicao" +
-                    "FROM usuario "
+            "SELECT * FROM usuario "
                     + "WHERE email_usuario = ? "
                     + "OR username = ?;";
 

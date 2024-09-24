@@ -3,6 +3,7 @@ package br.com.isabela.dao.livro;
 import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.endereco.EnderecoDao;
 import br.com.isabela.dto.livro.LivroDto;
+import br.com.isabela.dto.livro.LivroSolicitacaoDto;
 import br.com.isabela.model.livro.Livro;
 import br.com.isabela.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -24,52 +25,42 @@ public class LivroDao {
     @Inject
     LogService logService;
 
-    public Livro obterLivroPorNumero(String livroId) throws SQLException {
+    public Livro obterLivroPorNumero(Integer livroId) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca do livro");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_ID);
-        pstmt.setString(1, livroId);
-        ResultSet resultado = pstmt.executeQuery();
-        Livro livro = new Livro();
-        if (resultado.next()) livro = obterLivroDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca do livro finalizada");
-        return livro;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_ID);
+            pstmt.setInt(1, livroId);
+            ResultSet resultado = pstmt.executeQuery();
+            Livro livro = new Livro();
+            if (resultado.next()) livro = obterLivroDeResult(resultado);
+            logService.sucesso(LivroDao.class.getName(), "Busca do livro finalizada");
+            return livro;
+        }
     }
 
-    public Livro obterLivroPorUsuario(String emailUsuario) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro do usuário");
+    public boolean verificarExistenciaLivro(Integer livroId) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação da existência do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.LIVRO_EXISTE);
+            pstmt.setInt(1, livroId);
+            ResultSet resultSet = pstmt.executeQuery();
+            boolean livroExiste = false;
+            if (resultSet.next()) livroExiste = resultSet.getBoolean(1);
+            return livroExiste;
+        }
+
+    }
+
+    public List<Livro> obterLivroPorUsuario(String emailUsuario) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando busca dos livros do usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
         pstmt.setString(1, emailUsuario);
         ResultSet resultado = pstmt.executeQuery();
-        Livro livro = new Livro();
-        if (resultado.next()) livro = obterLivroDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca do livro do usuário finalizada");
-        return livro;
-    }
-
-    public Livro obterLivroPorTitulo(String livroTitulo) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro por titulo");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_TITULO);
-        pstmt.setString(1, livroTitulo);
-        ResultSet resultado = pstmt.executeQuery();
-        Livro titulo = new Livro();
-        if (resultado.next()) titulo = obterLivroDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca do livro por titulo finalizada");
-        return titulo;
-    }
-
-    public Livro obterLivroPorCategoria(String livroCategoria) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livro por categoria");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_CATEGORIA);
-        pstmt.setString(1, livroCategoria);
-        ResultSet resultado = pstmt.executeQuery();
-        Livro categoria = new Livro();
-        if (resultado.next()) categoria = obterLivroDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca do livro por categoria finalizada");
-        return categoria;
+        List<Livro> livros = new ArrayList<>();
+        while (resultado.next()) livros.add(obterLivroDeResult(resultado));
+        logService.sucesso(LivroDao.class.getName(), "Busca dos livros do usuário finalizada");
+        return livros;
     }
 
     public void salvarLivro(LivroDto livro) throws SQLException {
@@ -81,13 +72,15 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
     }
 
-    public void deletarLivro(int numeroLivro) throws SQLException {
+    public void deletarLivro(int numeroLivro, String email) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + numeroLivro);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.DELETAR_LIVRO);
-        pstmt.setInt(1, numeroLivro);
-        pstmt.executeUpdate();
-        logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + numeroLivro);
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.DELETAR_LIVRO);
+            pstmt.setInt(1, numeroLivro);
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+            logService.sucesso(EnderecoDao.class.getName(), "Exclusão de livro finalizada " + numeroLivro);
+        }
     }
 
     public boolean validarExistenciaLivro(int numeroLivro) throws SQLException {
@@ -121,6 +114,78 @@ public class LivroDao {
         while (resultado.next()) livros.add(obterLivroDeResult(resultado));
         logService.sucesso(LivroDao.class.getName(), "Sucesso em obter os livros paginados");
         return livros;
+    }
+
+    public boolean verificarStatusDisponivel(Integer numeroLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação do status de disponibilidade do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_STATUS_DISPONIVEL);
+            pstmt.setInt(1, numeroLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(LivroDao.class.getName(), "Sucesso na validação do status de disponibilidade livro");
+            return quantidade > 0;
+        }
+    }
+
+    public boolean verificarStatusEmprestado(Integer numeroLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação do status de empréstimo do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_STATUS_EMPRESTADO);
+            pstmt.setInt(1, numeroLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(LivroDao.class.getName(), "Sucesso na validação do status de empréstimo do livro");
+            return quantidade > 0;
+        }
+    }
+
+    public boolean verificarStatusDesativado(Integer numeroLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação do status de desativado do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_STATUS_DESATIVADO);
+            pstmt.setInt(1, numeroLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(LivroDao.class.getName(), "Sucesso na validação do status de desativado do livro");
+            return quantidade > 0;
+        }
+    }
+
+    public boolean verificarStatusIndisponivel(Integer numeroLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação do status de indisponibilidade do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_STATUS_INDISPONIVEL);
+            pstmt.setInt(1, numeroLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(LivroDao.class.getName(), "Sucesso na validação do status de indisponibilidade do livro");
+            return quantidade > 0;
+        }
+    }
+
+    public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros indisponíveis");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVROS_INDISPONIVEIS);
+            pstmt.setInt(1, numeroSolicitacao);
+            pstmt.setString(2, obterIdsConcatenados(livroSolicitacaoDtos));
+            pstmt.executeUpdate();
+            logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
+        }
+    }
+
+    private String obterIdsConcatenados(List<LivroSolicitacaoDto> livroSolicitacaoDtos) {
+        StringBuilder ids = new StringBuilder();
+        for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
+            ids.append(livroSolicitacaoDto.codigoLivro);
+            ids.append(",");
+        }
+        return ids.substring(0, ids.length() - 1);
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, LivroDto livro) throws SQLException {
