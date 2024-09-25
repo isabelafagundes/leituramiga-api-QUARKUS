@@ -1,5 +1,6 @@
 package br.com.isabela.service.livro;
 
+import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.livro.LivroDao;
 import br.com.isabela.dto.livro.LivroDto;
 import br.com.isabela.dto.livro.LivroSolicitacaoDto;
@@ -24,6 +25,9 @@ public class LivroService {
 
     @Inject
     LogService logService;
+
+    @Inject
+    FabricaDeConexoes bd;
 
     public LivroDto obterLivro(Integer numero) throws SQLException, LivroNaoExistente {
         try {
@@ -113,7 +117,7 @@ public class LivroService {
                 validarStatusLivro(livroSolicitacaoDto.codigoLivro, email);
             }
             logService.iniciar(LivroService.class.getName(), "Iniciando a atualização dos livros indisponíveis");
-            dao.atualizarLivrosIndisponiveis(numeroSolicitacao, livroSolicitacaoDtos);
+            dao.atualizarLivrosIndisponiveis(numeroSolicitacao, livroSolicitacaoDtos, conexao);
             logService.sucesso(LivroService.class.getName(), "Sucesso na atualização dos livros indisponíveis");
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na atualização dos livros indisponíveis", e);
