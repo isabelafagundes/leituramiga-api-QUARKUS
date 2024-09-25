@@ -69,33 +69,36 @@ public class SolicitacaoDao {
         }
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco) throws SQLException {
-        try (Connection conexao = bd.obterConexao()) {
-            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cadastro da solicitação");
-            PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CADASTRAR_SOLICITACAO);
-            DataHora dataHora = DataHora.hoje();
-            pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
-            pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
-            pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
-            pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
-            pstmt.setString(5, solicitacao.getDataEntrega());
-            pstmt.setString(6, solicitacao.getHoraEntrega());
-            pstmt.setString(7, solicitacao.getDataDevolucao());
-            pstmt.setString(8, solicitacao.getHoraDevolucao());
-            pstmt.setString(9, null);
-            pstmt.setString(10, null);
-            pstmt.setString(11, null);
-            pstmt.setString(12, solicitacao.getInformacoesAdicionais());
-            pstmt.setInt(13, solicitacao.getCodigoTipoSolicitacao());
-            pstmt.setInt(14, solicitacao.getCodigoStatusSolicitacao());
-            pstmt.setString(15, solicitacao.getEmailUsuarioReceptor());
-            pstmt.setString(16, solicitacao.getEmailUsuarioSolicitante());
-            pstmt.setInt(17, solicitacao.getCodigoFormaEntrega());
-            pstmt.setInt(18, codigoEndereco);
-            pstmt.setString(19, solicitacao.getCodigoRastreioCorreio());
-            pstmt.executeQuery();
-            logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação cadastrada com sucesso");
-        }
+    public Integer cadastrarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
+        logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cadastro da solicitação");
+        PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CADASTRAR_SOLICITACAO, PreparedStatement.RETURN_GENERATED_KEYS);
+        definirParametrosSolicitacao(solicitacao, codigoEndereco, pstmt);
+        pstmt.setString(19, solicitacao.getCodigoRastreioCorreio());
+        pstmt.executeQuery();
+        logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação cadastrada com sucesso");
+        return pstmt.getGeneratedKeys().getInt(1);
+    }
+
+    private void definirParametrosSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco, PreparedStatement pstmt) throws SQLException {
+        DataHora dataHora = DataHora.hoje();
+        pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+        pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+        pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
+        pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
+        pstmt.setString(5, solicitacao.getDataEntrega());
+        pstmt.setString(6, solicitacao.getHoraEntrega());
+        pstmt.setString(7, solicitacao.getDataDevolucao());
+        pstmt.setString(8, solicitacao.getHoraDevolucao());
+        pstmt.setString(9, null);
+        pstmt.setString(10, null);
+        pstmt.setString(11, null);
+        pstmt.setString(12, solicitacao.getInformacoesAdicionais());
+        pstmt.setInt(13, solicitacao.getCodigoTipoSolicitacao());
+        pstmt.setInt(14, solicitacao.getCodigoStatusSolicitacao());
+        pstmt.setString(15, solicitacao.getEmailUsuarioReceptor());
+        pstmt.setString(16, solicitacao.getEmailUsuarioSolicitante());
+        pstmt.setInt(17, solicitacao.getCodigoFormaEntrega());
+        pstmt.setInt(18, codigoEndereco);
     }
 
     public void atualizarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {

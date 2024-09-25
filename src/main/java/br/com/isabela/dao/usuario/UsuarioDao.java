@@ -43,12 +43,10 @@ public class UsuarioDao {
     }
 
 
-    public void salvarUsuario(CriacaoUsuarioDto usuario) throws SQLException {
-        try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);
-            definirParametros(pstmt, usuario);
-            pstmt.executeUpdate();
-        }
+    public void salvarUsuario(CriacaoUsuarioDto usuario, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);
+        definirParametros(pstmt, usuario);
+        pstmt.executeUpdate();
     }
 
     public void definirParametros(PreparedStatement pstmt, CriacaoUsuarioDto usuario) throws SQLException {

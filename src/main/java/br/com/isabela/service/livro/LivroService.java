@@ -12,6 +12,7 @@ import br.com.isabela.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class LivroService {
     }
 
 
-    public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, String email, Connection conexao) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a validação dos livros da solicitação");
             for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {

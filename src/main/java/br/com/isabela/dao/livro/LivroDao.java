@@ -168,15 +168,13 @@ public class LivroDao {
         }
     }
 
-    public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos) throws SQLException {
+    public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros indisponíveis");
-        try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVROS_INDISPONIVEIS);
-            pstmt.setInt(1, numeroSolicitacao);
-            pstmt.setString(2, obterIdsConcatenados(livroSolicitacaoDtos));
-            pstmt.executeUpdate();
-            logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
-        }
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVROS_INDISPONIVEIS);
+        pstmt.setInt(1, numeroSolicitacao);
+        pstmt.setString(2, obterIdsConcatenados(livroSolicitacaoDtos));
+        pstmt.executeUpdate();
+        logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
     }
 
     private String obterIdsConcatenados(List<LivroSolicitacaoDto> livroSolicitacaoDtos) {

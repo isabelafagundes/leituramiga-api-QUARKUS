@@ -34,9 +34,8 @@ public class EnderecoDao {
         }
     }
 
-    public Integer salvarEndereco(EnderecoDto endereco) throws SQLException {
+    public Integer salvarEndereco(EnderecoDto endereco,Connection conexao) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando salvamento de endereço");
-        try (Connection conexao = bd.obterConexao()) {
             PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.INSERIR_ENDERECO, PreparedStatement.RETURN_GENERATED_KEYS);
             definirParametrosDeSalvamento(pstmt, endereco);
             int linhasAfetadas = pstmt.executeUpdate();
@@ -50,7 +49,6 @@ public class EnderecoDao {
                 }
             }
             return null;
-        }
     }
 
 

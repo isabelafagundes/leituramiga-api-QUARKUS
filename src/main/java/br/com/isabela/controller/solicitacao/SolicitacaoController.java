@@ -114,7 +114,7 @@ public class SolicitacaoController {
     @Path("/solicitacao")
     public Response cadastrarSolicitacao(SolicitacaoDto dto) {
         try {
-            service.cadastrarSolicitacao(dto);
+            service.cadastrarSolicitacao(dto, email);
             return Response.ok().build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
