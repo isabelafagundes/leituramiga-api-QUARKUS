@@ -1,6 +1,8 @@
 package br.com.isabela.dao.comentario;
 
 import br.com.isabela.dao.FabricaDeConexoes;
+import br.com.isabela.dao.endereco.EnderecoDao;
+import br.com.isabela.dao.endereco.EnderecoQueries;
 import br.com.isabela.dao.livro.LivroDao;
 import br.com.isabela.dto.comentario.ComentarioDto;
 import br.com.isabela.model.comentario.Comentario;
@@ -33,6 +35,34 @@ public class ComentarioDao {
         logService.sucesso(LivroDao.class.getName(), "Busca do comentario finalizada");
         return comentario;
     }
+
+    public void deletarComentario(int comentario) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do comentário" + comentario);
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.EXCLUIR_ENDERECO);
+            pstmt.setInt(1, comentario);
+            pstmt.executeUpdate();
+            logService.sucesso(EnderecoDao.class.getName(), "Exclusão do comentário finalizada " + comentario);
+        }
+    }
+
+    public Integer salvarComentario(ComentarioDto comentario, Connection conexao) throws SQLException {
+        logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do comentario");
+        PreparedStatement pstms = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
+        definirParametrosDeSalvamento(pstms, comentario);
+
+        int linhasAfetadas = pstms.executeUpdate();
+        if (linhasAfetadas > 0) {
+            try (ResultSet resultado = pstms.getGeneratedKeys()) {
+                if (resultado.next()) {
+                    Integer idGerado = resultado.getInt(1);
+                    return idGerado;
+                }
+            }
+        }
+        return null;
+    }
+
 
     public Comentario obterComentariosFeitos(String emailUsuarioPerfil) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de comentarios feitos ou recebidos do usuário");

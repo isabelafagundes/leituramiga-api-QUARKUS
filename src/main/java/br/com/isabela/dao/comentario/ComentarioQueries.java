@@ -22,7 +22,18 @@ public class ComentarioQueries {
                     "          comentario.email_usuario,\n" +
                     "          comentario.nome_usuario_perfil,\n" +
                     "FROM comentario\n" +
-                    " WHERE comentario.codigo_comentario =? \n" + //Quando o usuario fez o comentario em outro perfil
-                    " OR comentario.email_usuario_perfil = ?;";  //pensei no sentido de exibir também os comentarios que foi postado para esse perfil
+                    " WHERE comentario.codigo_comentario =? \n" +
+                    " OR comentario.email_usuario_perfil = ?;";
+
+    public final static String SALVAR_COMENTARIO =
+            "INSERT INTO comentario (descricao, data_criacao, hora_criacao, email_usuario, nome_usuario_perfil)" +
+            "        VALUES (?,?,?,?,?)" +
+            " ON DUPLICATE KEY UPDATE " +
+            "descricao = VALUES(descricao), "  +
+            "data_criacao = VALUES(data_criacao), " +
+            "hora_criacao = VALUES (hora_criacao);";
+
+    public static final String EXCLUIR_COMENTARIO =
+            "DELETE FROM comentario WHERE codigo_comentario = ?;";
 
 }
