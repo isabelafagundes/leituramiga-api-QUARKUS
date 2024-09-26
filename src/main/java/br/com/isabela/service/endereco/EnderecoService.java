@@ -1,5 +1,6 @@
 package br.com.isabela.service.endereco;
 
+import br.com.isabela.dao.FabricaDeConexoes;
 import br.com.isabela.dao.endereco.EnderecoDao;
 import br.com.isabela.dto.endereco.EnderecoDto;
 import br.com.isabela.model.endereco.Endereco;
@@ -9,7 +10,9 @@ import br.com.isabela.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+
 @ApplicationScoped
 public class EnderecoService {
 
@@ -18,6 +21,9 @@ public class EnderecoService {
 
     @Inject
     EnderecoDao enderecoDao;
+
+    @Inject
+    FabricaDeConexoes bd;
 
     public EnderecoDto obterEnderecoUsuario(String email) throws SQLException, EnderecoNaoExistente {
         String md5Email = HashService.obterMd5Email(email);
@@ -36,9 +42,9 @@ public class EnderecoService {
 
 
     public void salvarEndereco(EnderecoDto endereco) throws SQLException {
-        try {
+        try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
-            enderecoDao.salvarEndereco(endereco);
+            enderecoDao.salvarEndereco(endereco, conexao);
             logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
         } catch (Exception e) {
             logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);

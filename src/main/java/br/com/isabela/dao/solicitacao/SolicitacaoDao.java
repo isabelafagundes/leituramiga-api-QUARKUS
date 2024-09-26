@@ -320,7 +320,8 @@ public class SolicitacaoDao {
                 result.getString("nome_cidade"),
                 result.getString("email_usuario"),
                 result.getString("estado"),
-                result.getString("numero")
+                result.getString("numero"),
+                result.getInt("codigo_cidade")
         );
     }
 }

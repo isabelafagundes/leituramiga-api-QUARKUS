@@ -53,7 +53,8 @@ public class Endereco {
             String nomeCidade,
             String emailUsuario,
             String estado,
-            String numero) {
+            String numero,
+            Integer codigoCidade) {
         Endereco endereco = new Endereco();
         endereco.codigo = id;
         endereco.logradouro = logradouro;
@@ -64,6 +65,7 @@ public class Endereco {
         endereco.emailUsuario = emailUsuario;
         endereco.estado = estado;
         endereco.numero = numero;
+        endereco.codigoCidade = codigoCidade;
         return endereco;
     }
 

@@ -49,7 +49,14 @@ public class LivroController {
     @Path("/livros")
     public Response obterLivros(FiltrosDto filtrosDto) {
         try {
-            List<LivroDto> livros = livroService.obterLivrosPaginados(filtrosDto.numeroPagina, filtrosDto.tamanhoPagina, filtrosDto.pesquisa, filtrosDto.numeroCidade, filtrosDto.numeroCategoria, filtrosDto.numeroInstituicao);
+            List<LivroDto> livros = livroService.obterLivrosPaginados(
+                    filtrosDto.numeroPagina,
+                    filtrosDto.tamanhoPagina,
+                    filtrosDto.pesquisa,
+                    filtrosDto.numeroCidade,
+                    filtrosDto.numeroCategoria,
+                    filtrosDto.numeroInstituicao
+            );
             return Response.ok(livros).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

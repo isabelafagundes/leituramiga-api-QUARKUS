@@ -95,9 +95,10 @@ public class EnderecoDao {
                 resultado.getString("bairro"),
                 resultado.getString("cep"),
                 resultado.getString("nome_cidade"),
-                resultado.getString("nome_estado"),
                 resultado.getString("email_usuario"),
-                resultado.getString("numero")
+                resultado.getString("nome_estado"),
+                resultado.getString("numero"),
+                resultado.getInt("codigo_cidade")
         );
     }
 
