@@ -2,20 +2,18 @@ package br.com.leituramiga.model.categoria;
 
 public class Categoria {
     private Integer id;
-    private String nome_categoria;
-    private String descricao_categoria;
+    private String descricao;
 
     public Categoria() {
     }
 
     public static Categoria carregar(
             Integer id,
-            String nome_categoria,
-            String descricao_categoria) {
+            String descricao) {
         Categoria categoria = new Categoria();
         categoria.id = id;
-        categoria.nome_categoria = nome_categoria;
-        categoria.descricao_categoria = descricao_categoria;
+        categoria.descricao = descricao;
+
         return categoria;
     }
 
@@ -27,19 +25,12 @@ public class Categoria {
         this.id = id;
     }
 
-    public String getNome_categoria() {
-        return nome_categoria;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setNome_categoria(String nome_categoria) {
-        this.nome_categoria = nome_categoria;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public String getDescricao_categoria() {
-        return descricao_categoria;
-    }
-
-    public void setDescricao_categoria(String descricao_categoria) {
-        this.descricao_categoria = descricao_categoria;
-    }
 }

@@ -7,8 +7,10 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class ComentarioDto {
     public Integer id;
     public String descricao;
-    public String data_criacao;
-    public String hora_criacao;
+    public String dataCriacao;
+    public String horaCriacao;
+    public String emailUsuarioCriador;
+    public String emailUsuarioPerfil;
 
     public static ComentarioDto deModel(
             Comentario comentario
@@ -17,8 +19,8 @@ public class ComentarioDto {
 
         dto.id = comentario.getId();
         dto.descricao = comentario.getDescricao();
-        dto.data_criacao = comentario.getData_criacao();
-        dto.hora_criacao = comentario.getHora_criacao();
+        dto.dataCriacao = comentario.getdataCriacao();
+        dto.horaCriacao = comentario.gethoraCriacao();
 
         return dto;
     }
@@ -27,37 +29,54 @@ public class ComentarioDto {
     }
 
 
-        public Integer getId () {
-            return id;
-        }
+    public Integer getId() {
+        return id;
+    }
 
-        public void setId ( Integer id){
-            this.id = id;
-        }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-        public String getDescricao () {
-            return descricao;
-        }
+    public String getDescricao() {
+        return descricao;
+    }
 
-        public void setDescricao (String descricao){
-            this.descricao = descricao;
-        }
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-        public String getData_criacao () {
-            return data_criacao;
-        }
+    public String getDataCriacao() {
+        return dataCriacao;
+    }
 
-        public void setData_criacao (String data_criacao){
-            this.data_criacao = data_criacao;
-        }
+    public void setDataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
 
-        public String getHora_criacao () {
-            return hora_criacao;
-        }
+    public String getHoraCriacao() {
+        return horaCriacao;
+    }
 
-        public void setHora_criacao (String hora_criacao){
-            this.hora_criacao = hora_criacao;
-        }
+    public void setHoraCriacao(String horaCriacao) {
+        this.horaCriacao = horaCriacao;
+    }
+
+    public String getEmailUsuarioCriador() {
+        return emailUsuarioCriador;
+    }
+
+    public void setEmailUsuarioCriador(String emailUsuarioCriador) {
+        this.emailUsuarioCriador = emailUsuarioCriador;
+    }
+
+    public String getEmailUsuarioPerfil() {
+        return emailUsuarioPerfil;
+    }
+
+    public void setEmailUsuarioPerfil(String emailUsuarioPerfil) {
+        this.emailUsuarioPerfil = emailUsuarioPerfil;
+    }
+
 
 
 }

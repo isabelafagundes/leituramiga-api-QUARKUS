@@ -6,8 +6,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class CategoriaDto {
     public Integer id;
-    public String nome_categoria;
-    public String descricao_categoria;
+    public String descricao;
 
     public static CategoriaDto deModel(
             Categoria categoria
@@ -15,8 +14,7 @@ public class CategoriaDto {
         CategoriaDto dto = new CategoriaDto();
 
         dto.id = categoria.getId();
-        dto.nome_categoria = categoria.getNome_categoria();
-        dto.descricao_categoria = categoria.getDescricao_categoria();
+        dto.descricao = categoria.getDescricao();
 
         return dto;
     }
@@ -33,20 +31,13 @@ public class CategoriaDto {
         this.id = id;
     }
 
-    public String getNome_categoria() {
-        return nome_categoria;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setNome_categoria(String nome_categoria) {
-        this.nome_categoria = nome_categoria;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public String getDescricao_categoria() {
-        return descricao_categoria;
-    }
-
-    public void setDescricao_categoria(String descricao_categoria) {
-        this.descricao_categoria = descricao_categoria;
-    }
 
 }
