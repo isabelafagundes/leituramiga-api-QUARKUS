@@ -11,7 +11,9 @@ CREATE TABLE IF NOT EXISTS cidade
 (
     codigo_cidade BIGINT PRIMARY KEY AUTO_INCREMENT,
     nome          VARCHAR(60) NOT NULL,
-    estado        VARCHAR(2)  NOT NULL
+    estado        VARCHAR(2)  NOT NULL,
+    codigo_ibge   VARCHAR(7),
+    CONSTRAINT uk_cidade UNIQUE (nome, estado, codigo_ibge)
 );
 
 CREATE TABLE IF NOT EXISTS instituicao
@@ -92,8 +94,6 @@ CREATE TABLE IF NOT EXISTS livro
     codigo_ultima_solicitacao BIGINT       NOT NULL,
     codigo_categoria          BIGINT       NOT NULL,
     codigo_status_livro       BIGINT       NOT NULL,
-    codigo_cidade             BIGINT       NOT NULL,
-    FOREIGN KEY (codigo_cidade) REFERENCES cidade (codigo_cidade),
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_ultima_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)

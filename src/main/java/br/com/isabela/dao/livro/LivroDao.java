@@ -72,6 +72,19 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
     }
 
+    public void atualizarLivro(LivroDto livro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização do livro");
+        Connection conexao = bd.obterConexao();
+        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVRO);
+        pstmt.setString(1, livro.getTitulo());
+        pstmt.setString(2, livro.getDescricao());
+        pstmt.setString(3, livro.getEstadoFisico());
+        pstmt.setString(4, livro.getEmailUsuario());
+        pstmt.setInt(5, livro.getCodigoCategoria());
+        pstmt.executeUpdate();
+        logService.sucesso(LivroDao.class.getName(), "Atualização do livro finalizada");
+    }
+
     public void deletarLivro(int numeroLivro, String email) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + numeroLivro);
         try (Connection conexao = bd.obterConexao()) {
@@ -187,15 +200,12 @@ public class LivroDao {
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, LivroDto livro) throws SQLException {
-        pstmt.setInt(1, livro.getId());
-        pstmt.setString(2, livro.getTitulo());
-        pstmt.setString(3, livro.getAutor());
-        pstmt.setString(7, livro.getDescricao());
-        pstmt.setString(8, livro.getCategoria());
-        pstmt.setString(9, livro.getEstado_fisico());
-        pstmt.setString(10, livro.getNome_instituicao());
-        pstmt.setString(11, livro.getNome_cidade());
-        pstmt.setString(12, livro.getData_ultima_solicitacao());
+        pstmt.setString(1, livro.getTitulo());
+        pstmt.setString(2, livro.getDescricao());
+        pstmt.setString(3, livro.getEstadoFisico());
+        pstmt.setString(4, livro.getEmailUsuario());
+        pstmt.setString(5, livro.getCategoria());
+        pstmt.setInt(6, livro.getCodigoCidade());
     }
 
     public void salvarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {

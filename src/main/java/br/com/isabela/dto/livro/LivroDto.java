@@ -6,15 +6,18 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class LivroDto {
     public Integer id;
-    public String nome_usuario;
+    public String nomeUsuario;
+    public String emailUsuario;
     public String titulo;
     public String autor;
     public String descricao;
     public String categoria;
-    public String estado_fisico;
-    public String nome_instituicao;
-    public String nome_cidade;
-    public String data_ultima_solicitacao;
+    public Integer codigoCategoria;
+    public String estadoFisico;
+    public String nomeInstituicao;
+    public String nomeCidade;
+    public Integer codigoCidade;
+    public String dataUltimaSolicitacao;
 
     public static LivroDto deModel(
             Livro livro
@@ -22,21 +25,24 @@ public class LivroDto {
         LivroDto dto = new LivroDto();
 
         dto.id = livro.getId();
-        dto.nome_usuario = livro.getNome_usuario();
+        dto.nomeUsuario = livro.getNomeUsuario();
         dto.titulo = livro.getTitulo();
         dto.autor = livro.getAutor();
         dto.descricao = livro.getDescricao();
         dto.categoria = livro.getCategoria();
-        dto.estado_fisico = livro.getEstado_fisico();
-        dto.nome_instituicao = livro.getNome_instituicao();
-        dto.nome_cidade = livro.getNome_cidade();
-        dto.data_ultima_solicitacao = livro.getData_ultima_solicitacao();
+        dto.estadoFisico = livro.getEstadoFisico();
+        dto.nomeInstituicao = livro.getNomeInstituicao();
+        dto.nomeCidade = livro.getNomeCidade();
+        dto.dataUltimaSolicitacao = livro.getDataUltimaSolicitacao();
 
         return dto;
     }
 
     public LivroDto() {
+    }
 
+    public Integer getCodigoCategoria() {
+        return codigoCategoria;
     }
 
     public Integer getId() {
@@ -47,12 +53,12 @@ public class LivroDto {
         this.id = id;
     }
 
-    public String getNome_usuario() {
-        return nome_usuario;
+    public String getNomeUsuario() {
+        return nomeUsuario;
     }
 
-    public void setNome_usuario(String nome_usuario) {
-        this.nome_usuario = nome_usuario;
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
     }
 
     public String getTitulo() {
@@ -87,36 +93,44 @@ public class LivroDto {
         this.categoria = categoria;
     }
 
-    public String getEstado_fisico() {
-        return estado_fisico;
+    public String getEstadoFisico() {
+        return estadoFisico;
     }
 
-    public void setEstado_fisico(String estado_fisico) {
-        this.estado_fisico = estado_fisico;
+    public void setEstadoFisico(String estadoFisico) {
+        this.estadoFisico = estadoFisico;
     }
 
-    public String getNome_instituicao() {
-        return nome_instituicao;
+    public String getNomeInstituicao() {
+        return nomeInstituicao;
     }
 
-    public void setNome_instituicao(String nome_instituicao) {
-        this.nome_instituicao = nome_instituicao;
+    public void setNomeInstituicao(String nomeInstituicao) {
+        this.nomeInstituicao = nomeInstituicao;
     }
 
-    public String getNome_cidade() {
-        return nome_cidade;
+    public String getNomeCidade() {
+        return nomeCidade;
     }
 
-    public void setNome_cidade(String nome_cidade) {
-        this.nome_cidade = nome_cidade;
+    public void setNomeCidade(String nomeCidade) {
+        this.nomeCidade = nomeCidade;
     }
 
-    public String getData_ultima_solicitacao() {
-        return data_ultima_solicitacao;
+    public String getDataUltimaSolicitacao() {
+        return dataUltimaSolicitacao;
     }
 
-    public void setData_ultima_solicitacao(String data_ultima_solicitacao) {
-        this.data_ultima_solicitacao = data_ultima_solicitacao;
+    public String getEmailUsuario() {
+        return emailUsuario;
+    }
+
+    public Integer getCodigoCidade() {
+        return codigoCidade;
+    }
+
+    public void setDataUltimaSolicitacao(String dataUltimaSolicitacao) {
+        this.dataUltimaSolicitacao = dataUltimaSolicitacao;
     }
 
 }

@@ -86,6 +86,19 @@ public class LivroService {
         }
     }
 
+    public void atualizarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        String md5Login = HashService.obterMd5Email(email);
+        try {
+            if (livro.getId() != null) validarStatusLivro(livro.getId(), email);
+            logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
+            dao.atualizarLivro(livro);
+            logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
+        } catch (Exception e) {
+            logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);
+            throw e;
+        }
+    }
+
     public void deletarLivro(Integer numeroLivro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
         String md5Login = HashService.obterMd5Email(email);
         try {

@@ -98,7 +98,7 @@ public class LivroController {
     @Path("/livro/{id}")
     public Response atualizarLivro(@PathParam("id") Integer numeroLivro, LivroDto livro) {
         try {
-            livroService.salvarLivro(livro, email);
+            livroService.atualizarLivro(livro, email);
             return Response.ok("Livro salvo com sucesso!").build();
         } catch (LivroJaDesativado e) {
             return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
