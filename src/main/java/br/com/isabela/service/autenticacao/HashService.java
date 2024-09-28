@@ -28,4 +28,15 @@ public class HashService {
             throw new RuntimeException(e);
         }
     }
+
+    public static String ObterMd5Categoria(String validarCategoria) {
+        try{
+            byte[] hash = MessageDigest.getInstance("MD5").digest(validarCategoria.getBytes("UTF-8"));
+            return new BigInteger(1, hash).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

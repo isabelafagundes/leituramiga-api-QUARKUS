@@ -1,9 +1,6 @@
 package br.com.isabela.dao.comentario;
 
 import br.com.isabela.dao.FabricaDeConexoes;
-import br.com.isabela.dao.endereco.EnderecoDao;
-import br.com.isabela.dao.endereco.EnderecoQueries;
-import br.com.isabela.dao.livro.LivroDao;
 import br.com.isabela.dto.comentario.ComentarioDto;
 import br.com.isabela.model.comentario.Comentario;
 import br.com.isabela.service.autenticacao.LogService;
@@ -24,25 +21,25 @@ public class ComentarioDao {
     @Inject
     LogService logService;
 
-    public Comentario obterComentarioPorID(String comentarioId) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca do comentario por usuário");
+    public Comentario obterComentarioPorPerfilUsuario(String comentarioPerfil) throws SQLException {
+        logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do comentario por usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_POR_PERFIL);
-        pstmt.setString(1, comentarioId);
+        pstmt.setString(1, comentarioPerfil);
         ResultSet resultado = pstmt.executeQuery();
         Comentario comentario = new Comentario();
         if (resultado.next()) comentario = obterComentarioDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca do comentario finalizada");
+        logService.sucesso(ComentarioDao.class.getName(), "Busca do comentario finalizada");
         return comentario;
     }
 
     public void deletarComentario(int comentario) throws SQLException {
-        logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do comentário" + comentario);
+        logService.iniciar(ComentarioDao.class.getName(), "Iniciando exclusão do comentário" + comentario);
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.EXCLUIR_ENDERECO);
+            PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.EXCLUIR_COMENTARIO);
             pstmt.setInt(1, comentario);
             pstmt.executeUpdate();
-            logService.sucesso(EnderecoDao.class.getName(), "Exclusão do comentário finalizada " + comentario);
+            logService.sucesso(ComentarioDao.class.getName(), "Exclusão do comentário finalizada " + comentario);
         }
     }
 
@@ -65,22 +62,22 @@ public class ComentarioDao {
 
 
     public Comentario obterComentariosFeitos(String emailUsuarioPerfil) throws SQLException {
-        logService.iniciar(LivroDao.class.getName(), "Iniciando busca de comentarios feitos ou recebidos do usuário");
+        logService.iniciar(ComentarioDto.class.getName(), "Iniciando busca de comentarios feitos ou recebidos do usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_FEITOS_OU_RECEBIDOS);
         pstmt.setString(1, emailUsuarioPerfil);
         ResultSet resultado = pstmt.executeQuery();
         Comentario comentario = new Comentario();
         if (resultado.next()) comentario = obterComentarioDeResult(resultado);
-        logService.sucesso(LivroDao.class.getName(), "Busca de comentarios feitos finalizada");
+        logService.sucesso(ComentarioDao.class.getName(), "Busca de comentarios feitos finalizada");
         return comentario;
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, ComentarioDto comentario) throws SQLException {
         pstmt.setInt(1, comentario.getId());
         pstmt.setString(2, comentario.getDescricao());
-        pstmt.setString(3, comentario.getData_criacao());
-        pstmt.setString(4, comentario.getHora_criacao());
+        pstmt.setString(3, comentario.getDataCriacao());
+        pstmt.setString(4, comentario.getHoraCriacao());
     }
 
     public Comentario obterComentarioDeResult(ResultSet resultado) throws SQLException {

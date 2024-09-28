@@ -4,26 +4,26 @@ public class Comentario {
 
     private Integer id;
     private String descricao;
-    private String data_criacao;
-    private String hora_criacao;
+    private String dataCriacao;
+    private String horaCriacao;
 
-    private Integer email_usuario;
-    private Integer email_usuario_perfil;
+    private Integer emailUsuarioCriador;
+    private Integer emailUsuarioPerfil;
 
-    public Integer getEmail_usuario() {
-        return email_usuario;
+    public Integer getemailUsuarioCriador() {
+        return emailUsuarioCriador;
     }
 
-    public void setEmail_usuario(Integer email_usuario) {
-        this.email_usuario = email_usuario;
+    public void setemailUsuarioCriador(Integer email_usuario) {
+        this.emailUsuarioCriador = emailUsuarioCriador;
     }
 
-    public Integer getEmail_usuario_perfil() {
-        return email_usuario_perfil;
+    public Integer getemailUsuarioPerfil() {
+        return emailUsuarioPerfil;
     }
 
-    public void setEmail_usuario_perfil(Integer email_usuario_perfil) {
-        this.email_usuario_perfil = email_usuario_perfil;
+    public void setemailUsuarioPerfil(Integer emailUsuarioPerfil) {
+        this.emailUsuarioPerfil = emailUsuarioPerfil;
     }
 
     public Comentario() {
@@ -33,13 +33,13 @@ public class Comentario {
     public static Comentario carregar(
             Integer id,
             String descricao,
-            String data_criacao,
-            String hora_criacao) {
+            String dataCriacao,
+            String horaCriacao) {
         Comentario comentario = new Comentario();
         comentario.id = id;
         comentario.descricao = descricao;
-        comentario.data_criacao = data_criacao;
-        comentario.hora_criacao = hora_criacao;
+        comentario.dataCriacao = dataCriacao;
+        comentario.horaCriacao = horaCriacao;
         return comentario;
     }
 
@@ -59,20 +59,20 @@ public class Comentario {
         this.descricao = descricao;
     }
 
-    public String getData_criacao() {
-        return data_criacao;
+    public String getdataCriacao() {
+        return dataCriacao;
     }
 
-    public void setData_criacao(String data_criacao) {
-        this.data_criacao = data_criacao;
+    public void setdataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
-    public String getHora_criacao() {
-        return hora_criacao;
+    public String gethoraCriacao() {
+        return horaCriacao;
     }
 
-    public void setHora_criacao(String hora_criacao) {
-        this.hora_criacao = hora_criacao;
+    public void sethoraCriacao(String horaCriacao) {
+        this.horaCriacao = horaCriacao;
     }
 
 }
