@@ -26,6 +26,9 @@ public class LivroDto {
 
         dto.id = livro.getId();
         dto.nomeUsuario = livro.getNomeUsuario();
+        dto.emailUsuario = livro.getEmailUsuario();
+        dto.codigoCategoria = livro.getCodigoCategoria();
+        dto.codigoCidade = livro.getCodigoCidade();
         dto.titulo = livro.getTitulo();
         dto.autor = livro.getAutor();
         dto.descricao = livro.getDescricao();
@@ -133,4 +136,22 @@ public class LivroDto {
         this.dataUltimaSolicitacao = dataUltimaSolicitacao;
     }
 
+    @Override
+    public String toString() {
+        return "LivroDto{" +
+                "id=" + id +
+                ", nomeUsuario='" + nomeUsuario + '\'' +
+                ", emailUsuario='" + emailUsuario + '\'' +
+                ", titulo='" + titulo + '\'' +
+                ", autor='" + autor + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", categoria='" + categoria + '\'' +
+                ", codigoCategoria=" + codigoCategoria +
+                ", estadoFisico='" + estadoFisico + '\'' +
+                ", nomeInstituicao='" + nomeInstituicao + '\'' +
+                ", nomeCidade='" + nomeCidade + '\'' +
+                ", codigoCidade=" + codigoCidade +
+                ", dataUltimaSolicitacao='" + dataUltimaSolicitacao + '\'' +
+                '}';
+    }
 }

@@ -72,18 +72,22 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
     }
 
-    public void atualizarLivro(LivroDto livro) throws SQLException {
+    public void atualizarLivro(LivroDto livro, String email) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização do livro");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVRO);
-        pstmt.setString(1, livro.getTitulo());
-        pstmt.setString(2, livro.getDescricao());
-        pstmt.setString(3, livro.getEstadoFisico());
-        pstmt.setString(4, livro.getEmailUsuario());
-        pstmt.setInt(5, livro.getCodigoCategoria());
-        pstmt.executeUpdate();
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVRO);
+            pstmt.setString(1, livro.getTitulo());
+            pstmt.setString(2, livro.getDescricao());
+            pstmt.setString(3, livro.getEstadoFisico());
+            pstmt.setInt(4, livro.getCodigoCategoria());
+            pstmt.setString(5, livro.getAutor());
+            pstmt.setInt(6, livro.getId());
+            pstmt.setString(7, email);
+            pstmt.executeUpdate();
+        }
         logService.sucesso(LivroDao.class.getName(), "Atualização do livro finalizada");
     }
+
 
     public void deletarLivro(int numeroLivro, String email) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando exclusão do livro " + numeroLivro);
@@ -204,8 +208,8 @@ public class LivroDao {
         pstmt.setString(2, livro.getDescricao());
         pstmt.setString(3, livro.getEstadoFisico());
         pstmt.setString(4, livro.getEmailUsuario());
-        pstmt.setString(5, livro.getCategoria());
-        pstmt.setInt(6, livro.getCodigoCidade());
+        pstmt.setInt(5, livro.getCodigoCategoria());
+        pstmt.setString(6, livro.getAutor());
     }
 
     public void salvarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {
@@ -220,16 +224,21 @@ public class LivroDao {
 
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {
         return Livro.carregar(
-                resultado.getInt("id"),
+                resultado.getInt("codigo_livro"),
                 resultado.getString("nome_usuario"),
-                resultado.getString("titulo"),
+                resultado.getString("nome"),
                 resultado.getString("autor"),
                 resultado.getString("descricao"),
-                resultado.getString("categoria"),
+                resultado.getString("nome_categoria"),
                 resultado.getString("estado_fisico"),
                 resultado.getString("nome_instituicao"),
                 resultado.getString("nome_cidade"),
-                resultado.getString("data_ultima_solicitacao")
+                resultado.getString("ultima_solicitacao"),
+                resultado.getString("email_usuario"),
+                resultado.getInt("codigo_ultima_solicitacao"),
+                resultado.getInt("codigo_categoria"),
+                resultado.getInt("codigo_status_livro"),
+                resultado.getInt("codigo_cidade")
         );
     }
 

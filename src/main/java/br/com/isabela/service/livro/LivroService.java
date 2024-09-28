@@ -91,7 +91,7 @@ public class LivroService {
         try {
             if (livro.getId() != null) validarStatusLivro(livro.getId(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
-            dao.atualizarLivro(livro);
+            dao.atualizarLivro(livro, email);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);

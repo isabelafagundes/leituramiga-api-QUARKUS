@@ -91,9 +91,10 @@ CREATE TABLE IF NOT EXISTS livro
     estado_fisico             VARCHAR(160) NOT NULL,
     ultima_solicitacao        VARCHAR(25),
     email_usuario             VARCHAR(260) NOT NULL,
-    codigo_ultima_solicitacao BIGINT       NOT NULL,
+    codigo_ultima_solicitacao BIGINT,
     codigo_categoria          BIGINT       NOT NULL,
     codigo_status_livro       BIGINT       NOT NULL,
+    autor                     VARCHAR(40),
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_ultima_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)
