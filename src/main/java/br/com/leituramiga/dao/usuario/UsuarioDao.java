@@ -32,12 +32,7 @@ public class UsuarioDao {
         String md5Login = HashService.obterMd5Email(login);
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Login);
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
-            pstmt.setString(1, login);
-            pstmt.setString(2, login);
-            ResultSet resultado = pstmt.executeQuery();
-            Usuario usuario = null;
-            if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+            Usuario usuario = obterUsuarioPorEmailUsuario(login, conexao);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Login);
             return usuario;
         }
@@ -80,7 +75,6 @@ public class UsuarioDao {
         Boolean existenciaUsername = validarExistenciaUsername(username);
         return existenciaUsername;
     }
-
 
     private boolean validarExistenciaEmail(String email) throws SQLException {
         String md5Email = HashService.obterMd5Email(email);
@@ -139,17 +133,22 @@ public class UsuarioDao {
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de segurança do usuário de email " + md5Login);
 
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
-            pstmt.setString(1, email);
-            pstmt.setString(2, email);
-            ResultSet resultado = pstmt.executeQuery();
-            Usuario usuario = null;
-            if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+            Usuario usuario = obterUsuarioPorEmailUsuario(email, conexao);
             if (usuario == null) throw new UsuarioNaoExistente();
             Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de segurança do usuário de email " + md5Login);
             return codigoCorreto;
         }
+    }
+
+    private Usuario obterUsuarioPorEmailUsuario(String email, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
+        pstmt.setString(1, email);
+        pstmt.setString(2, email);
+        ResultSet resultado = pstmt.executeQuery();
+        Usuario usuario = null;
+        if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+        return usuario;
     }
 
     public void ativarUsuario(String email) throws SQLException {
@@ -236,7 +235,9 @@ public class UsuarioDao {
                 resultado.getString("descricao"),
                 resultado.getString("imagem"),
                 resultado.getInt("codigo_instituicao"),
-                null
+                null,
+                resultado.getString("nome_cidade"),
+                resultado.getString("nome_instituicao")
         );
     }
 }

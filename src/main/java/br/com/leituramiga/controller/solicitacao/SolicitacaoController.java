@@ -12,11 +12,14 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.util.List;
 
 @RequestScoped
 @Path("/api")
+@Tag(name = "Solicitações", description = "Controller responsável por gerenciar solicitações")
 public class SolicitacaoController {
 
     @Inject
@@ -30,6 +33,7 @@ public class SolicitacaoController {
     @GET
     @Authenticated
     @Path("/solicitacao/{id}")
+    @Operation(summary = "Retorna uma solicitação", description = "Retorna uma solicitação a partir do seu código de identificação")
     public Response obterSolicitacao(@PathParam("id") Integer numero) {
         try {
             SolicitacaoDto dto = service.obterSolicitacao(numero);
@@ -44,6 +48,7 @@ public class SolicitacaoController {
     @POST
     @Authenticated
     @Path("/solicitacao/{id}/aceitar")
+    @Operation(summary = "Aceita uma solicitação", description = "Aceita uma solicitação a partir do seu código de identificação")
     public Response aceitarSolicitacao(@PathParam("id") Integer numero) {
         try {
             service.aceitarSolicitacao(numero, email);
@@ -62,6 +67,7 @@ public class SolicitacaoController {
     @POST
     @Authenticated
     @Path("/solicitacao/{id}/recusar")
+    @Operation(summary = "Recusa uma solicitação", description = "Recusa uma solicitação a partir do seu código de identificação")
     public Response recusarSolicitacao(@PathParam("id") Integer numero, String motivoRecusa) {
         try {
             service.recusarSolicitacao(numero, motivoRecusa, email);
@@ -80,6 +86,7 @@ public class SolicitacaoController {
     @POST
     @Authenticated
     @Path("/solicitacao/{id}/cancelar")
+    @Operation(summary = "Cancela uma solicitação", description = "Cancela uma solicitação a partir do seu código de identificação")
     public Response cancelarSolicitacao(@PathParam("id") Integer numero, String motivoRecusa) {
         try {
             service.cancelarSolicitacao(numero, motivoRecusa, email);
@@ -96,7 +103,8 @@ public class SolicitacaoController {
 
     @GET
     @Authenticated
-    @Path("/solicitaoes")
+    @Path("/solicitacoes")
+    @Operation(summary = "Retorna as solicitações do usuário", description = "Retorna as solicitações do usuário do token de autenticação")
     public Response obterSolicitacoesPaginadas(@QueryParam("pagina") Integer pagina, @QueryParam("tamanhoPagina") Integer tamanhoPagina) {
         try {
             List<SolicitacaoDto> solicitacoes = service.obterSolicitacoesPaginadas(pagina, tamanhoPagina, email);
@@ -110,6 +118,7 @@ public class SolicitacaoController {
     @POST
     @Authenticated
     @Path("/solicitacao")
+    @Operation(summary = "Cadastra uma solicitação", description = "Cadastra uma solicitação do usuário do token de autenticação")
     public Response cadastrarSolicitacao(SolicitacaoDto dto) {
         try {
             service.cadastrarSolicitacao(dto, email);
@@ -123,6 +132,7 @@ public class SolicitacaoController {
     @POST
     @Authenticated
     @Path("/solicitacao/{id}/atualizar")
+    @Operation(summary = "Atualiza uma solicitação", description = "Atualiza uma solicitação a partir do seu código de identificação")
     public Response atualizarSolicitacao(@PathParam("id") Integer numero, SolicitacaoDto dto) {
         try {
             service.atualizarSoliciacao(dto);

@@ -10,9 +10,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/api")
+@Tag(name = "Endereço", description = "Controller responsável por gerenciar endereços")
 public class EnderecoController {
 
     @Inject
@@ -25,6 +28,7 @@ public class EnderecoController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
+    @Operation(summary = "Retorna o endereço do usuário", description = "Retorna o endereço do usuário a partir do token de autenticação")
     @Path("/endereco")
     public Response obterEnderecoUsuario() {
         try {
@@ -41,6 +45,7 @@ public class EnderecoController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
+    @Operation(summary = "Altera o endereço do usuário", description = "Altera o endereço do usuário a partir do token de autenticação")
     @Path("/endereco")
     public Response salvarEndereco(EnderecoDto endereco) {
         try {

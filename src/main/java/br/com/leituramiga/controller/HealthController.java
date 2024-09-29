@@ -6,10 +6,13 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @RequestScoped
 @Path("")
 @Authenticated
+@Tag(name = "Health", description = "Controller responsável por gerenciar a saúde da aplicação")
 public class HealthController {
 
 
@@ -19,6 +22,7 @@ public class HealthController {
 
     @GET
     @Path("/health")
+    @Operation(summary = "Retorna o status da aplicação", description = "Retorna o status da aplicação")
     public Response ok() {
         try {
             return Response.ok().build();

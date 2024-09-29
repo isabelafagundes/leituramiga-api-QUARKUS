@@ -128,7 +128,7 @@ public class SolicitacaoService {
 
     private Integer atualizarEnderecoSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
         Integer endereco = 0;
-        if (!enderecoDao.validarExistencia(solicitacao.getEmailUsuarioSolicitante())) {
+        if (!enderecoDao.validarExistencia(solicitacao.getEmailUsuarioSolicitante()) && solicitacao.endereco == null) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
             endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
         } else {

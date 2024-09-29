@@ -1,4 +1,5 @@
 package br.com.leituramiga.model.usuario;
+
 import br.com.leituramiga.model.endereco.Endereco;
 
 public class Usuario {
@@ -17,8 +18,11 @@ public class Usuario {
     private String imagem;
     private Integer codigoInstituicao;
     private Endereco endereco;
+    private String nomeCidade;
+    private String nomeInstituicao;
 
-    public Usuario() {}
+    public Usuario() {
+    }
 
     public static Usuario carregar(
             String nome,
@@ -34,7 +38,9 @@ public class Usuario {
             String descricao,
             String imagem,
             Integer codigoInstituicao,
-            Endereco endereco
+            Endereco endereco,
+            String nomeCidade,
+            String nomeInstituicao
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -51,6 +57,8 @@ public class Usuario {
         usuario.imagem = imagem;
         usuario.codigoInstituicao = codigoInstituicao;
         usuario.endereco = endereco;
+        usuario.nomeCidade = nomeCidade;
+        usuario.nomeInstituicao = nomeInstituicao;
 
         return usuario;
     }
@@ -125,6 +133,14 @@ public class Usuario {
 
     public Endereco getEndereco() {
         return endereco;
+    }
+
+    public String getNomeCidade() {
+        return nomeCidade;
+    }
+
+    public String getNomeInstituicao() {
+        return nomeInstituicao;
     }
 
     public String getCodigoAlteracao() {

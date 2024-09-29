@@ -48,7 +48,9 @@ public class CriacaoUsuarioDto {
                 dto.descricao,
                 dto.imagem,
                 dto.codigoInstituicao,
-                EnderecoDto.paraModel(dto.endereco)
+                EnderecoDto.paraModel(dto.endereco),
+                null,
+                null
         );
     }
 

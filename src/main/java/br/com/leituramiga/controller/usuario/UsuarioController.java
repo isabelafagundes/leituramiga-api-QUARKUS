@@ -12,9 +12,12 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @RequestScoped
 @Path("/api")
+@Tag(name = "Usuários", description = "Controller responsável por gerenciar usuários")
 public class UsuarioController {
 
     @Inject
@@ -36,6 +39,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
     @Path("/login")
+    @Operation(summary = "Realiza o login", description = "Realiza o login a partir do email e senha")
     public Response login(LoginDto dto) {
         try {
             UsuarioAutenticadoDto usuarioDto = autenticacaoService.autenticarUsuario(dto.email, dto.senha);
@@ -57,9 +61,10 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
     @Path("/usuario")
+    @Operation(summary = "Retorna o usuário", description = "Retorna o usuário a partir do token de autenticação")
     public Response obterUsuario() {
         try {
-            UsuarioDto usuarioDto = autenticacaoService.obterUsuarioDto(email);
+            UsuarioDto usuarioDto = autenticacaoService.obterUsuarioPorEmail(email);
             return Response.ok(usuarioDto).build();
         } catch (UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -74,6 +79,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
     @Path("/refresh")
+    @Operation(summary = "Atualiza os tokens", description = "Atualiza os tokens a partir do token de autenticação")
     public Response atualizarTokens() {
         try {
             UsuarioAutenticadoDto dto = autenticacaoService.atualizarTokens(email, tipoToken);
@@ -93,6 +99,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
+    @Operation(summary = "Cria um usuário", description = "Cria um usuário a partir do email e senha")
     @Path("/criar-usuario")
     public Response criarUsuario(CriacaoUsuarioDto dto) {
         try {
@@ -111,6 +118,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Authenticated
+    @Operation(summary = "Atualiza o usuário", description = "Atualiza o usuário a partir do token de autenticação")
     @Path("/salvar-usuario")
     public Response salvarUsuario(CriacaoUsuarioDto dto) {
         try {
@@ -125,6 +133,7 @@ public class UsuarioController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Authenticated
+    @Operation(summary = "Desativa o usuário", description = "Desativa o usuário a partir do token de autenticação")
     @Path("/desativar")
     public Response desativar() {
         try {
@@ -140,8 +149,9 @@ public class UsuarioController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Solicita a recuperação de senha", description = "Solicita a recuperação de senha a partir do email")
     @PermitAll
-    @Path("/verificar-codigo_seguranca")
+    @Path("/verificar-codigo-seguranca")
     public Response verificarCodigoSeguranca(CodigoDto dto) {
         try {
             autenticacaoService.verificarCodigo(dto.email, dto.codigo);

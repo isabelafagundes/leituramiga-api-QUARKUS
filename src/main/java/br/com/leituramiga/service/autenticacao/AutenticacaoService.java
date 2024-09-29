@@ -59,7 +59,7 @@ public class AutenticacaoService {
     }
 
 
-    public UsuarioDto obterUsuarioDto(String email) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, ClassNotFoundException {
+    public UsuarioDto obterUsuarioPorEmail(String email) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, ClassNotFoundException {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do usuário de email " + md5Email);
@@ -67,7 +67,7 @@ public class AutenticacaoService {
             Usuario usuario = obterUsuario(email);
             validarUsuarioAtivo(usuario);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
-            return UsuarioDto.deModel(usuario.getNome(), usuario.getUsername(), usuario.getEmail(), usuario.getTipoUsuario());
+            return UsuarioDto.deModel(usuario);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do usuário de email " + md5Email, e);
             throw e;
