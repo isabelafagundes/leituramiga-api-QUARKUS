@@ -118,7 +118,7 @@ public class AutenticacaoService {
             validarUsuario(usuarioDto);
             dao.salvarUsuario(usuarioDto, conexao);
             if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email);
-            String codigo = salvarCodigo(usuarioDto.email);
+            String codigo = salvarCodigo(usuarioDto.email, conexao);
             emailService.enviarEmailCodigoVerificacao(usuarioDto.email, codigo, usuarioDto.nome);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
             conexao.commit();
@@ -217,12 +217,11 @@ public class AutenticacaoService {
         return BCrypt.hashpw(senha, BCrypt.gensalt());
     }
 
-    public String salvarCodigo(String email) throws SQLException, UsuarioNaoExistente {
+    public String salvarCodigo(String email, Connection conexao) throws SQLException {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o código de email " + md5Email);
-            validarEmail(email);
-            String codigo = dao.salvarCodigoAlteracao(email);
+            String codigo = dao.salvarCodigoAlteracao(email, conexao);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o código de email " + md5Email);
             return codigo;
         } catch (Exception e) {
@@ -237,9 +236,11 @@ public class AutenticacaoService {
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
             validarEmail(email);
-            boolean codigoValido = dao.verificarCodigoAlteracao(email, codigo);
+            boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo);
             if (!codigoValido) throw new CodigoIncorreto();
             dao.ativarUsuario(email);
+            Usuario usuario = dao.obterUsuario(email);
+            emailService.enviarEmailBoasVindas(email, usuario.getNome());
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação do código de email " + md5Email);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação do código de email " + md5Email, e);

@@ -16,7 +16,7 @@ public class EmailService {
 
     public void enviarEmailCodigoVerificacao(String destinatario, String codigo, String nome) {
         String assunto = "Código de verificação do LeiturAmiga";
-        String html = EmailStyles.MODELO_CODIGO_SEGURANCA.replace("{{codigo}}", codigo).replace("{{nomeUsuario}}", nome);
+        String html = EmailStyles.MODELO_CODIGO_SEGURANCA.replace("{{codigoSeguranca}}", codigo).replace("{{nomeUsuario}}", nome);
         enviarEmailSimples(destinatario, assunto, html);
     }
 

@@ -34,6 +34,7 @@ public class EmailStyles {
                               }
                               .content {
                                   padding: 20px;
+                                  background: #ffffff;
                               }
                               .footer {
                                   background-color: #f1f1f1;
@@ -98,6 +99,7 @@ public class EmailStyles {
                               }
                               .content {
                                   padding: 20px;
+                                  background: #ffffff;
                               }
                               .footer {
                                   background-color: #f1f1f1;

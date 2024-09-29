@@ -32,7 +32,7 @@ public class UsuarioQueries {
             "UPDATE usuario SET tentativas = ? WHERE email_usuario = ?;";
 
     public static final String SALVAR_CODIGO_ALTERACAO =
-            "UPDATE usuario SET codigo_alteracao = ? WHERE email_usuario = '';";
+            "UPDATE usuario SET codigo_alteracao = ? WHERE email_usuario = ?;";
 
     public static final String BLOQUEAR_USUARIO =
             "UPDATE usuario SET bloqueado = ? WHERE email_usuario = ?;";

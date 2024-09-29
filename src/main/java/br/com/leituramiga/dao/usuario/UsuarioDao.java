@@ -1,6 +1,7 @@
 package br.com.leituramiga.dao.usuario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
+import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.service.autenticacao.HashService;
@@ -73,7 +74,6 @@ public class UsuarioDao {
     }
 
     public Boolean validarExistencia(String email, String username) throws SQLException {
-        String md5Login = HashService.obterMd5Email(email);
         boolean existenciaEmail = validarExistenciaEmail(email);
         if (existenciaEmail) return existenciaEmail;
         if (username == null) return existenciaEmail;
@@ -90,9 +90,12 @@ public class UsuarioDao {
         pstmt.setString(1, email);
         pstmt.setString(2, email);
         ResultSet resultado = pstmt.executeQuery();
-        boolean existencia = resultado.next() && resultado.getBoolean(1);
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do email " + md5Email);
-        return existencia;
+        if (resultado.next()) {
+            boolean existencia = resultado.getInt(1) > 0;
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do email " + md5Email);
+            return existencia;
+        }
+        return false;
     }
 
     private boolean validarExistenciaUsername(String username) throws SQLException {
@@ -119,33 +122,32 @@ public class UsuarioDao {
         logService.sucesso(UsuarioDao.class.getName(), "Sucesso na atualização da senha do usuário de email " + md5Login);
     }
 
-    public String salvarCodigoAlteracao(String email) throws SQLException {
+    public String salvarCodigoAlteracao(String email, Connection conexao) throws SQLException {
         String md5Login = HashService.obterMd5Email(email);
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a geração do código de alteração da senha do usuário de email " + md5Login);
         String codigo = CodigoUtil.obterCodigo();
-        try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_CODIGO_ALTERACAO);
-            pstmt.setString(1, codigo);
-            pstmt.setString(2, email);
-            pstmt.executeUpdate();
-            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na geração do código da alteração da senha do usuário de email " + md5Login);
-        }
+        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_CODIGO_ALTERACAO);
+        pstmt.setString(1, CodigoUtil.obterCodigoCriptografado(codigo));
+        pstmt.setString(2, email);
+        pstmt.executeUpdate();
+        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na geração do código da alteração da senha do usuário de email " + md5Login);
         return codigo;
     }
 
-    public Boolean verificarCodigoAlteracao(String email, String codigo) throws SQLException {
+    public Boolean verificarCodigoSeguranca(String email, String codigo) throws SQLException, UsuarioNaoExistente {
         String md5Login = HashService.obterMd5Email(email);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de alteração da senha do usuário de email " + md5Login);
+        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de segurança do usuário de email " + md5Login);
 
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_EMAIL_USUARIO);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
             pstmt.setString(1, email);
             pstmt.setString(2, email);
             ResultSet resultado = pstmt.executeQuery();
             Usuario usuario = null;
             if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
+            if (usuario == null) throw new UsuarioNaoExistente();
             Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
-            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de alteração da senha do usuário de email " + md5Login);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de segurança do usuário de email " + md5Login);
             return codigoCorreto;
         }
     }

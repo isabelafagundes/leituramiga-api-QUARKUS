@@ -1,10 +1,7 @@
 package br.com.leituramiga.controller.usuario;
 
+import br.com.leituramiga.dto.usuario.*;
 import br.com.leituramiga.model.exception.*;
-import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
-import br.com.leituramiga.dto.usuario.LoginDto;
-import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
-import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
@@ -145,9 +142,9 @@ public class UsuarioController {
     @Consumes(MediaType.APPLICATION_JSON)
     @PermitAll
     @Path("/verificar-codigo_seguranca")
-    public Response verificarCodigoSeguranca(@QueryParam("codigo") String codigo, @QueryParam("email") String email) {
+    public Response verificarCodigoSeguranca(CodigoDto dto) {
         try {
-            autenticacaoService.verificarCodigo(codigo, email);
+            autenticacaoService.verificarCodigo(dto.email, dto.codigo);
             return Response.ok().build();
         } catch (CodigoIncorreto erro) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

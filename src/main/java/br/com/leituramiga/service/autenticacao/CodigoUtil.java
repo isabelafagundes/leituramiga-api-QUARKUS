@@ -15,7 +15,11 @@ public class CodigoUtil {
             builder.append(digito);
         }
 
-        return BCrypt.hashpw(builder.toString(), BCrypt.gensalt());
+        return builder.toString();
+    }
+
+    public static String obterCodigoCriptografado(String codigo) {
+        return BCrypt.hashpw(codigo, BCrypt.gensalt());
     }
 
     public static boolean verificarCodigo(String tokenSalvo, String tokenEnviado) {
