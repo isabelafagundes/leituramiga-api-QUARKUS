@@ -1,4 +1,4 @@
-package br.com.isabela.model.exception;
+package br.com.leituramiga.model.exception;
 
 public class CategoriaNaoExistente extends Throwable {
     @Override

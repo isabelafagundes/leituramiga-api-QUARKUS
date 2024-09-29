@@ -1,12 +1,12 @@
-package br.com.isabela.service.categoria;
+package br.com.leituramiga.service.categoria;
 
-import br.com.isabela.dao.FabricaDeConexoes;
-import br.com.isabela.dao.categoria.CategoriaDao;
-import br.com.isabela.dto.categoria.CategoriaDto;
-import br.com.isabela.model.categoria.Categoria;
-import br.com.isabela.model.exception.CategoriaNaoExistente;
-import br.com.isabela.service.autenticacao.HashService;
-import br.com.isabela.service.autenticacao.LogService;
+import br.com.leituramiga.dao.FabricaDeConexoes;
+import br.com.leituramiga.dao.categoria.CategoriaDao;
+import br.com.leituramiga.dto.categoria.CategoriaDto;
+import br.com.leituramiga.model.categoria.Categoria;
+import br.com.leituramiga.model.exception.CategoriaNaoExistente;
+import br.com.leituramiga.service.autenticacao.HashService;
+import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.sql.Connection;
