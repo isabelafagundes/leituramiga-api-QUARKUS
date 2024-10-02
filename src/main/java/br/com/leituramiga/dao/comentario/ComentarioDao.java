@@ -43,23 +43,24 @@ public class ComentarioDao {
         }
     }
 
-    public Integer salvarComentario(ComentarioDto comentario, Connection conexao) throws SQLException {
-        logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do comentario");
-        PreparedStatement pstms = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
-        definirParametrosDeSalvamento(pstms, comentario);
+    public void salvarComentario(ComentarioDto comentario) throws SQLException {
+        logService.iniciar(ComentarioDao.class.getName(), "Iniciando salvamento de comentário");
 
-       //todo @Kauã: remover o retorno "Integer", usar apenas quando precisamos retornar o ID gerado pelo banco
-       //Nesse caso não precisamos, pode chamar apenas o método executeUpdate() e não retornar nada
-        int linhasAfetadas = pstms.executeUpdate();
-        if (linhasAfetadas > 0) {
-            try (ResultSet resultado = pstms.getGeneratedKeys()) {
-                if (resultado.next()) {
-                    Integer idGerado = resultado.getInt(1);
-                    return idGerado;
-                }
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstms = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
+            definirParametrosDeSalvamento(pstms, comentario);
+
+            int linhasAfetadas = pstms.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                logService.sucesso(ComentarioDao.class.getName(), "Salvamento de comentário finalizado com sucesso");
+            } else {
+                logService.erro(ComentarioDao.class.getName(), "Nenhuma linha foi afetada ao salvar um comentário", null); //Passei o null como erro
             }
+        } catch (SQLException e) {
+            logService.erro(ComentarioDao.class.getName(), "Erro ao salvar comentário", e);
+            throw e;
         }
-        return null;
     }
 
 
@@ -83,12 +84,7 @@ public class ComentarioDao {
     }
 
     public Comentario obterComentarioDeResult(ResultSet resultado) throws SQLException {
-        return Comentario.carregar(
-                resultado.getInt("id"),
-                resultado.getString("descricao"),
-                resultado.getString("data_criacao"),
-                resultado.getString("hora_criacao")
-        );
+        return Comentario.carregar(resultado.getInt("id"), resultado.getString("descricao"), resultado.getString("data_criacao"), resultado.getString("hora_criacao"));
     }
 
 

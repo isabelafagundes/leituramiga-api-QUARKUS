@@ -1,7 +1,6 @@
 package br.com.leituramiga.dao.categoria;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
-import br.com.leituramiga.dao.comentario.ComentarioDao;
 import br.com.leituramiga.dto.categoria.CategoriaDto;
 import br.com.leituramiga.model.categoria.Categoria;
 import br.com.leituramiga.service.autenticacao.LogService;
@@ -49,20 +48,24 @@ public class CategoriaDao {
         }
     }
 
-    public Integer salvarCategoria(CategoriaDto categoria, Connection conexao) throws SQLException {
-        logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do categoria");
-        PreparedStatement pstms = conexao.prepareStatement(CategoriaQueries.SALVAR_CATEGORIA, PreparedStatement.RETURN_GENERATED_KEYS);
-        definirParametrosDeSalvamento(pstms, categoria);
-        int linhasAfetadas = pstms.executeUpdate();
-        if (linhasAfetadas > 0) {
-            try (ResultSet resultado = pstms.getGeneratedKeys()) {
-                if (resultado.next()) {
-                    Integer idGerado = resultado.getInt(1);
-                    return idGerado;
-                }
+    public void salvarCategoria(CategoriaDto categoria) throws SQLException {
+        logService.iniciar(CategoriaDao.class.getName(), "Iniciando salvamento de comentário");
+
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstms = conexao.prepareStatement(CategoriaQueries.SALVAR_CATEGORIA, PreparedStatement.RETURN_GENERATED_KEYS);
+            definirParametrosDeSalvamento(pstms, categoria);
+
+            int linhasAfetadas = pstms.executeUpdate();
+
+            if (linhasAfetadas > 0) {
+                logService.sucesso(CategoriaDao.class.getName(), "Salvamento de categoria finalizada com sucesso");
+            } else {
+                logService.erro(CategoriaDao.class.getName(), "Nenhuma linha foi afetada ao salvar a categoria ", null);  //Passei o null como erro
             }
+        } catch (SQLException e) {
+            logService.erro(CategoriaDao.class.getName(), "Erro ao salvar a categoria", e);
+            throw e;
         }
-        return null;
     }
 
     public void deletarCategoria(int numeroCategoria) throws SQLException {
@@ -78,7 +81,7 @@ public class CategoriaDao {
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, CategoriaDto categoria) throws SQLException {
         pstmt.setInt(1, categoria.getId());
-        pstmt.setString(3, categoria.getDescricao());
+        pstmt.setString(2, categoria.getDescricao());
 
     }
 

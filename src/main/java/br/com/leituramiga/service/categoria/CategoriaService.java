@@ -9,6 +9,7 @@ import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -25,26 +26,24 @@ public class CategoriaService {
     FabricaDeConexoes bd;
 
     public CategoriaDto obterValidarCategoria(String validarCategoria) throws SQLException, CategoriaNaoExistente {
-        String md5Categoria= HashService.ObterMd5Categoria(validarCategoria);//todo @Kauã: remover
-        if (!categoriaDao.validarExistencia(validarCategoria)) {//todo: colocar este if{} dentro do try{}
-            throw new CategoriaNaoExistente();
-        }
         try {
+            if (!categoriaDao.validarExistencia(validarCategoria)) {
+                throw new CategoriaNaoExistente();
+            }
             logService.iniciar(CategoriaService.class.getName(), "Iniciando busca de validação da categoria" + validarCategoria);
             Categoria categoria = categoriaDao.obterCategoria(validarCategoria);
             logService.sucesso(CategoriaService.class.getName(), "Busca de categoria concluida" + validarCategoria);
             return CategoriaDto.deModel(categoria);
         } catch (Exception e) {
             logService.erro(CategoriaService.class.getName(), "Ocorreu um erro na busca de categoria" + validarCategoria, e);
-                    throw e;
+            throw e;
         }
     }
 
     public void salvarCategoria(CategoriaDto categoria) throws SQLException {
-        //todo @Kauã: remover Connection conexao = bd.obterConexao(); -> usar apenas no dao ou em casos muito específicos no service
-        try (Connection conexao = bd.obterConexao()) {
+        try {
             logService.iniciar(CategoriaService.class.getName(), "Iniciando salvamento de comentário" + categoria.descricao);
-            categoriaDao.salvarCategoria(categoria, conexao);
+            categoriaDao.salvarCategoria(categoria);
             logService.sucesso(CategoriaService.class.getName(), "Salvamento de comentário finalizada com sucesso" + categoria.descricao);
         } catch (Exception e) {
             logService.erro(CategoriaService.class.getName(), "Ocorreu um erro no salvamento do comentário" + categoria.descricao, e);
@@ -57,12 +56,11 @@ public class CategoriaService {
             logService.iniciar(CategoriaService.class.getName(), "Iniciando exclusão de categoria" + listaCategoria);
             categoriaDao.deletarCategoria(listaCategoria);
             logService.sucesso(CategoriaService.class.getName(), "Exclusão de categoria na lista concluída!" + listaCategoria);
-        } catch (Exception e){
+        } catch (Exception e) {
             logService.erro(CategoriaService.class.getName(), "Ocorreu um erro na exclusão dessa categoria na lista" + listaCategoria, e);
             throw e;
         }
     }
-
 
 
 }
