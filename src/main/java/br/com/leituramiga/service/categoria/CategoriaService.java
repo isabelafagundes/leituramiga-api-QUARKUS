@@ -25,8 +25,8 @@ public class CategoriaService {
     FabricaDeConexoes bd;
 
     public CategoriaDto obterValidarCategoria(String validarCategoria) throws SQLException, CategoriaNaoExistente {
-        String md5Categoria= HashService.ObterMd5Categoria(validarCategoria);
-        if (!categoriaDao.validarExistencia(validarCategoria)) {
+        String md5Categoria= HashService.ObterMd5Categoria(validarCategoria);//todo @Kauã: remover
+        if (!categoriaDao.validarExistencia(validarCategoria)) {//todo: colocar este if{} dentro do try{}
             throw new CategoriaNaoExistente();
         }
         try {
@@ -41,6 +41,7 @@ public class CategoriaService {
     }
 
     public void salvarCategoria(CategoriaDto categoria) throws SQLException {
+        //todo @Kauã: remover Connection conexao = bd.obterConexao(); -> usar apenas no dao ou em casos muito específicos no service
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(CategoriaService.class.getName(), "Iniciando salvamento de comentário" + categoria.descricao);
             categoriaDao.salvarCategoria(categoria, conexao);

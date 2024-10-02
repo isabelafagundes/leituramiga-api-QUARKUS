@@ -48,6 +48,8 @@ public class ComentarioDao {
         PreparedStatement pstms = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
         definirParametrosDeSalvamento(pstms, comentario);
 
+       //todo @Kauã: remover o retorno "Integer", usar apenas quando precisamos retornar o ID gerado pelo banco
+       //Nesse caso não precisamos, pode chamar apenas o método executeUpdate() e não retornar nada
         int linhasAfetadas = pstms.executeUpdate();
         if (linhasAfetadas > 0) {
             try (ResultSet resultado = pstms.getGeneratedKeys()) {

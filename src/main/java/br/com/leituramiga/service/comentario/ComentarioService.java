@@ -27,7 +27,7 @@ public class ComentarioService {
     FabricaDeConexoes bd;
 
     public ComentarioDto obterComentarioPorUsuario(String emailComentario) throws SQLException, ComentarioNaoExistente {
-        String md5Comentario = HashService.ObterMd5Comentario(emailComentario);
+        String md5Comentario = HashService.ObterMd5Comentario(emailComentario);//todo @Kauã: remover md5Comentario
         try {
             logService.iniciar(ComentarioService.class.getName(), "Iniciando busca de validação do comentário por email do destinatario" + emailComentario);
 
@@ -45,6 +45,7 @@ public class ComentarioService {
     }
 
     public void salvarComentario(ComentarioDto comentario) throws SQLException, ComentarioNaoExistente {
+        //todo @Kauã: remover Connection conexao = bd.obterConexao(); -> usar apenas no dao ou em casos muito específicos no service
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(ComentarioService.class.getName(), "Iniciando salvamento de comentário" + comentario.emailUsuarioPerfil);
             comentarioDao.salvarComentario(comentario, conexao);
