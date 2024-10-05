@@ -76,27 +76,37 @@ public class LivroQueries {
                     "       livro.nome,\n" +
                     "       livro.estado_fisico,\n" +
                     "       livro.email_usuario,\n" +
-                    "       usuario.nome,\n" +
-                    "       instituicao_ensino.nome,\n" +
-                    "       cidade.nome,\n" +
-                    "       categoria.nome\n" +
+                    "       usuario.nome as nome_usuario,\n" +
+                    "       instituicao.nome as nome_instituicao,\n" +
+                    "       cidade.nome as nome_cidade,\n" +
+                    "       cidade.codigo_cidade,\n" +
+                    "       livro.autor,\n" +
+                    "       livro.descricao,\n" +
+                    "       null as ultima_solicitacao,\n" +
+                    "       null as codigo_ultima_solicitacao,\n" +
+                    "       livro.descricao,\n" +
+                    "       categoria.codigo_categoria,\n" +
+                    "       livro.codigo_status_livro,\n" +
+                    "       livro.descricao,\n" +
+                    "       categoria.descricao as nome_categoria\n" +
                     "FROM livro\n" +
-                    "         INNER JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
-                    "         INNER JOIN instituicao_ensino ON instituicao_ensino.codigo_instituicao = usuario.codigo_instituicao\n" +
-                    "         INNER JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
-                    "         INNER JOIN cidade ON cidade.codigo_cidade = livro.codigo_cidade\n" +
-                    "WHERE FILTROS_LIVRO " +
-                    "OFFSET ? LIMIT ?;";
+                    "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
+                    "         LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao\n" +
+                    "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
+                    "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario\n" +
+                    "         LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
+                    "FILTROS_LIVRO " +
+                    "LIMIT ? OFFSET ?;";
 
     public static String FILTROS_LIVRO =
-            "WHERE livro.codigo_status_livro = 1 AND (livro.nome LIKE '%?%'\n" +
-                    "OR livro.descricao LIKE '%?%'\n" +
-                    "OR categoria.descricao LIKE '%?%'\n" +
-                    "OR instituicao_ensino.nome LIKE '%?%'\n" +
-                    "OR usuario.nome LIKE '%?%'\n" +
-                    "OR instituicao_ensino.numero = ?\n" +
-                    "OR categoria.numero = ?\n" +
-                    "OR livro.codigo_cidade = ?);";
+            "WHERE livro.codigo_status_livro = 1 AND (livro.nome LIKE PESQUISA\n" +
+                    "OR livro.descricao LIKE PESQUISA\n" +
+                    "OR categoria.descricao LIKE PESQUISA\n" +
+                    "OR instituicao.nome LIKE PESQUISA\n" +
+                    "OR usuario.nome LIKE PESQUISA\n" +
+                    "OR instituicao.codigo_instituicao = ?\n" +
+                    "OR categoria.codigo_categoria = ?\n" +
+                    "OR cidade.codigo_cidade = ?)";
 
     public static String SALVAR_IMAGEM = "INSERT INTO imagem_livro (imagem, codigo_livro) " +
             "VALUES (?, ?)";

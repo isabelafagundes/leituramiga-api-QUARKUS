@@ -1,20 +1,18 @@
 package br.com.leituramiga.controller.instituicao;
 
 import br.com.leituramiga.dto.Instituicao.ArquivoInstituicaoDto;
+import br.com.leituramiga.dto.Instituicao.InstituicaoDto;
 import br.com.leituramiga.service.instituicao.InstituicaoService;
-import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.List;
 
 @RequestScoped
 @Path("/api")
@@ -24,9 +22,17 @@ public class InstituicaoController {
     @Inject
     InstituicaoService instituicaoService;
 
-    @Inject
-    @Claim("email")
-    String email;
+    @GET
+    @PermitAll
+    @Path("/instituicao")
+    public Response obterInstituicoesPorEstado(@QueryParam("pesquisa") String pesquisa) {
+        try {
+            List<InstituicaoDto> instituicoes = instituicaoService.obterInstituicoes(pesquisa);
+            return Response.ok(instituicoes).build();
+        } catch (Exception e) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @POST
     @RolesAllowed("ADMINISTRADOR")

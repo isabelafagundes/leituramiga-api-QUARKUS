@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,26 +25,31 @@ public class InstituicaoDao {
     LogService logService;
 
     public Instituicao obterInstituicaoPorEstado(String uf) throws SQLException {
-        logService.iniciar(InstituicaoDao.class.getName(), "Iniciando a busca de instituição por estado");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(InstituicaoQueries.OBTER_INSTITUICAO_POR_ESTADO);
-        pstmt.setString(1, uf);
-        ResultSet resultado = pstmt.executeQuery();
-        Instituicao instituicao = new Instituicao();
-        if (resultado.next()) instituicao = obterInstituicaoDeResult(resultado);
-        logService.sucesso(InstituicaoDao.class.getName(), "Busca de instituições por estado finalizada");
-        return instituicao;
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(InstituicaoDao.class.getName(), "Iniciando a busca de instituição por estado");
+            PreparedStatement pstmt = conexao.prepareStatement(InstituicaoQueries.OBTER_INSTITUICAO_POR_ESTADO);
+            pstmt.setString(1, uf);
+            ResultSet resultado = pstmt.executeQuery();
+            Instituicao instituicao = new Instituicao();
+            if (resultado.next()) instituicao = obterInstituicaoDeResult(resultado);
+            logService.sucesso(InstituicaoDao.class.getName(), "Busca de instituições por estado finalizada");
+            return instituicao;
+        }
     }
 
-    public Instituicao obterTodasInstituicoes() throws SQLException {
+    public List<Instituicao> obterTodasInstituicoes(String pesquisa) throws SQLException {
         logService.iniciar(InstituicaoDao.class.getName(), "Iniciando busca de todas instituicoes");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(InstituicaoQueries.OBTER_TODAS_INSTITUICOES);
-        ResultSet resultado = pstmt.executeQuery();
-        Instituicao instituicao = new Instituicao();
-        if (resultado.next()) instituicao = obterInstituicaoDeResult(resultado);
-        logService.sucesso(InstituicaoDao.class.getName(), "Busca de todas instituições finalizada");
-        return instituicao;
+        try (Connection conexao = bd.obterConexao()) {
+            String query = pesquisa == null ? InstituicaoQueries.OBTER_TODAS_INSTITUICOES : InstituicaoQueries.OBTER_TODAS_INSTITUICOES_COM_PESQUISA;
+            if (pesquisa != null) query = query.replaceAll("PESQUISA", "'%" + pesquisa.toLowerCase() + "%'");
+            System.out.println(query);
+            PreparedStatement pstmt = conexao.prepareStatement(query);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Instituicao> instituicoes = new ArrayList<>();
+            while (resultado.next()) instituicoes.add(obterInstituicaoDeResult(resultado));
+            logService.sucesso(InstituicaoDao.class.getName(), "Busca de todas instituições finalizada");
+            return instituicoes;
+        }
     }
 
     public boolean validarExistencia(String instituicao) throws SQLException {
@@ -99,7 +105,7 @@ public class InstituicaoDao {
         }
         queryInsert.deleteCharAt(queryInsert.length() - 1);
         System.out.println(queryInsert);
-//        executarUpdate(String.valueOf(queryInsert));
+        executarUpdate(String.valueOf(queryInsert));
     }
 
     private void executarUpdate(String query) throws SQLException {
@@ -116,11 +122,7 @@ public class InstituicaoDao {
     }
 
     public Instituicao obterInstituicaoDeResult(ResultSet resultado) throws SQLException {
-        return Instituicao.carregar(
-                resultado.getInt("id"),
-                resultado.getString("nome"),
-                resultado.getString("sigla")
-        );
+        return Instituicao.carregar(resultado.getInt("codigo_instituicao"), resultado.getString("nome"), resultado.getString("sigla"));
     }
 
 

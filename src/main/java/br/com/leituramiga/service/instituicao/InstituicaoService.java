@@ -47,12 +47,12 @@ public class InstituicaoService {
         }
     }
 
-    public InstituicaoDto obterInsituicoes() throws SQLException {
+    public List<InstituicaoDto> obterInstituicoes(String pesquisa) throws SQLException {
         logService.iniciar(InstituicaoService.class.getName(), "Iniciando a busca de instuições");
         try {
-            Instituicao instituicao = instituicaoDao.obterTodasInstituicoes();
+            List<Instituicao> instituicoes = instituicaoDao.obterTodasInstituicoes(pesquisa);
             logService.sucesso(InstituicaoService.class.getName(), "Busca de todas instituições finalizada");
-            return InstituicaoDto.deModel(instituicao);
+            return instituicoes.stream().map(InstituicaoDto::deModel).toList();
         } catch (Exception e) {
             logService.erro(InstituicaoService.class.getName(), "Ocorreu um erro na busca das instituições", e);
             throw e;
@@ -86,7 +86,7 @@ public class InstituicaoService {
         try {
             logService.iniciar(InstituicaoService.class.getName(), "Iniciando salvamento de instituições por XLSX");
             Map<String, List<String>> instituicoes = leituraXlsxService.obterDadosPlanilha(inputStream);
-            logService.iniciar(InstituicaoService.class.getName(),"Iniciando salvamento de instituições por XLSX");
+            logService.iniciar(InstituicaoService.class.getName(), "Iniciando salvamento de instituições por XLSX");
             instituicaoDao.salvarInstituicoesDeMapa(instituicoes);
             logService.sucesso(InstituicaoService.class.getName(), "Salvamento de instituições por XLSX finalizado com sucesso");
         } catch (Exception erro) {

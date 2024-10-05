@@ -112,20 +112,19 @@ public class LivroDao {
         return qtd > 0;
     }
 
-    public List<Livro> obterLivrosPaginados(int pagina, int tamanhoPagina, String pesquisa, int numeroCategoria, int numeroInstituicao, int numeroCidade) throws SQLException {
+    public List<Livro> obterLivrosPaginados(Integer pagina, Integer tamanhoPagina, String pesquisa, Integer numeroCategoria, Integer numeroInstituicao, Integer numeroCidade) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livros paginados");
         Connection conexao = bd.obterConexao();
         String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", LivroQueries.FILTROS_LIVRO);
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVROS_PAGINADOS);
-        pstmt.setString(1, pesquisa);
-        pstmt.setString(2, pesquisa);
-        pstmt.setString(3, pesquisa);
-        pstmt.setString(4, pesquisa);
-        pstmt.setInt(5, numeroInstituicao);
-        pstmt.setInt(6, numeroCategoria);
-        pstmt.setInt(7, numeroCidade);
-        pstmt.setInt(8, pagina * tamanhoPagina);
-        pstmt.setInt(9, tamanhoPagina);
+        String pesquisaQuery = pesquisa == null ? "" : pesquisa;
+        query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
+        PreparedStatement pstmt = conexao.prepareStatement(query);
+        System.out.println(query);
+        pstmt.setInt(1, (numeroInstituicao != null) ? numeroInstituicao : 0);
+        pstmt.setInt(2, (numeroCategoria != null) ? numeroCategoria : 0);
+        pstmt.setInt(3, (numeroCidade != null) ? numeroCidade : 0);
+        pstmt.setInt(4, tamanhoPagina);
+        pstmt.setInt(5, pagina * tamanhoPagina);
         ResultSet resultado = pstmt.executeQuery();
         List<Livro> livros = new ArrayList<>();
         while (resultado.next()) livros.add(obterLivroDeResult(resultado));
