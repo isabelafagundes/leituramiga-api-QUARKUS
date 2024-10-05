@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class InstituicaoDao {
@@ -85,6 +87,25 @@ public class InstituicaoDao {
             pstmt.setInt(1, numeroInstituicao);
             pstmt.executeUpdate();
             logService.sucesso(InstituicaoDao.class.getName(), "Exclusao de instituição concluido" + numeroInstituicao);
+        }
+    }
+
+    public void salvarInstituicoesDeMapa(Map<String, List<String>> instituicoes) throws SQLException {
+        StringBuilder queryInsert = new StringBuilder("INSERT INTO instituicao (nome, sigla) VALUES ");
+        for (Map.Entry<String, List<String>> entry : instituicoes.entrySet()) {
+            List<String> value = entry.getValue();
+            String sigla = value.get(0).toLowerCase().contains("fatec") ? "FATEC" : "ETEC";
+            queryInsert.append("('").append(value.get(0)).append("', '" + sigla + "'),");
+        }
+        queryInsert.deleteCharAt(queryInsert.length() - 1);
+        System.out.println(queryInsert);
+//        executarUpdate(String.valueOf(queryInsert));
+    }
+
+    private void executarUpdate(String query) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(query);
+            pstmt.executeUpdate();
         }
     }
 

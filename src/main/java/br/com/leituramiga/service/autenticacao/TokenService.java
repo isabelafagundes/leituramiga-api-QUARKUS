@@ -19,9 +19,6 @@ public class TokenService {
     String issuer;
 
     @Inject
-    JWTParser parser;
-
-    @Inject
     LogService logService;
 
     public UsuarioAutenticadoDto obterUsuarioAutenticado(Usuario usuario) {
@@ -41,9 +38,7 @@ public class TokenService {
     public UsuarioAutenticadoDto atualizarToken(Usuario usuario, String tipoToken) throws RefreshTokenInvalido {
         String md5Email = HashService.obterMd5Email(usuario.getEmail());
         try {
-            if (!"refresh".equals(tipoToken)) {
-                throw new RefreshTokenInvalido();
-            }
+            if (!"refresh".equals(tipoToken)) throw new RefreshTokenInvalido();
             logService.iniciar("TokenSmallryeService", "Iniciando a geração do token de acesso do usuário de email " + md5Email);
             String accessToken = gerarToken(usuario);
             String refreshToken = gerarRefreshToken(usuario);

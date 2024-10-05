@@ -5,6 +5,7 @@ import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.instituicao.InstituicaoDao;
 import br.com.leituramiga.dto.Instituicao.InstituicaoDto;
 import br.com.leituramiga.model.instituicao.Instituicao;
+import br.com.leituramiga.service.xlsx.LeituraXlsxService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.categoria.CategoriaService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -12,7 +13,11 @@ import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class InstituicaoService {
@@ -20,6 +25,9 @@ public class InstituicaoService {
     private static final Logger log = LoggerFactory.getLogger(InstituicaoService.class);
     @Inject
     LogService logService;
+
+    @Inject
+    LeituraXlsxService leituraXlsxService;
 
     @Inject
     InstituicaoDao instituicaoDao;
@@ -70,6 +78,20 @@ public class InstituicaoService {
         } catch (Exception e) {
             logService.erro(CategoriaService.class.getName(), "Ocorreu um erro na exclusão dessa instituição " + deletarInstituicao, e);
             throw e;
+        }
+    }
+
+
+    public void salvarInstituicoesDeXlsx(InputStream inputStream) throws SQLException, IOException {
+        try {
+            logService.iniciar(InstituicaoService.class.getName(), "Iniciando salvamento de instituições por XLSX");
+            Map<String, List<String>> instituicoes = leituraXlsxService.obterDadosPlanilha(inputStream);
+            logService.iniciar(InstituicaoService.class.getName(),"Iniciando salvamento de instituições por XLSX");
+            instituicaoDao.salvarInstituicoesDeMapa(instituicoes);
+            logService.sucesso(InstituicaoService.class.getName(), "Salvamento de instituições por XLSX finalizado com sucesso");
+        } catch (Exception erro) {
+            logService.erro(InstituicaoService.class.getName(), "Ocorreu um erro no salvamento de instituições por XLSX", erro);
+            throw erro;
         }
     }
 

@@ -12,14 +12,22 @@ public class UsuarioQueries {
                     "cidade.nome as nome_cidade, " +
                     "instituicao.nome as nome_instituicao, " +
                     "usuario.codigo_instituicao, " +
+                    "usuario.senha, " +
+                    "null as tentativas, " +
+                    "null as bloqueado, " +
+                    "null as codigo_alteracao, " +
+                    "usuario.tipo_usuario, " +
+                    "usuario.celular, " +
+                    "usuario.descricao, " +
+                    "usuario.imagem, " +
                     "usuario.ativo " +
-                    "FROM usuario" +
-                    "INNER JOIN endereco ON usuario.email_usuario = endereco.email_usuario" +
-                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade" +
-                    "INNER JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao" +
-                    "WHERE (usuario.ativo = 1 AND usuario.bloqueado = 0)" +
-                    "AND email_usuario = ? " +
-                    "OR username = ?;";
+                    "FROM usuario " +
+                    "INNER JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
+                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "INNER JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
+                    "WHERE (usuario.ativo = 1 AND usuario.bloqueado = 0) " +
+                    "AND usuario.email_usuario = ? " +
+                    "OR usuario.username = ?; ";
 
     public static final String VERIFICAR_EXISTENCIA =
             "SELECT COUNT(usuario.email_usuario) FROM usuario "

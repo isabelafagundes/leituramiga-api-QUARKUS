@@ -207,6 +207,7 @@ public class AutenticacaoService {
 
     public boolean verificarSenha(String senhaEnviada, String senhaSalva) {
         logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação das senhas");
+
         boolean senhaValida = BCrypt.checkpw(senhaEnviada, senhaSalva);
         logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação das senhas");
         return senhaValida;
