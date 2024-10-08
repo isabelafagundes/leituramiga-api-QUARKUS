@@ -78,15 +78,17 @@ public class EnderecoDao {
         }
     }
 
-    public List<Cidade> obterCidades(String uf) throws SQLException {
-        logService.iniciar(EnderecoDao.class.getName(),"Iniciando a obtenção das cidades da UF " + uf);
+    public List<Cidade> obterCidades(String uf, String pesquisa) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando a obtenção das cidades da UF " + uf);
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.OBTER_CIDADES_POR_UF);
+            String query = EnderecoQueries.OBTER_CIDADES_POR_UF;
+            if (pesquisa != null) query = query.replaceAll("PESQUISA", "'%" + pesquisa + "%'");
+            PreparedStatement pstmt = conexao.prepareStatement(query);
             pstmt.setString(1, uf);
             ResultSet resultado = pstmt.executeQuery();
             List<Cidade> cidades = new ArrayList<>();
             while (resultado.next()) cidades.add(obterCidadeDeResult(resultado));
-            logService.sucesso(EnderecoDao.class.getName(),"Sucesso na obtenção das cidades da UF " + uf);
+            logService.sucesso(EnderecoDao.class.getName(), "Sucesso na obtenção das cidades da UF " + uf);
             return cidades;
         }
     }

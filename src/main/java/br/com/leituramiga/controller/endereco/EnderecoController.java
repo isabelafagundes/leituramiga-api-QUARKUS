@@ -1,9 +1,11 @@
 package br.com.leituramiga.controller.endereco;
 
+import br.com.leituramiga.dto.endereco.CidadeDto;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
 import br.com.leituramiga.model.exception.EnderecoNaoExistente;
 import br.com.leituramiga.service.endereco.EnderecoService;
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -12,6 +14,8 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.List;
 
 @RequestScoped
 @Path("/api")
@@ -51,6 +55,19 @@ public class EnderecoController {
         try {
             enderecoService.salvarEndereco(endereco, email);
             return Response.ok().build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
+    @Path("/endereco/{uf}")
+    public Response obterCidades(@PathParam("uf") String uf, @QueryParam("pesquisa") String pesquisa) {
+        try {
+            List<CidadeDto> cidades = enderecoService.obterCidades(uf, pesquisa);
+            return Response.ok(cidades).build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

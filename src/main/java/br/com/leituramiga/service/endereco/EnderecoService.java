@@ -2,6 +2,7 @@ package br.com.leituramiga.service.endereco;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.endereco.EnderecoDao;
+import br.com.leituramiga.dto.endereco.CidadeDto;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
 import br.com.leituramiga.model.cidade.Cidade;
 import br.com.leituramiga.model.endereco.Endereco;
@@ -65,12 +66,12 @@ public class EnderecoService {
         }
     }
 
-    public List<Cidade> obterCidades(String uf) throws SQLException {
+    public List<CidadeDto> obterCidades(String uf, String pesquisa) throws SQLException {
         try {
             logService.sucesso(EnderecoService.class.getName(), "Iniciando a obtenção das cidades da UF " + uf);
-            List<Cidade> cidades = enderecoDao.obterCidades(uf);
+            List<Cidade> cidades = enderecoDao.obterCidades(uf, pesquisa);
             logService.sucesso(EnderecoService.class.getName(), "Sucesso na obtenção das cidades da UF " + uf);
-            return cidades;
+            return cidades.stream().map(CidadeDto::deModel).toList();
         } catch (Exception e) {
             logService.erro(EnderecoService.class.getName(), "Ocorreu um erro na obtenção das cidades da UF " + uf, e);
             throw e;

@@ -9,7 +9,10 @@ public class EnderecoQueries {
     public static final String OBTER_CIDADES_POR_UF ="SELECT cidade.codigo_cidade, " +
             "cidade.nome, " +
             "cidade.estado " +
-            "FROM cidade WHERE cidade.estado = ?";
+            "FROM cidade WHERE cidade.estado = ? " +
+            "OR cidade.estado LIKE PESQUISA " +
+            "OR cidade.nome LIKE PESQUISA " +
+            "ORDER BY cidade.nome ASC; ";
 
     public static final String OBTER_ENDERECO_POR_USUARIO =
             "SELECT endereco.codigo_endereco, " +
