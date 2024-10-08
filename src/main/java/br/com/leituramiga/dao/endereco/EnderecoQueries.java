@@ -6,6 +6,11 @@ public class EnderecoQueries {
             "SELECT * FROM endereco "
                     + "WHERE codigo_endereco = ?;";
 
+    public static final String OBTER_CIDADES_POR_UF ="SELECT cidade.codigo_cidade, " +
+            "cidade.nome, " +
+            "cidade.estado " +
+            "FROM cidade WHERE cidade.estado = ?";
+
     public static final String OBTER_ENDERECO_POR_USUARIO =
             "SELECT endereco.codigo_endereco, " +
                     "endereco.cep, " +

@@ -58,14 +58,15 @@ public class UsuarioQueries {
             "instituicao.nome as nome_instituicao, " +
             "usuario.codigo_instituicao, " +
             "usuario.ativo " +
-            "FROM usuario" +
-            "INNER JOIN endereco ON usuario.email_usuario = endereco.email_usuario" +
-            "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade" +
-            "INNER JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao" +
-            "WHERE usuario.ativo = 1 AND usuario.bloqueado = 0" +
-            "AND (usuario.nome LIKE ? " +
-            "OR usuario.username LIKE ? " +
-            "OR endereco.codigo_cidade = ?)" +
+            "FROM usuario " +
+            "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
+            "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+            "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
+            "WHERE usuario.ativo = 1 AND usuario.bloqueado = 0 " +
+            "AND (usuario.nome LIKE PESQUISA " +
+            "OR usuario.username LIKE PESQUISA " +
+            "OR instituicao.codigo_instituicao = ? " +
+            "OR endereco.codigo_cidade = ?) " +
             "LIMIT ? OFFSET ?;";
 
     public static final String OBTER_SENHA =

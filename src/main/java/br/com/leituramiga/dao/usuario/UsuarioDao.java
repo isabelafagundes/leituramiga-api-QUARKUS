@@ -1,6 +1,7 @@
 package br.com.leituramiga.dao.usuario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
+import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
@@ -15,6 +16,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class UsuarioDao {
@@ -29,11 +32,11 @@ public class UsuarioDao {
     LogService logService;
 
     public Usuario obterUsuario(String login) throws SQLException {
-        String md5Login = HashService.obterMd5Email(login);
+        String md5Identificador = HashService.obterMd5Email(login);
         try (Connection conexao = bd.obterConexao()) {
-            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Login);
-            Usuario usuario = obterUsuarioPorEmailUsuario(login, conexao);
-            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Login);
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Identificador);
+            Usuario usuario = obterUsuarioPorIdentificador(login, conexao);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Identificador);
             return usuario;
         }
     }
@@ -128,12 +131,12 @@ public class UsuarioDao {
         return codigo;
     }
 
-    public Boolean verificarCodigoSeguranca(String email, String codigo) throws SQLException, UsuarioNaoExistente {
-        String md5Login = HashService.obterMd5Email(email);
+    public Boolean verificarCodigoSeguranca(String identificador, String codigo) throws SQLException, UsuarioNaoExistente {
+        String md5Login = HashService.obterMd5Email(identificador);
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de segurança do usuário de email " + md5Login);
 
         try (Connection conexao = bd.obterConexao()) {
-            Usuario usuario = obterUsuarioPorEmailUsuario(email, conexao);
+            Usuario usuario = obterUsuarioPorIdentificador(identificador, conexao);
             if (usuario == null) throw new UsuarioNaoExistente();
             Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de segurança do usuário de email " + md5Login);
@@ -141,10 +144,10 @@ public class UsuarioDao {
         }
     }
 
-    private Usuario obterUsuarioPorEmailUsuario(String email, Connection conexao) throws SQLException {
+    private Usuario obterUsuarioPorIdentificador(String identificador, Connection conexao) throws SQLException {
         PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
-        pstmt.setString(1, email);
-        pstmt.setString(2, email);
+        pstmt.setString(1, identificador);
+        pstmt.setString(2, identificador);
         ResultSet resultado = pstmt.executeQuery();
         Usuario usuario = null;
         if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
@@ -219,6 +222,37 @@ public class UsuarioDao {
             return existencia;
         }
     }
+
+    public List<Usuario> obterUsuariosPaginados(Integer numeroCidade, Integer numeroInstituicao, String pesquisa, Integer numeroPagina, Integer tamanhoPagina) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            String pesquisaQuery = pesquisa==null?"":pesquisa;
+            String query = UsuarioQueries.OBTER_USUARIOS_PAGINADOS.replace("PESQUISA", "'%" + pesquisaQuery + "%'");
+            PreparedStatement pstmt = conexao.prepareStatement(query);
+            pstmt.setInt(1, numeroInstituicao);
+            pstmt.setInt(2, numeroCidade);
+            pstmt.setInt(3, tamanhoPagina);
+            pstmt.setInt(4, numeroPagina * tamanhoPagina);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Usuario> usuarios = new ArrayList<>();
+            while (resultado.next()) usuarios.add(obterUsuarioResumidoDeResultSet(resultado));
+            return usuarios;
+        }
+    }
+
+
+    private Usuario obterUsuarioResumidoDeResultSet(ResultSet resultado) throws SQLException {
+        return Usuario.carregarResumo(
+                resultado.getString("nome"),
+                resultado.getString("username"),
+                resultado.getString("email_usuario"),
+                resultado.getString("descricao"),
+                resultado.getString("imagem"),
+                resultado.getInt("codigo_instituicao"),
+                resultado.getString("nome_cidade"),
+                resultado.getString("nome_instituicao")
+        );
+    }
+
 
     private Usuario obterUsuarioDeResultSet(ResultSet resultado) throws SQLException {
         return Usuario.carregar(

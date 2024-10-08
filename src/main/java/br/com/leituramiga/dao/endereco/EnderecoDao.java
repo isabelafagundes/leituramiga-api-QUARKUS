@@ -2,6 +2,7 @@ package br.com.leituramiga.dao.endereco;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
+import br.com.leituramiga.model.cidade.Cidade;
 import br.com.leituramiga.model.endereco.Endereco;
 import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,6 +12,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class EnderecoDao {
@@ -75,6 +78,19 @@ public class EnderecoDao {
         }
     }
 
+    public List<Cidade> obterCidades(String uf) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(),"Iniciando a obtenção das cidades da UF " + uf);
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.OBTER_CIDADES_POR_UF);
+            pstmt.setString(1, uf);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Cidade> cidades = new ArrayList<>();
+            while (resultado.next()) cidades.add(obterCidadeDeResult(resultado));
+            logService.sucesso(EnderecoDao.class.getName(),"Sucesso na obtenção das cidades da UF " + uf);
+            return cidades;
+        }
+    }
+
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, EnderecoDto endereco, String email) throws SQLException {
         pstmt.setString(1, endereco.getLogradouro());
         pstmt.setString(2, endereco.getComplemento());
@@ -86,6 +102,13 @@ public class EnderecoDao {
         pstmt.setString(8, endereco.getNumero());
     }
 
+    public Cidade obterCidadeDeResult(ResultSet resultado) throws SQLException {
+        return Cidade.carregar(
+                resultado.getInt("codigo_cidade"),
+                resultado.getString("nome"),
+                resultado.getString("estado")
+        );
+    }
 
     public Endereco obterEnderecoDeResult(ResultSet resultado) throws SQLException {
         return Endereco.carregar(

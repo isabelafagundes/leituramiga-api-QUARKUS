@@ -3,6 +3,7 @@ package br.com.leituramiga.service.endereco;
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
+import br.com.leituramiga.model.cidade.Cidade;
 import br.com.leituramiga.model.endereco.Endereco;
 import br.com.leituramiga.model.exception.EnderecoNaoExistente;
 import br.com.leituramiga.service.autenticacao.HashService;
@@ -12,6 +13,7 @@ import jakarta.inject.Inject;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @ApplicationScoped
 public class EnderecoService {
@@ -59,6 +61,18 @@ public class EnderecoService {
             logService.sucesso(EnderecoService.class.getName(), "Exclusão de endereço do usuário finalizada de email " + numeroEndereco);
         } catch (Exception e) {
             logService.erro(EnderecoService.class.getName(), "Ocorreu um erro na exclusão de endereço do usuário de email " + numeroEndereco, e);
+            throw e;
+        }
+    }
+
+    public List<Cidade> obterCidades(String uf) throws SQLException {
+        try {
+            logService.sucesso(EnderecoService.class.getName(), "Iniciando a obtenção das cidades da UF " + uf);
+            List<Cidade> cidades = enderecoDao.obterCidades(uf);
+            logService.sucesso(EnderecoService.class.getName(), "Sucesso na obtenção das cidades da UF " + uf);
+            return cidades;
+        } catch (Exception e) {
+            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro na obtenção das cidades da UF " + uf, e);
             throw e;
         }
     }

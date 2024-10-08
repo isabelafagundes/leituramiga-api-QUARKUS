@@ -8,6 +8,7 @@ import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.model.exception.*;
+import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.email.EmailService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -40,51 +41,23 @@ public class AutenticacaoService {
     @Inject
     FabricaDeConexoes bd;
 
+    @Inject
+    UsuarioService usuarioService;
+
     public UsuarioAutenticadoDto autenticarUsuario(String login, String senha) throws UsuarioNaoAutorizado, UsuarioNaoExistente, UsuarioNaoAtivo, UsuarioBloqueado, SQLException, ClassNotFoundException {
         String md5Login = HashService.obterMd5Email(login);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do usuário de login " + md5Login);
-            validarEmail(login);
+            usuarioService.validarIdentificadorUsuario(login);
             Usuario usuario = dao.obterUsuario(login);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do usuário de login " + md5Login);
-            validarUsuarioAtivo(usuario);
-            validarUsuarioBloqueado(usuario);
+            usuarioService.validarUsuarioAtivo(usuario);
+            usuarioService.validarUsuarioBloqueado(usuario);
             validarSenhaUsuario(senha, usuario.getSenha(), login);
             UsuarioAutenticadoDto usuarioDto = service.obterUsuarioAutenticado(usuario);
             return usuarioDto;
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do usuário de login " + md5Login, e);
-            throw e;
-        }
-    }
-
-
-    public UsuarioDto obterUsuarioPorEmail(String email) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, ClassNotFoundException {
-        String md5Email = HashService.obterMd5Email(email);
-        try {
-            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do usuário de email " + md5Email);
-            validarEmail(email);
-            Usuario usuario = obterUsuario(email);
-            validarUsuarioAtivo(usuario);
-            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
-            return UsuarioDto.deModel(usuario);
-        } catch (Exception e) {
-            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do usuário de email " + md5Email, e);
-            throw e;
-        }
-    }
-
-    public Usuario obterUsuario(String email) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, ClassNotFoundException {
-        String md5Email = HashService.obterMd5Email(email);
-        try {
-            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do usuário de email " + md5Email);
-            validarEmail(email);
-            Usuario usuario = dao.obterUsuario(email);
-            validarUsuarioAtivo(usuario);
-            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
-            return usuario;
-        } catch (Exception e) {
-            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do usuário de email " + md5Email, e);
             throw e;
         }
     }
@@ -103,41 +76,12 @@ public class AutenticacaoService {
         }
     }
 
-    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente {
-        String md5Email = HashService.obterMd5Email(usuarioDto.email);
-        Connection conexao = null;
-        try {
-            conexao = bd.obterConexao();
-            conexao.setAutoCommit(false);
-            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o usuário de email " + md5Email);
-            if (!usuarioDto.email.contains("@")) throw new InformacoesInvalidas();
-            boolean existencia = dao.validarExistencia(usuarioDto.email, usuarioDto.username);
-            if (existencia) throw new UsuarioExistente();
-            String senhaCriptografada = obterSenhaCriptografada(usuarioDto.senha);
-            usuarioDto.setSenha(senhaCriptografada);
-            validarUsuario(usuarioDto);
-            dao.salvarUsuario(usuarioDto, conexao);
-            if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email);
-            String codigo = salvarCodigo(usuarioDto.email, conexao);
-            emailService.enviarEmailCodigoVerificacao(usuarioDto.email, codigo, usuarioDto.nome);
-            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
-            conexao.commit();
-        } catch (Exception e) {
-            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de salvar o usuário de email " + md5Email, e);
-            if (conexao != null) conexao.rollback();
-            throw e;
-        } finally {
-            bd.desconectar(conexao);
-        }
-    }
-
     private void validarUsuario(CriacaoUsuarioDto usuarioDto) throws SQLException, UsuarioNaoExistente, UsernameExiste {
         logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a validação da existência do usuário");
         if (dao.validarExistencia(usuarioDto.getEmail(), null)) throw new UsuarioNaoExistente();
         logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a validação do username do usuário");
         if (dao.validarUsername(usuarioDto.getUsername())) throw new UsernameExiste();
     }
-
 
     public void salvarUsuario(CriacaoUsuarioDto usuarioDto) throws SQLException, UsernameExiste, UsuarioNaoExistente {
         String md5Email = HashService.obterMd5Email(usuarioDto.email);
@@ -157,7 +101,7 @@ public class AutenticacaoService {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de exclusão do usuário de email " + md5Email);
-            validarEmail(email);
+            usuarioService.validarIdentificadorUsuario(email);
             dao.desativarUsuario(email);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de exclusão do usuário de email " + md5Email);
         } catch (Exception e) {
@@ -181,22 +125,6 @@ public class AutenticacaoService {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação da senha, usuário não autorizado", e);
             throw e;
         }
-    }
-
-    private void validarUsuarioAtivo(Usuario usuario) throws UsuarioNaoAtivo {
-        logService.iniciar(AutenticacaoService.class.getName(), "Verificando se o usuário está ativo na base de dados");
-        if (!usuario.isAtivo()) throw new UsuarioNaoAtivo();
-    }
-
-    private void validarUsuarioBloqueado(Usuario usuario) throws UsuarioBloqueado {
-        logService.iniciar(AutenticacaoService.class.getName(), "Verificando se o usuário está bloqueado na base de dados");
-        if (usuario.isBloqueado()) throw new UsuarioBloqueado();
-    }
-
-    private void validarEmail(String login) throws UsuarioNaoExistente, SQLException {
-        logService.iniciar(AutenticacaoService.class.getName(), "Verificando a existência do usuário de login " + login);
-        boolean existenciaUsuario = dao.validarExistencia(login, null);
-        if (!existenciaUsuario) throw new UsuarioNaoExistente();
     }
 
     private void atualizarTentativas(String login) throws SQLException, ClassNotFoundException {
@@ -231,12 +159,39 @@ public class AutenticacaoService {
         }
     }
 
+    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente {
+        String md5Email = HashService.obterMd5Email(usuarioDto.email);
+        Connection conexao = null;
+        try {
+            conexao = bd.obterConexao();
+            conexao.setAutoCommit(false);
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o usuário de email " + md5Email);
+            if (!usuarioDto.email.contains("@")) throw new InformacoesInvalidas();
+            boolean existencia = dao.validarExistencia(usuarioDto.email, usuarioDto.username);
+            if (existencia) throw new UsuarioExistente();
+            String senhaCriptografada = obterSenhaCriptografada(usuarioDto.senha);
+            usuarioDto.setSenha(senhaCriptografada);
+            validarUsuario(usuarioDto);
+            dao.salvarUsuario(usuarioDto, conexao);
+            if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email);
+            String codigo = salvarCodigo(usuarioDto.email, conexao);
+            emailService.enviarEmailCodigoVerificacao(usuarioDto.email, codigo, usuarioDto.nome);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
+            conexao.commit();
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de salvar o usuário de email " + md5Email, e);
+            if (conexao != null) conexao.rollback();
+            throw e;
+        } finally {
+            bd.desconectar(conexao);
+        }
+    }
 
     public void verificarCodigo(String email, String codigo) throws SQLException, CodigoIncorreto, UsuarioNaoExistente {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
-            validarEmail(email);
+            usuarioService.validarIdentificadorUsuario(email);
             boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo);
             if (!codigoValido) throw new CodigoIncorreto();
             dao.ativarUsuario(email);

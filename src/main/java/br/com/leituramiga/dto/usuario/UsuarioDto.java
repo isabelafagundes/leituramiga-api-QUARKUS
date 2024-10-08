@@ -21,6 +21,7 @@ public class UsuarioDto {
     public String descricao;
     public String imagem;
     public Integer codigoInstituicao;
+    public Integer codigoEndereco;
     public EnderecoDto endereco;
     public String nomeCidade;
     public String nomeInstituicao;
@@ -42,6 +43,7 @@ public class UsuarioDto {
         dto.codigoInstituicao = usuario.getCodigoInstituicao();
         dto.nomeCidade = usuario.getNomeCidade();
         dto.nomeInstituicao = usuario.getNomeInstituicao();
+        dto.codigoEndereco = usuario.getEndereco().getCodigo();
         if (usuario.getEndereco() != null) dto.endereco = EnderecoDto.deModel(usuario.getEndereco());
         return dto;
     }

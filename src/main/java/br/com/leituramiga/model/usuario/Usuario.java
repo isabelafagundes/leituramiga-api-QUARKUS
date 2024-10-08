@@ -9,8 +9,8 @@ public class Usuario {
     private String email;
     private String senha;
     private TipoUsuario tipoUsuario;
-    private boolean ativo;
-    private boolean bloqueado;
+    private Boolean ativo;
+    private Boolean bloqueado;
     private Integer tentativas;
     private String codigoAlteracao;
     private String celular;
@@ -22,6 +22,29 @@ public class Usuario {
     private String nomeInstituicao;
 
     public Usuario() {
+    }
+
+    public static Usuario carregarResumo(
+            String nome,
+            String username,
+            String email,
+            String descricao,
+            String imagem,
+            Integer codigoInstituicao,
+            String nomeCidade,
+            String nomeInstituicao
+    ) {
+        Usuario usuario = new Usuario();
+        usuario.nome = nome;
+        usuario.username = username;
+        usuario.email = email;
+        usuario.descricao = descricao;
+        usuario.imagem = imagem;
+        usuario.codigoInstituicao = codigoInstituicao;
+        usuario.nomeCidade = nomeCidade;
+        usuario.nomeInstituicao = nomeInstituicao;
+
+        return usuario;
     }
 
     public static Usuario carregar(
