@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS cidade
 CREATE TABLE IF NOT EXISTS instituicao
 (
     codigo_instituicao BIGINT PRIMARY KEY AUTO_INCREMENT,
-    nome               VARCHAR(60),
+    nome               VARCHAR(120),
     sigla              VARCHAR(10)
 );
 
@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS livro
     codigo_categoria          BIGINT       NOT NULL,
     codigo_status_livro       BIGINT       NOT NULL,
     autor                     VARCHAR(40),
+    tipo_solicitacao          TEXT         NOT NULL,
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
     FOREIGN KEY (codigo_ultima_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)

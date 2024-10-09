@@ -7,24 +7,10 @@ public class Comentario {
     private String dataCriacao;
     private String horaCriacao;
 
-    private Integer emailUsuarioCriador;
-    private Integer emailUsuarioPerfil;
+    private String emailUsuarioCriador;
+    private String emailUsuarioPerfil;
 
-    public Integer getemailUsuarioCriador() {
-        return emailUsuarioCriador;
-    }
-
-    public void setemailUsuarioCriador(Integer email_usuario) {
-        this.emailUsuarioCriador = emailUsuarioCriador;
-    }
-
-    public Integer getemailUsuarioPerfil() {
-        return emailUsuarioPerfil;
-    }
-
-    public void setemailUsuarioPerfil(Integer emailUsuarioPerfil) {
-        this.emailUsuarioPerfil = emailUsuarioPerfil;
-    }
+    private String nomeUsuarioCriador;
 
     public Comentario() {
 
@@ -34,12 +20,20 @@ public class Comentario {
             Integer id,
             String descricao,
             String dataCriacao,
-            String horaCriacao) {
+            String horaCriacao,
+            String emailUsuarioCriador,
+            String emailUsuarioPerfil,
+            String nomeUsuarioCriador
+
+    ) {
         Comentario comentario = new Comentario();
         comentario.id = id;
         comentario.descricao = descricao;
         comentario.dataCriacao = dataCriacao;
         comentario.horaCriacao = horaCriacao;
+        comentario.emailUsuarioCriador = emailUsuarioCriador;
+        comentario.emailUsuarioPerfil = emailUsuarioPerfil;
+        comentario.nomeUsuarioCriador = nomeUsuarioCriador;
         return comentario;
     }
 
@@ -75,4 +69,35 @@ public class Comentario {
         this.horaCriacao = horaCriacao;
     }
 
+    public String getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(String dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public String getHoraCriacao() {
+        return horaCriacao;
+    }
+
+    public void setHoraCriacao(String horaCriacao) {
+        this.horaCriacao = horaCriacao;
+    }
+
+    public String getEmailUsuarioCriador() {
+        return emailUsuarioCriador;
+    }
+
+    public String getEmailUsuarioPerfil() {
+        return emailUsuarioPerfil;
+    }
+
+    public String getNomeUsuarioCriador() {
+        return nomeUsuarioCriador;
+    }
+
+    public void setNomeUsuarioCriador(String nomeUsuarioCriador) {
+        this.nomeUsuarioCriador = nomeUsuarioCriador;
+    }
 }

@@ -6,6 +6,7 @@ import br.com.leituramiga.dto.livro.LivroDto;
 import br.com.leituramiga.dto.livro.LivroSolicitacaoDto;
 import br.com.leituramiga.model.livro.Livro;
 import br.com.leituramiga.service.autenticacao.LogService;
+import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -112,10 +113,14 @@ public class LivroDao {
         return qtd > 0;
     }
 
-    public List<Livro> obterLivrosPaginados(Integer pagina, Integer tamanhoPagina, String pesquisa, Integer numeroCategoria, Integer numeroInstituicao, Integer numeroCidade) throws SQLException {
+    public List<Livro> obterLivrosPaginados(Integer pagina, Integer tamanhoPagina, String pesquisa, Integer numeroCategoria, Integer numeroInstituicao, Integer numeroCidade, Integer tipoSolicitacao, String emailUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livros paginados");
         Connection conexao = bd.obterConexao();
-        String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", LivroQueries.FILTROS_LIVRO);
+        String filtros = LivroQueries.FILTROS_LIVRO;
+        String tipoSolicitacaoQuery = tipoSolicitacao == null ? "" : tipoSolicitacao.toString();
+        if (tipoSolicitacao != null) filtros.replaceAll("TIPO_SOLICITACAO", "'%" + tipoSolicitacaoQuery + "%'");
+        if (emailUsuario != null) filtros += LivroQueries.FILTRO_EMAIL_USUARIO;
+        String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", filtros);
         String pesquisaQuery = pesquisa == null ? "" : pesquisa;
         query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
         PreparedStatement pstmt = conexao.prepareStatement(query);
@@ -123,8 +128,10 @@ public class LivroDao {
         pstmt.setInt(1, (numeroInstituicao != null) ? numeroInstituicao : 0);
         pstmt.setInt(2, (numeroCategoria != null) ? numeroCategoria : 0);
         pstmt.setInt(3, (numeroCidade != null) ? numeroCidade : 0);
-        pstmt.setInt(4, tamanhoPagina);
-        pstmt.setInt(5, pagina * tamanhoPagina);
+        pstmt.setInt(4, (tipoSolicitacao != null) ? tipoSolicitacao : 0);
+        pstmt.setString(5, emailUsuario);
+        pstmt.setInt(6, tamanhoPagina);
+        pstmt.setInt(7, pagina * tamanhoPagina);
         ResultSet resultado = pstmt.executeQuery();
         List<Livro> livros = new ArrayList<>();
         while (resultado.next()) livros.add(obterLivroDeResult(resultado));

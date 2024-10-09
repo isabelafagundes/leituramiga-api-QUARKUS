@@ -106,7 +106,10 @@ public class LivroQueries {
                     "OR usuario.nome LIKE PESQUISA\n" +
                     "OR instituicao.codigo_instituicao = ?\n" +
                     "OR categoria.codigo_categoria = ?\n" +
-                    "OR cidade.codigo_cidade = ?)";
+                    "OR cidade.codigo_cidade = ?" +
+                    "OR livro.tipo_solicitacao LIKE TIPO_SOLICITACAO)";
+
+    public static String FILTRO_EMAIL_USUARIO = " AND usuario.email_usuario = ?";
 
     public static String SALVAR_IMAGEM = "INSERT INTO imagem_livro (imagem, codigo_livro) " +
             "VALUES (?, ?)";

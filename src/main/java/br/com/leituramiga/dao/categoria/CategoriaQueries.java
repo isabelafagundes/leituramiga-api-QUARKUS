@@ -2,7 +2,7 @@ package br.com.leituramiga.dao.categoria;
 
 public class CategoriaQueries {
 
-    public final static String OBTER_CODIGO_CATEGORIA =
+    public final static String OBTER_CATEGORIAS =
             "SELECT categoria.codigo_categoria,\n" +
                     "       categoria.descricao\n" +
                     "FROM categoria\n" +

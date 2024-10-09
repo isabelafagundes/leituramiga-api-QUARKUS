@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @ApplicationScoped
 public class ComentarioDao {
@@ -21,16 +23,16 @@ public class ComentarioDao {
     @Inject
     LogService logService;
 
-    public Comentario obterComentarioPorPerfilUsuario(String comentarioPerfil) throws SQLException {
+    public List<Comentario> obterComentarioPorPerfilUsuario(String comentarioPerfil) throws SQLException {
         logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do comentario por usuário");
         Connection conexao = bd.obterConexao();
         PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_POR_PERFIL);
         pstmt.setString(1, comentarioPerfil);
         ResultSet resultado = pstmt.executeQuery();
-        Comentario comentario = new Comentario();
-        if (resultado.next()) comentario = obterComentarioDeResult(resultado);
+        List<Comentario> comentarios = new ArrayList<>();
+        while (resultado.next()) comentarios.add(obterComentarioDeResult(resultado));
         logService.sucesso(ComentarioDao.class.getName(), "Busca do comentario finalizada");
-        return comentario;
+        return comentarios;
     }
 
     public void deletarComentario(int comentario) throws SQLException {
@@ -67,7 +69,7 @@ public class ComentarioDao {
     public Comentario obterComentariosFeitos(String emailUsuarioPerfil) throws SQLException {
         logService.iniciar(ComentarioDto.class.getName(), "Iniciando busca de comentarios feitos ou recebidos do usuário");
         Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_FEITOS_OU_RECEBIDOS);
+        PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIOS);
         pstmt.setString(1, emailUsuarioPerfil);
         ResultSet resultado = pstmt.executeQuery();
         Comentario comentario = new Comentario();
@@ -77,14 +79,22 @@ public class ComentarioDao {
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, ComentarioDto comentario) throws SQLException {
-        pstmt.setInt(1, comentario.getId());
+        pstmt.setInt(1, comentario.getCodigoComentario());
         pstmt.setString(2, comentario.getDescricao());
         pstmt.setString(3, comentario.getDataCriacao());
         pstmt.setString(4, comentario.getHoraCriacao());
     }
 
     public Comentario obterComentarioDeResult(ResultSet resultado) throws SQLException {
-        return Comentario.carregar(resultado.getInt("id"), resultado.getString("descricao"), resultado.getString("data_criacao"), resultado.getString("hora_criacao"));
+        return Comentario.carregar(
+                resultado.getInt("id"),
+                resultado.getString("descricao"),
+                resultado.getString("dataCriacao"),
+                resultado.getString("horaCriacao"),
+                resultado.getString("emailUsuarioCriador"),
+                resultado.getString("emailUsuarioPerfil"),
+                resultado.getString("nomeUsuarioCriador")
+        );
     }
 
 

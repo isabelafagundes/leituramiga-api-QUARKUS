@@ -30,6 +30,7 @@ public class SolicitacaoController {
     String email;
 
 
+    //todo: adicionar mais informações na solicitação
     @GET
     @Authenticated
     @Path("/solicitacao/{id}")

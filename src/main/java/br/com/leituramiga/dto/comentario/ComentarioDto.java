@@ -5,19 +5,23 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class ComentarioDto {
-    public Integer id;
+    public Integer codigoComentario;
     public String descricao;
     public String dataCriacao;
     public String horaCriacao;
     public String emailUsuarioCriador;
     public String emailUsuarioPerfil;
 
+    public String nomeUsuarioCriador;
+
     public static ComentarioDto deModel(
             Comentario comentario
     ) {
         ComentarioDto dto = new ComentarioDto();
-
-        dto.id = comentario.getId();
+        dto.emailUsuarioCriador = comentario.getEmailUsuarioCriador();
+        dto.emailUsuarioPerfil = comentario.getEmailUsuarioPerfil();
+        dto.nomeUsuarioCriador = comentario.getNomeUsuarioCriador();
+        dto.codigoComentario = comentario.getId();
         dto.descricao = comentario.getDescricao();
         dto.dataCriacao = comentario.getdataCriacao();
         dto.horaCriacao = comentario.gethoraCriacao();
@@ -29,12 +33,12 @@ public class ComentarioDto {
     }
 
 
-    public Integer getId() {
-        return id;
+    public Integer getCodigoComentario() {
+        return codigoComentario;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCodigoComentario(Integer codigoComentario) {
+        this.codigoComentario = codigoComentario;
     }
 
     public String getDescricao() {
@@ -76,7 +80,6 @@ public class ComentarioDto {
     public void setEmailUsuarioPerfil(String emailUsuarioPerfil) {
         this.emailUsuarioPerfil = emailUsuarioPerfil;
     }
-
 
 
 }

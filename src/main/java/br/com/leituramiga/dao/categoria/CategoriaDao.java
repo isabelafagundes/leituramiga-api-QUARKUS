@@ -11,6 +11,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ApplicationScoped
@@ -22,16 +24,15 @@ public class CategoriaDao {
     @Inject
     LogService logService;
 
-    public Categoria obterCategoria(String codigoCategoria) throws SQLException {
+    public List<Categoria> obterCategoria() throws SQLException {
         logService.iniciar(CategoriaDao.class.getName(), "Iniciando busca de categoria");
         Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(CategoriaQueries.OBTER_CODIGO_CATEGORIA);
-        pstmt.setString(1, codigoCategoria);
+        PreparedStatement pstmt = conexao.prepareStatement(CategoriaQueries.OBTER_CATEGORIAS);
         ResultSet resultado = pstmt.executeQuery();
-        Categoria categoria = new Categoria();
-        if (resultado.next()) categoria = obterCategoriaDeResult(resultado);
+        List<Categoria> categorias = new ArrayList<>();
+        while (resultado.next()) categorias.add(obterCategoriaDeResult(resultado));
         logService.sucesso(CategoriaDao.class.getName(), "Busca de categoria finalizada");
-        return categoria;
+        return categorias;
     }
 
 

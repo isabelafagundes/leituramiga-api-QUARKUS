@@ -15,6 +15,10 @@ public class SolicitacaoDto {
     public String horaEntrega;
     public String dataDevolucao;
     public String horaDevolucao;
+    public String dataAtualizacao;
+    public String horaAtualizacao;
+    public String dataAceite;
+    public String horaAceite;
     public String motivoRecusa;
     public String informacoesAdicionais;
     public Integer codigoTipoSolicitacao;
@@ -45,6 +49,11 @@ public class SolicitacaoDto {
         dto.horaEntrega = solicitacao.getHoraEntrega();
         dto.informacoesAdicionais = solicitacao.getInformacoesAdicionais();
         dto.endereco = EnderecoDto.deModel(solicitacao.getEndereco());
+        dto.motivoRecusa = solicitacao.getMotivoRecusa();
+        dto.dataAtualizacao = solicitacao.getDataAtualizacao();
+        dto.horaAtualizacao = solicitacao.getHoraAtualizacao();
+        dto.dataAceite = solicitacao.getDataAceite();
+        dto.horaAceite = solicitacao.getHoraAceite();
         dto.livrosTroca = solicitacao.getLivrosTroca().stream().map(LivroSolicitacaoDto::deModel).toList();
         dto.livrosUsuarioSolicitante = solicitacao.getLivrosUsuarioCriador().stream().map(LivroSolicitacaoDto::deModel).toList();
         return dto;

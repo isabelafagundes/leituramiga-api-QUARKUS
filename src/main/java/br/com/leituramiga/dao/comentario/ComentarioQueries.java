@@ -14,14 +14,16 @@ public class ComentarioQueries {
                     " WHERE comentario.email_usuario = ?\n" +
                     " ORDER BY comentario.data_criacao ASC";
 
-    public final static String OBTER_COMENTARIO_FEITOS_OU_RECEBIDOS =
+    public final static String OBTER_COMENTARIOS =
             "SELECT comentario.codigo_comentario,\n" +
                     "          comentario.descricao,\n" +
                     "          comentario.data_criacao,\n" +
                     "          comentario.hora_criacao,\n" +
+                    "          usuario.username,\n" +
                     "          comentario.email_usuario_criador,\n" +
-                    "          comentario.email_usuario_perfil),\n" +
+                    "          comentario.email_usuario_perfil\n" +
                     "FROM comentario\n" +
+                    "INNER JOIN usuario ON usuario.email = comentario.email_usuario_criador\n" +
                     " WHERE comentario.codigo_comentario =? \n" +
                     " OR comentario.email_usuario_perfil = ?;";
 

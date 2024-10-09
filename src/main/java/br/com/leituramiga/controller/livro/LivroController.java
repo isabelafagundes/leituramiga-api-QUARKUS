@@ -60,7 +60,9 @@ public class LivroController {
                     filtrosDto.pesquisa,
                     filtrosDto.numeroCidade,
                     filtrosDto.numeroCategoria,
-                    filtrosDto.numeroInstituicao
+                    filtrosDto.numeroInstituicao,
+                    filtrosDto.tipoSolicitacao,
+                    filtrosDto.emailUsuario
             );
             return Response.ok(livros).build();
         } catch (SQLException e) {

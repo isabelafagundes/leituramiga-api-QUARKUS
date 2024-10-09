@@ -82,7 +82,8 @@ public class EnderecoDao {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando a obtenção das cidades da UF " + uf);
         try (Connection conexao = bd.obterConexao()) {
             String query = EnderecoQueries.OBTER_CIDADES_POR_UF;
-            if (pesquisa != null) query = query.replaceAll("PESQUISA", "'%" + pesquisa + "%'");
+            String pesquisaQuery = pesquisa == null ? "" : pesquisa;
+            if (pesquisa != null) query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
             PreparedStatement pstmt = conexao.prepareStatement(query);
             pstmt.setString(1, uf);
             ResultSet resultado = pstmt.executeQuery();

@@ -48,10 +48,13 @@ public class LivroService {
             String pesquisa,
             Integer numeroCidade,
             Integer numeroCategoria,
-            Integer numeroInstituicao) throws SQLException {
+            Integer numeroInstituicao,
+            Integer tipoSolicitacao,
+            String emailUsuario
+            ) throws SQLException {
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina);
-            List<Livro> livros = dao.obterLivrosPaginados(pagina, tamanhoPagina, pesquisa, numeroCategoria, numeroInstituicao, numeroCidade);
+            List<Livro> livros = dao.obterLivrosPaginados(pagina, tamanhoPagina, pesquisa, numeroCategoria, numeroInstituicao, numeroCidade, tipoSolicitacao, emailUsuario);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina);
             return livros.stream().map(LivroDto::deModel).toList();
         } catch (Exception erro) {

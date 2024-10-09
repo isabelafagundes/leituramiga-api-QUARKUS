@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @ApplicationScoped
 public class ComentarioService {
@@ -26,42 +27,39 @@ public class ComentarioService {
     @Inject
     FabricaDeConexoes bd;
 
-    public ComentarioDto obterComentarioPorUsuario(String emailComentario) throws SQLException, ComentarioNaoExistente {
+    public List<ComentarioDto> obterComentarioPorUsuario(String emailComentario) throws SQLException, ComentarioNaoExistente {
         try {
-            logService.iniciar(ComentarioService.class.getName(), "Iniciando busca de validação do comentário por email do destinatario" + emailComentario);
+            logService.iniciar(ComentarioService.class.getName(), "Iniciando busca de comentários por email " + emailComentario);
 
-            Comentario comentario = comentarioDao.obterComentarioPorPerfilUsuario(emailComentario);
+            List<Comentario> comentarios = comentarioDao.obterComentarioPorPerfilUsuario(emailComentario);
 
-            if (comentario != null) {
-                throw new ComentarioNaoExistente();
-            }
-            logService.sucesso(ComentarioService.class.getName(), "Busca de comentário por email concluído" + emailComentario);
-            return ComentarioDto.deModel(comentario);
+            logService.sucesso(ComentarioService.class.getName(), "Busca de comentáriod por email " + emailComentario + " concluído");
+            return comentarios.stream().map(ComentarioDto::deModel).toList();
         } catch (Exception e) {
-            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro na busca do comentário pelo email" + emailComentario, e);
+            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro na busca do comentário pelo email " + emailComentario, e);
             throw e;
         }
     }
 
-    public void salvarComentario(ComentarioDto comentario) throws SQLException, ComentarioNaoExistente {
+    public void salvarComentario(ComentarioDto comentario) throws SQLException {
 
         try {
-            logService.iniciar(ComentarioService.class.getName(), "Iniciando salvamento de comentário" + comentario.emailUsuarioPerfil);
+            logService.iniciar(ComentarioService.class.getName(), "Iniciando salvamento de comentário do usuário de email " + comentario.emailUsuarioPerfil);
             comentarioDao.salvarComentario(comentario);
-            logService.sucesso(ComentarioService.class.getName(), "Salvamento de comentário finalizada com sucesso" + comentario.emailUsuarioPerfil);
+            logService.sucesso(ComentarioService.class.getName(), "Salvamento de comentário finalizada com sucesso do usuário de email " + comentario.emailUsuarioPerfil);
         } catch (Exception e) {
-            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro no salvamento do comentário" + comentario.emailUsuarioPerfil, e);
+            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro no salvamento do comentário do usuário de email " + comentario.emailUsuarioPerfil, e);
             throw e;
         }
     }
 
-    public void deletarComentario(Integer perfilComentario) throws SQLException, ComentarioNaoExistente {
+    public void deletarComentario(Integer numeroComentario) throws SQLException {
         try {
-            logService.iniciar(ComentarioService.class.getName(), "Iniciando exclusão de comentário" + perfilComentario);
-            comentarioDao.deletarComentario(perfilComentario);
-            logService.sucesso(ComentarioService.class.getName(), "Exclusão do comentário concluído com sucesso!" + perfilComentario);
+            logService.iniciar(ComentarioService.class.getName(), "Iniciando exclusão de comentário de número " + numeroComentario);
+            comentarioDao.deletarComentario(numeroComentario);
+            logService.sucesso(ComentarioService.class.getName(), "Exclusão do comentário de número " + numeroComentario + " concluída");
         } catch (Exception e) {
-            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro na exclusão do comentário" + perfilComentario, e);
+            logService.erro(ComentarioService.class.getName(), "Ocorreu um erro na exclusão do comentário de número " + numeroComentario, e);
             throw e;
         }
     }

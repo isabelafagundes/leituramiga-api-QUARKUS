@@ -5,13 +5,12 @@ import br.com.leituramiga.dao.categoria.CategoriaDao;
 import br.com.leituramiga.dto.categoria.CategoriaDto;
 import br.com.leituramiga.model.categoria.Categoria;
 import br.com.leituramiga.model.exception.CategoriaNaoExistente;
-import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @ApplicationScoped
 public class CategoriaService {
@@ -25,17 +24,14 @@ public class CategoriaService {
     @Inject
     FabricaDeConexoes bd;
 
-    public CategoriaDto obterValidarCategoria(String validarCategoria) throws SQLException, CategoriaNaoExistente {
+    public List<CategoriaDto> obterCategorias() throws SQLException {
         try {
-            if (!categoriaDao.validarExistencia(validarCategoria)) {
-                throw new CategoriaNaoExistente();
-            }
-            logService.iniciar(CategoriaService.class.getName(), "Iniciando busca de validação da categoria" + validarCategoria);
-            Categoria categoria = categoriaDao.obterCategoria(validarCategoria);
-            logService.sucesso(CategoriaService.class.getName(), "Busca de categoria concluida" + validarCategoria);
-            return CategoriaDto.deModel(categoria);
+            logService.iniciar(CategoriaService.class.getName(), "Iniciando busca de categorias");
+            List<Categoria> categorias = categoriaDao.obterCategoria();
+            logService.sucesso(CategoriaService.class.getName(), "Sucesso na busca de " + categorias.size() + " categorias");
+            return categorias.stream().map(CategoriaDto::deModel).toList();
         } catch (Exception e) {
-            logService.erro(CategoriaService.class.getName(), "Ocorreu um erro na busca de categoria" + validarCategoria, e);
+            logService.erro(CategoriaService.class.getName(), "Ocorreu um erro na busca de categorias", e);
             throw e;
         }
     }
