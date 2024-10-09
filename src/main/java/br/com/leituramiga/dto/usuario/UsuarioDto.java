@@ -1,8 +1,6 @@
 package br.com.leituramiga.dto.usuario;
 
 import br.com.leituramiga.dto.endereco.EnderecoDto;
-import br.com.leituramiga.model.endereco.Endereco;
-import br.com.leituramiga.model.usuario.TipoUsuario;
 import br.com.leituramiga.model.usuario.Usuario;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -43,7 +41,7 @@ public class UsuarioDto {
         dto.codigoInstituicao = usuario.getCodigoInstituicao();
         dto.nomeCidade = usuario.getNomeCidade();
         dto.nomeInstituicao = usuario.getNomeInstituicao();
-        dto.codigoEndereco = usuario.getEndereco().getCodigo();
+        dto.codigoEndereco = usuario.getEndereco().getCodigoEndereco();
         if (usuario.getEndereco() != null) dto.endereco = EnderecoDto.deModel(usuario.getEndereco());
         return dto;
     }

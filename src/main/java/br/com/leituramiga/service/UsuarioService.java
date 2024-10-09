@@ -7,11 +7,13 @@ import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@ApplicationScoped
 public class UsuarioService {
 
     @Inject

@@ -6,7 +6,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class EnderecoDto {
 
-    public Integer id;
+    public Integer codigoEndereco;
     public String logradouro;
     public String complemento;
     public String bairro;
@@ -21,7 +21,7 @@ public class EnderecoDto {
             Endereco endereco
     ) {
         EnderecoDto dto = new EnderecoDto();
-        dto.id = endereco.getCodigo();
+        dto.codigoEndereco = endereco.getCodigoEndereco();
         dto.estado = endereco.getEstado();
         dto.logradouro = endereco.getLogradouro();
         dto.complemento = endereco.getComplemento();
@@ -30,12 +30,13 @@ public class EnderecoDto {
         dto.numero = endereco.getNumero();
         dto.nomeCidade = endereco.getNomeCidade();
         dto.codigoCidade = endereco.getCodigoCidade();
+        dto.emailUsuario = endereco.getEmailUsuario();
         return dto;
     }
 
     public static Endereco paraModel(EnderecoDto dto) {
         Endereco endereco = new Endereco();
-        endereco.setCodigo(dto.id);
+        endereco.setCodigoEndereco(dto.codigoEndereco);
         endereco.setEstado(dto.estado);
         endereco.setLogradouro(dto.logradouro);
         endereco.setComplemento(dto.complemento);
@@ -43,14 +44,11 @@ public class EnderecoDto {
         endereco.setCep(dto.cep);
         endereco.setNomeCidade(dto.nomeCidade);
         endereco.setCodigoCidade(dto.codigoCidade);
+        endereco.setEmailUsuario(dto.emailUsuario);
         return endereco;
     }
 
     public EnderecoDto() {
-    }
-
-    public Integer getCodigoEndereco() {
-        return id;
     }
 
     public String getLogradouro() {
@@ -85,8 +83,8 @@ public class EnderecoDto {
         return estado;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getCodigoEndereco() {
+        return codigoEndereco;
     }
 
     public String getNumero() {

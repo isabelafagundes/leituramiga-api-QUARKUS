@@ -79,7 +79,7 @@ public class LivroService {
     public void salvarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
         String md5Login = HashService.obterMd5Email(email);
         try {
-            if (livro.getId() != null) validarStatusLivro(livro.getId(), email);
+            if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             dao.salvarLivro(livro);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
@@ -92,7 +92,7 @@ public class LivroService {
     public void atualizarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
         String md5Login = HashService.obterMd5Email(email);
         try {
-            if (livro.getId() != null) validarStatusLivro(livro.getId(), email);
+            if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             dao.atualizarLivro(livro, email);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);

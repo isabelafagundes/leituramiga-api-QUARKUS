@@ -2,7 +2,7 @@ package br.com.leituramiga.model.livro;
 
 
 public class Livro {
-    private Integer id;
+    private Integer codigoLivro;
     private String nomeUsuario;
     private String titulo;
     private String autor;
@@ -18,6 +18,7 @@ public class Livro {
     private Integer codigoUltimaSolicitacao;
     private Integer codigoCategoria;
     private Integer codigoStatusLivro;
+    public String tipoSolicitacao;
 
     public Livro() {
     }
@@ -37,10 +38,11 @@ public class Livro {
             Integer codigoUltimaSolicitacao,
             Integer codigoCategoria,
             Integer codigoStatusLivro,
-            Integer codigoCidade
+            Integer codigoCidade,
+            String tipoSolicitacao
     ) {
         Livro livro = new Livro();
-        livro.id = codigoLivro;
+        livro.codigoLivro = codigoLivro;
         livro.nomeUsuario = nomeUsuario;
         livro.titulo = titulo;
         livro.autor = autor;
@@ -55,11 +57,16 @@ public class Livro {
         livro.codigoCategoria = codigoCategoria;
         livro.codigoStatusLivro = codigoStatusLivro;
         livro.codigoCidade = codigoCidade;
+        livro.tipoSolicitacao = tipoSolicitacao;
         return livro;
     }
 
-    public Integer getId() {
-        return id;
+    public String getTipoSolicitacao() {
+        return tipoSolicitacao;
+    }
+
+    public Integer getCodigoLivro() {
+        return codigoLivro;
     }
 
     public String getNomeUsuario() {

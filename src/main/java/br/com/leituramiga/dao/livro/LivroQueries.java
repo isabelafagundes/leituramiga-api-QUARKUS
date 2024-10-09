@@ -17,6 +17,7 @@ public class LivroQueries {
                     "       usuario.nome as nome_usuario," +
                     "       instituicao.nome as nome_instituicao," +
                     "       livro.autor," +
+                    "       livro.tipo_solicitacao," +
                     "       cidade.nome as nome_cidade " +
                     "FROM livro " +
                     "         INNER JOIN usuario ON usuario.email_usuario = livro.email_usuario " +

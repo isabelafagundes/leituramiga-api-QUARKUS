@@ -5,7 +5,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class LivroDto {
-    public Integer id;
+    public Integer codigoLivro;
     public String nomeUsuario;
     public String emailUsuario;
     public String titulo;
@@ -18,13 +18,14 @@ public class LivroDto {
     public String nomeCidade;
     public Integer codigoCidade;
     public String dataUltimaSolicitacao;
+    public String tipoSolicitacao;
+    public Integer codigoStatusLivro;
 
     public static LivroDto deModel(
             Livro livro
     ) {
         LivroDto dto = new LivroDto();
-
-        dto.id = livro.getId();
+        dto.codigoLivro = livro.getCodigoLivro();
         dto.nomeUsuario = livro.getNomeUsuario();
         dto.emailUsuario = livro.getEmailUsuario();
         dto.codigoCategoria = livro.getCodigoCategoria();
@@ -37,7 +38,8 @@ public class LivroDto {
         dto.nomeInstituicao = livro.getNomeInstituicao();
         dto.nomeCidade = livro.getNomeCidade();
         dto.dataUltimaSolicitacao = livro.getDataUltimaSolicitacao();
-
+        dto.tipoSolicitacao = livro.getTipoSolicitacao();
+        dto.codigoStatusLivro = livro.getCodigoStatusLivro();
         return dto;
     }
 
@@ -48,12 +50,12 @@ public class LivroDto {
         return codigoCategoria;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getCodigoLivro() {
+        return codigoLivro;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCodigoLivro(Integer codigoLivro) {
+        this.codigoLivro = codigoLivro;
     }
 
     public String getNomeUsuario() {
@@ -139,7 +141,7 @@ public class LivroDto {
     @Override
     public String toString() {
         return "LivroDto{" +
-                "id=" + id +
+                "id=" + codigoLivro +
                 ", nomeUsuario='" + nomeUsuario + '\'' +
                 ", emailUsuario='" + emailUsuario + '\'' +
                 ", titulo='" + titulo + '\'' +

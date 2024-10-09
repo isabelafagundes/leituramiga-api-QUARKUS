@@ -6,7 +6,6 @@ import br.com.leituramiga.dto.livro.LivroDto;
 import br.com.leituramiga.dto.livro.LivroSolicitacaoDto;
 import br.com.leituramiga.model.livro.Livro;
 import br.com.leituramiga.service.autenticacao.LogService;
-import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -82,7 +81,7 @@ public class LivroDao {
             pstmt.setString(3, livro.getEstadoFisico());
             pstmt.setInt(4, livro.getCodigoCategoria());
             pstmt.setString(5, livro.getAutor());
-            pstmt.setInt(6, livro.getId());
+            pstmt.setInt(6, livro.getCodigoLivro());
             pstmt.setString(7, email);
             pstmt.executeUpdate();
         }
@@ -244,7 +243,8 @@ public class LivroDao {
                 resultado.getInt("codigo_ultima_solicitacao"),
                 resultado.getInt("codigo_categoria"),
                 resultado.getInt("codigo_status_livro"),
-                resultado.getInt("codigo_cidade")
+                resultado.getInt("codigo_cidade"),
+                resultado.getString("tipo_solicitacao")
         );
     }
 

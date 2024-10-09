@@ -133,7 +133,7 @@ public class SolicitacaoService {
             endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
         } else {
             Endereco enderecoSolicitante = enderecoDao.obterEnderecoUsuario(solicitacao.getEmailUsuarioSolicitante());
-            endereco = enderecoSolicitante.getCodigo();
+            endereco = enderecoSolicitante.getCodigoEndereco();
         }
         return endereco;
     }

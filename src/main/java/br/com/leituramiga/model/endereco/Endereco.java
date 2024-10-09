@@ -3,7 +3,7 @@ package br.com.leituramiga.model.endereco;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
 
 public class Endereco {
-    private Integer codigo;
+    private Integer codigoEndereco;
     private String logradouro;
     private String complemento;
     private String numero;
@@ -56,7 +56,7 @@ public class Endereco {
             String numero,
             Integer codigoCidade) {
         Endereco endereco = new Endereco();
-        endereco.codigo = id;
+        endereco.codigoEndereco = id;
         endereco.logradouro = logradouro;
         endereco.complemento = complemento;
         endereco.bairro = bairro;
@@ -81,12 +81,12 @@ public class Endereco {
         this.estado = estado;
     }
 
-    public Integer getCodigo() {
-        return codigo;
+    public Integer getCodigoEndereco() {
+        return codigoEndereco;
     }
 
-    public void setCodigo(Integer codigo) {
-        this.codigo = codigo;
+    public void setCodigoEndereco(Integer codigoEndereco) {
+        this.codigoEndereco = codigoEndereco;
     }
 
     public String getLogradouro() {
