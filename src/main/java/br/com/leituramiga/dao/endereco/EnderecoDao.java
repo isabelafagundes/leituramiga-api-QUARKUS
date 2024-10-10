@@ -83,7 +83,7 @@ public class EnderecoDao {
         try (Connection conexao = bd.obterConexao()) {
             String query = EnderecoQueries.OBTER_CIDADES_POR_UF;
             String pesquisaQuery = pesquisa == null ? "" : pesquisa;
-            if (pesquisa != null) query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
+            query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
             PreparedStatement pstmt = conexao.prepareStatement(query);
             pstmt.setString(1, uf);
             ResultSet resultado = pstmt.executeQuery();

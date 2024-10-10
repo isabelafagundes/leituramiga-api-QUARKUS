@@ -35,8 +35,8 @@ public class InstituicaoController {
     }
 
     @POST
-    @RolesAllowed("ADMINISTRADOR")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @PermitAll
     @Path("/instituicao/xlsx")
     public Response salvarInstituicoesDeXlsx(ArquivoInstituicaoDto arquivo) {
         try {

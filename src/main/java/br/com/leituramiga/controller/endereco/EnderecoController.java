@@ -63,7 +63,7 @@ public class EnderecoController {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @PermitAll
-    @Path("/endereco/{uf}")
+    @Path("/cidades/{uf}")
     public Response obterCidades(@PathParam("uf") String uf, @QueryParam("pesquisa") String pesquisa) {
         try {
             List<CidadeDto> cidades = enderecoService.obterCidades(uf, pesquisa);

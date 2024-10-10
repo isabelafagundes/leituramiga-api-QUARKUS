@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS usuario
     ativo              BIT         NOT NULL DEFAULT 1,
     tentativas         INTEGER     NOT NULL DEFAULT 3,
     bloqueado          BIT         NOT NULL DEFAULT 0,
-    codigo_alteracao   VARCHAR(8),
+    codigo_alteracao   VARCHAR(40),
     codigo_instituicao BIGINT,
     FOREIGN KEY (codigo_instituicao) REFERENCES instituicao (codigo_instituicao)
 );

@@ -1,13 +1,12 @@
 package br.com.leituramiga.dao.usuario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
-import br.com.leituramiga.dto.usuario.UsuarioDto;
+import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
-import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
+import br.com.leituramiga.service.autenticacao.CodigoUtil;
 import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
-import br.com.leituramiga.service.autenticacao.CodigoUtil;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -54,10 +53,12 @@ public class UsuarioDao {
         pstmt.setString(3, usuario.email);
         pstmt.setInt(4, usuario.tipoUsuario);
         pstmt.setString(5, usuario.senha);
-        pstmt.setString(6, usuario.celular);
-        pstmt.setString(7, usuario.descricao);
-        pstmt.setString(8, usuario.imagem);
-        pstmt.setInt(9, usuario.codigoInstituicao);
+        if (usuario.celular == null) pstmt.setNull(6, java.sql.Types.VARCHAR);
+        else pstmt.setString(6, usuario.celular);
+        pstmt.setString(7, usuario.descricao != null ? usuario.descricao : "");
+        pstmt.setString(8, usuario.imagem != null ? usuario.imagem : "");
+        if (usuario.codigoInstituicao == null) pstmt.setNull(9, java.sql.Types.INTEGER);
+        else pstmt.setInt(9, usuario.codigoInstituicao);
     }
 
     public void desativarUsuario(String email) throws SQLException {
@@ -225,7 +226,7 @@ public class UsuarioDao {
 
     public List<Usuario> obterUsuariosPaginados(Integer numeroCidade, Integer numeroInstituicao, String pesquisa, Integer numeroPagina, Integer tamanhoPagina) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
-            String pesquisaQuery = pesquisa==null?"":pesquisa;
+            String pesquisaQuery = pesquisa == null ? "" : pesquisa;
             String query = UsuarioQueries.OBTER_USUARIOS_PAGINADOS.replace("PESQUISA", "'%" + pesquisaQuery + "%'");
             PreparedStatement pstmt = conexao.prepareStatement(query);
             pstmt.setInt(1, numeroInstituicao);
