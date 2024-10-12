@@ -26,13 +26,14 @@ public class CategoriaDao {
 
     public List<Categoria> obterCategoria() throws SQLException {
         logService.iniciar(CategoriaDao.class.getName(), "Iniciando busca de categoria");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(CategoriaQueries.OBTER_CATEGORIAS);
-        ResultSet resultado = pstmt.executeQuery();
-        List<Categoria> categorias = new ArrayList<>();
-        while (resultado.next()) categorias.add(obterCategoriaDeResult(resultado));
-        logService.sucesso(CategoriaDao.class.getName(), "Busca de categoria finalizada");
-        return categorias;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(CategoriaQueries.OBTER_CATEGORIAS);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Categoria> categorias = new ArrayList<>();
+            while (resultado.next()) categorias.add(obterCategoriaDeResult(resultado));
+            logService.sucesso(CategoriaDao.class.getName(), "Busca de categoria finalizada");
+            return categorias;
+        }
     }
 
 
@@ -88,7 +89,7 @@ public class CategoriaDao {
 
     public Categoria obterCategoriaDeResult(ResultSet resultado) throws SQLException {
         return Categoria.carregar(
-                resultado.getInt("id"),
+                resultado.getInt("codigo_categoria"),
                 resultado.getString("descricao")
         );
     }

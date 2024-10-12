@@ -2,7 +2,9 @@ package br.com.leituramiga.service;
 
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
-import br.com.leituramiga.model.exception.*;
+import br.com.leituramiga.model.exception.UsuarioBloqueado;
+import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
+import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import br.com.leituramiga.service.autenticacao.HashService;
@@ -66,7 +68,7 @@ public class UsuarioService {
 
     public void validarUsuarioAtivo(Usuario usuario) throws UsuarioNaoAtivo {
         logService.iniciar(AutenticacaoService.class.getName(), "Verificando se o usuário está ativo na base de dados");
-        if (!usuario.isAtivo()) throw new UsuarioNaoAtivo();
+        if (usuario == null || !usuario.isAtivo()) throw new UsuarioNaoAtivo();
     }
 
     public void validarUsuarioBloqueado(Usuario usuario) throws UsuarioBloqueado {

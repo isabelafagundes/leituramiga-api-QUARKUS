@@ -126,11 +126,11 @@ public class Usuario {
         this.tipoUsuario = tipoUsuario;
     }
 
-    public boolean isAtivo() {
+    public Boolean isAtivo() {
         return ativo;
     }
 
-    public boolean isBloqueado() {
+    public Boolean isBloqueado() {
         return bloqueado;
     }
 

@@ -25,14 +25,15 @@ public class ComentarioDao {
 
     public List<Comentario> obterComentarioPorPerfilUsuario(String comentarioPerfil) throws SQLException {
         logService.iniciar(ComentarioDao.class.getName(), "Iniciando busca do comentario por usuário");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_POR_PERFIL);
-        pstmt.setString(1, comentarioPerfil);
-        ResultSet resultado = pstmt.executeQuery();
-        List<Comentario> comentarios = new ArrayList<>();
-        while (resultado.next()) comentarios.add(obterComentarioDeResult(resultado));
-        logService.sucesso(ComentarioDao.class.getName(), "Busca do comentario finalizada");
-        return comentarios;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIO_POR_PERFIL);
+            pstmt.setString(1, comentarioPerfil);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Comentario> comentarios = new ArrayList<>();
+            while (resultado.next()) comentarios.add(obterComentarioDeResult(resultado));
+            logService.sucesso(ComentarioDao.class.getName(), "Busca do comentario finalizada");
+            return comentarios;
+        }
     }
 
     public void deletarComentario(int comentario) throws SQLException {
@@ -68,14 +69,15 @@ public class ComentarioDao {
 
     public Comentario obterComentariosFeitos(String emailUsuarioPerfil) throws SQLException {
         logService.iniciar(ComentarioDto.class.getName(), "Iniciando busca de comentarios feitos ou recebidos do usuário");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIOS);
-        pstmt.setString(1, emailUsuarioPerfil);
-        ResultSet resultado = pstmt.executeQuery();
-        Comentario comentario = new Comentario();
-        if (resultado.next()) comentario = obterComentarioDeResult(resultado);
-        logService.sucesso(ComentarioDao.class.getName(), "Busca de comentarios feitos finalizada");
-        return comentario;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(ComentarioQueries.OBTER_COMENTARIOS);
+            pstmt.setString(1, emailUsuarioPerfil);
+            ResultSet resultado = pstmt.executeQuery();
+            Comentario comentario = new Comentario();
+            if (resultado.next()) comentario = obterComentarioDeResult(resultado);
+            logService.sucesso(ComentarioDao.class.getName(), "Busca de comentarios feitos finalizada");
+            return comentario;
+        }
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, ComentarioDto comentario) throws SQLException {

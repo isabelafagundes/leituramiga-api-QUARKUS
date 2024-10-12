@@ -20,7 +20,7 @@ public class ComentarioController {
     @Inject
     ComentarioService comentarioService;
 
-    @GET
+    @POST
     @Path("/comentarios")
     public Response obterComentarios(IdentificadorUsuarioDto identificadorUsuarioDto) {
         try {

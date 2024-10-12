@@ -23,6 +23,8 @@ public class CodigoUtil {
     }
 
     public static boolean verificarCodigo(String tokenSalvo, String tokenEnviado) {
+        System.out.println("Token salvo: " + tokenSalvo);
+        System.out.println("Token enviado: " + tokenEnviado);
         return BCrypt.checkpw(tokenEnviado, tokenSalvo);
     }
 

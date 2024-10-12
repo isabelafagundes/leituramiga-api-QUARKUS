@@ -1,6 +1,7 @@
 package br.com.leituramiga.dto.usuario;
 
 import br.com.leituramiga.dto.endereco.EnderecoDto;
+import br.com.leituramiga.model.usuario.TipoUsuario;
 import br.com.leituramiga.model.usuario.Usuario;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -31,9 +32,9 @@ public class UsuarioDto {
         dto.email = usuario.getEmail();
         dto.nome = usuario.getNome();
         dto.username = usuario.getUsername();
-        dto.tipoUsuario = usuario.getTipoUsuario().getId();
-        dto.ativo = usuario.isAtivo();
-        dto.bloqueado = usuario.isBloqueado();
+        dto.tipoUsuario = usuario.getTipoUsuario() == null ? TipoUsuario.USUARIO.getId() : usuario.getTipoUsuario().getId();
+        dto.ativo = usuario.isAtivo() == null || usuario.isAtivo();
+        dto.bloqueado = usuario.isBloqueado() == null || usuario.isBloqueado();
         dto.tentativas = usuario.getTentativas();
         dto.celular = usuario.getCelular();
         dto.descricao = usuario.getDescricao();
@@ -41,7 +42,7 @@ public class UsuarioDto {
         dto.codigoInstituicao = usuario.getCodigoInstituicao();
         dto.nomeCidade = usuario.getNomeCidade();
         dto.nomeInstituicao = usuario.getNomeInstituicao();
-        dto.codigoEndereco = usuario.getEndereco().getCodigoEndereco();
+        dto.codigoEndereco = usuario.getEndereco() == null ? null : usuario.getEndereco().getCodigoEndereco();
         if (usuario.getEndereco() != null) dto.endereco = EnderecoDto.deModel(usuario.getEndereco());
         return dto;
     }

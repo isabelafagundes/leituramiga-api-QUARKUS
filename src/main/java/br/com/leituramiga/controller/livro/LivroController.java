@@ -48,7 +48,7 @@ public class LivroController {
         }
     }
 
-    @GET
+    @POST
     @PermitAll
     @Operation(summary = "Retorna os livros", description = "Retorna os livros a partir de filtros")
     @Path("/livros")

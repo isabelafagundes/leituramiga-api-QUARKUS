@@ -53,23 +53,25 @@ public class LivroDao {
 
     public List<Livro> obterLivroPorUsuario(String emailUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca dos livros do usuário");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
-        pstmt.setString(1, emailUsuario);
-        ResultSet resultado = pstmt.executeQuery();
-        List<Livro> livros = new ArrayList<>();
-        while (resultado.next()) livros.add(obterLivroDeResult(resultado));
-        logService.sucesso(LivroDao.class.getName(), "Busca dos livros do usuário finalizada");
-        return livros;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.OBTER_LIVRO_POR_USUARIO);
+            pstmt.setString(1, emailUsuario);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Livro> livros = new ArrayList<>();
+            while (resultado.next()) livros.add(obterLivroDeResult(resultado));
+            logService.sucesso(LivroDao.class.getName(), "Busca dos livros do usuário finalizada");
+            return livros;
+        }
     }
 
     public void salvarLivro(LivroDto livro) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando o salvamento do livro");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_LIVRO);
-        definirParametrosDeSalvamento(pstmt, livro);
-        pstmt.executeUpdate();
-        logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_LIVRO);
+            definirParametrosDeSalvamento(pstmt, livro);
+            pstmt.executeUpdate();
+            logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
+        }
     }
 
     public void atualizarLivro(LivroDto livro, String email) throws SQLException {
@@ -102,40 +104,42 @@ public class LivroDao {
 
     public boolean validarExistenciaLivro(int numeroLivro) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação da existência do livro");
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_EXISTENCIA);
-        pstmt.setInt(1, numeroLivro);
-        ResultSet resultado = pstmt.executeQuery();
-        resultado.next();
-        int qtd = resultado.getInt(1);
-        logService.sucesso(EnderecoDao.class.getName(), "Sucesso na validação de existência do livro");
-        return qtd > 0;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.VALIDAR_EXISTENCIA);
+            pstmt.setInt(1, numeroLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int qtd = resultado.getInt(1);
+            logService.sucesso(EnderecoDao.class.getName(), "Sucesso na validação de existência do livro");
+            return qtd > 0;
+        }
+
     }
 
     public List<Livro> obterLivrosPaginados(Integer pagina, Integer tamanhoPagina, String pesquisa, Integer numeroCategoria, Integer numeroInstituicao, Integer numeroCidade, Integer tipoSolicitacao, String emailUsuario) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livros paginados");
-        Connection conexao = bd.obterConexao();
-        String filtros = LivroQueries.FILTROS_LIVRO;
-        String tipoSolicitacaoQuery = tipoSolicitacao == null ? "" : tipoSolicitacao.toString();
-        if (tipoSolicitacao != null) filtros.replaceAll("TIPO_SOLICITACAO", "'%" + tipoSolicitacaoQuery + "%'");
-        if (emailUsuario != null) filtros += LivroQueries.FILTRO_EMAIL_USUARIO;
-        String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", filtros);
-        String pesquisaQuery = pesquisa == null ? "" : pesquisa;
-        query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
-        PreparedStatement pstmt = conexao.prepareStatement(query);
-        System.out.println(query);
-        pstmt.setInt(1, (numeroInstituicao != null) ? numeroInstituicao : 0);
-        pstmt.setInt(2, (numeroCategoria != null) ? numeroCategoria : 0);
-        pstmt.setInt(3, (numeroCidade != null) ? numeroCidade : 0);
-        pstmt.setInt(4, (tipoSolicitacao != null) ? tipoSolicitacao : 0);
-        pstmt.setString(5, emailUsuario);
-        pstmt.setInt(6, tamanhoPagina);
-        pstmt.setInt(7, pagina * tamanhoPagina);
-        ResultSet resultado = pstmt.executeQuery();
-        List<Livro> livros = new ArrayList<>();
-        while (resultado.next()) livros.add(obterLivroDeResult(resultado));
-        logService.sucesso(LivroDao.class.getName(), "Sucesso em obter os livros paginados");
-        return livros;
+
+        try (Connection conexao = bd.obterConexao()) {
+            String filtros = LivroQueries.FILTROS_LIVRO;
+            String tipoSolicitacaoQuery = tipoSolicitacao == null ? "" : tipoSolicitacao.toString();
+            filtros = filtros.replaceAll("TIPO_SOLICITACAO", "'%" + tipoSolicitacaoQuery + "%'");
+            if (emailUsuario != null) filtros += LivroQueries.FILTRO_EMAIL_USUARIO.replaceAll("EMAIL_USUARIO", emailUsuario);
+            String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", filtros);
+            String pesquisaQuery = pesquisa == null ? "" : pesquisa;
+            query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
+            System.out.println(query);
+            PreparedStatement pstmt = conexao.prepareStatement(query);
+            pstmt.setInt(1, (numeroInstituicao != null) ? numeroInstituicao : 0);
+            pstmt.setInt(2, (numeroCategoria != null) ? numeroCategoria : 0);
+            pstmt.setInt(3, (numeroCidade != null) ? numeroCidade : 0);
+            pstmt.setInt(4, tamanhoPagina);
+            pstmt.setInt(5, pagina * tamanhoPagina);
+            ResultSet resultado = pstmt.executeQuery();
+            List<Livro> livros = new ArrayList<>();
+            while (resultado.next()) livros.add(obterLivroDeResult(resultado));
+            logService.sucesso(LivroDao.class.getName(), "Sucesso em obter os livros paginados");
+            return livros;
+        }
     }
 
     public boolean verificarStatusDisponivel(Integer numeroLivro) throws SQLException {
@@ -219,12 +223,14 @@ public class LivroDao {
 
     public void salvarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando o salvamento da imagem do livro de código" + codigoLivro);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_IMAGEM);
-        pstmt.setString(1, caminhoImagem);
-        pstmt.setInt(2, codigoLivro);
-        pstmt.executeQuery();
-        logService.sucesso(LivroDao.class.getName(), "Sucesso em salvar a imagem do livro de código " + codigoLivro);
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_IMAGEM);
+            pstmt.setString(1, caminhoImagem);
+            pstmt.setInt(2, codigoLivro);
+            pstmt.executeQuery();
+            logService.sucesso(LivroDao.class.getName(), "Sucesso em salvar a imagem do livro de código " + codigoLivro);
+        }
+
     }
 
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {

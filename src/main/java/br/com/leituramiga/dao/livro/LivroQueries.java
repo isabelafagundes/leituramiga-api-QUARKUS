@@ -35,6 +35,7 @@ public class LivroQueries {
                     "       usuario.nome," +
                     "       instituicao_ensino.nome," +
                     "       cidade.nome," +
+                    "       NULL as tipo_solicitacao," +
                     "       categoria.nome" +
                     "FROM livro" +
                     "         INNER JOIN usuario ON usuario.email_usuario = livro.email_usuario" +
@@ -85,6 +86,7 @@ public class LivroQueries {
                     "       livro.descricao,\n" +
                     "       null as ultima_solicitacao,\n" +
                     "       null as codigo_ultima_solicitacao,\n" +
+                    "       null as tipo_solicitacao,\n" +
                     "       livro.descricao,\n" +
                     "       categoria.codigo_categoria,\n" +
                     "       livro.codigo_status_livro,\n" +
@@ -107,10 +109,10 @@ public class LivroQueries {
                     "OR usuario.nome LIKE PESQUISA\n" +
                     "OR instituicao.codigo_instituicao = ?\n" +
                     "OR categoria.codigo_categoria = ?\n" +
-                    "OR cidade.codigo_cidade = ?" +
+                    "OR cidade.codigo_cidade = ?\n" +
                     "OR livro.tipo_solicitacao LIKE TIPO_SOLICITACAO)";
 
-    public static String FILTRO_EMAIL_USUARIO = " AND usuario.email_usuario = ?";
+    public static String FILTRO_EMAIL_USUARIO = " AND usuario.email_usuario = EMAIL_USUARIO";
 
     public static String SALVAR_IMAGEM = "INSERT INTO imagem_livro (imagem, codigo_livro) " +
             "VALUES (?, ?)";

@@ -146,9 +146,8 @@ public class SolicitacaoService {
     }
 
     public void atualizarSoliciacao(SolicitacaoDto solicitacao) throws SQLException, SolicitacaoNaoExistente {
-        try {
+        try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(solicitacao.getCodigoSolicitacao());
-            Connection conexao = bd.obterConexao();
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de solicitação de código " + solicitacao.getCodigoSolicitacao());
             enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
             solicitacaoDao.atualizarSolicitacao(solicitacao);

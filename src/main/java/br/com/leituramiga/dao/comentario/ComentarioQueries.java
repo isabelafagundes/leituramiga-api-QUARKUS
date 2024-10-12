@@ -9,9 +9,9 @@ public class ComentarioQueries {
                     "          comentario.data_criacao,\n" +
                     "          comentario.hora_criacao,\n" +
                     "          comentario.email_usuario_criador,\n" +
-                    "          comentario.usuario_usuario_perfil,\n" +
+                    "          comentario.email_usuario_perfil\n" +
                     "FROM comentario\n" +
-                    " WHERE comentario.email_usuario = ?\n" +
+                    " WHERE comentario.email_usuario_perfil = ?\n" +
                     " ORDER BY comentario.data_criacao ASC";
 
     public final static String OBTER_COMENTARIOS =

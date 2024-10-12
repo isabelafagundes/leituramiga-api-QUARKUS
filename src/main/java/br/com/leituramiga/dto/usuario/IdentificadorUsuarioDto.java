@@ -7,7 +7,8 @@ public class IdentificadorUsuarioDto {
     public String username;
     public String email;
 
-    public IdentificadorUsuarioDto(String username) {
+    public IdentificadorUsuarioDto(String username, String email) {
         this.username = username;
+        this.email = email;
     }
 }

@@ -60,8 +60,6 @@ public class UsuarioController {
         }
     }
 
-
-
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
@@ -80,7 +78,7 @@ public class UsuarioController {
         }
     }
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
     @Path("/usuarios")
@@ -100,8 +98,9 @@ public class UsuarioController {
         }
     }
 
-    @GET
+    @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     @Authenticated
     @Path("/usuario")
     @Operation(summary = "Retorna o usuário", description = "Retorna o usuário a partir do identificador (email ou username)")

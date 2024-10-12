@@ -34,7 +34,7 @@ public class UsuarioDao {
         String md5Identificador = HashService.obterMd5Email(login);
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de login " + md5Identificador);
-            Usuario usuario = obterUsuarioPorIdentificador(login, conexao);
+            Usuario usuario = obterUsuarioPorIdentificador(login, conexao, true);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de login " + md5Identificador);
             return usuario;
         }
@@ -63,13 +63,14 @@ public class UsuarioDao {
 
     public void desativarUsuario(String email) throws SQLException {
         String md5Login = HashService.obterMd5Email(email);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a desativação do usuário de email " + md5Login);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.EXCLUIR_USUARIO);
-        pstmt.setInt(1, 0);
-        pstmt.setString(2, email);
-        pstmt.executeUpdate();
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na desativação do usuário de email " + md5Login);
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a desativação do usuário de email " + md5Login);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.EXCLUIR_USUARIO);
+            pstmt.setInt(1, 0);
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na desativação do usuário de email " + md5Login);
+        }
     }
 
     public Boolean validarExistencia(String email, String username) throws SQLException {
@@ -81,43 +82,46 @@ public class UsuarioDao {
     }
 
     private boolean validarExistenciaEmail(String email) throws SQLException {
-        String md5Email = HashService.obterMd5Email(email);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a validação da existência do email " + md5Email);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_EXISTENCIA);
-        pstmt.setString(1, email);
-        pstmt.setString(2, email);
-        ResultSet resultado = pstmt.executeQuery();
-        if (resultado.next()) {
-            boolean existencia = resultado.getInt(1) > 0;
-            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do email " + md5Email);
-            return existencia;
+        try (Connection conexao = bd.obterConexao()) {
+            String md5Email = HashService.obterMd5Email(email);
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a validação da existência do email " + md5Email);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_EXISTENCIA);
+            pstmt.setString(1, email);
+            pstmt.setString(2, email);
+            ResultSet resultado = pstmt.executeQuery();
+            if (resultado.next()) {
+                boolean existencia = resultado.getInt(1) > 0;
+                logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do email " + md5Email);
+                return existencia;
+            }
+            return false;
         }
-        return false;
     }
 
     private boolean validarExistenciaUsername(String username) throws SQLException {
         String md5Username = HashService.obterMd5Email(username);
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a validação da existência do username " + md5Username);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_USERNAME);
-        pstmt.setString(1, username);
-        ResultSet resultado = pstmt.executeQuery();
-        boolean existencia = resultado.next() && resultado.getBoolean(1);
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do username " + md5Username);
-        return existencia;
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.VERIFICAR_USERNAME);
+            pstmt.setString(1, username);
+            ResultSet resultado = pstmt.executeQuery();
+            boolean existencia = resultado.next() && resultado.getBoolean(1);
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na validação da existência do username " + md5Username);
+            return existencia;
+        }
     }
 
 
     public void atualizarSenha(String senha, String email) throws SQLException {
         String md5Login = HashService.obterMd5Email(email);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a atualização da senha do usuário de email " + md5Login);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ALTERAR_SENHA);
-        pstmt.setString(1, senha);
-        pstmt.setString(2, email);
-        pstmt.executeUpdate();
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na atualização da senha do usuário de email " + md5Login);
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a atualização da senha do usuário de email " + md5Login);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ALTERAR_SENHA);
+            pstmt.setString(1, senha);
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na atualização da senha do usuário de email " + md5Login);
+        }
     }
 
     public String salvarCodigoAlteracao(String email, Connection conexao) throws SQLException {
@@ -137,7 +141,7 @@ public class UsuarioDao {
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de segurança do usuário de email " + md5Login);
 
         try (Connection conexao = bd.obterConexao()) {
-            Usuario usuario = obterUsuarioPorIdentificador(identificador, conexao);
+            Usuario usuario = obterUsuarioPorIdentificador(identificador, conexao, false);
             if (usuario == null) throw new UsuarioNaoExistente();
             Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de segurança do usuário de email " + md5Login);
@@ -145,10 +149,11 @@ public class UsuarioDao {
         }
     }
 
-    private Usuario obterUsuarioPorIdentificador(String identificador, Connection conexao) throws SQLException {
+    private Usuario obterUsuarioPorIdentificador(String identificador, Connection conexao, boolean ativo) throws SQLException {
         PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_E_USUARIO);
-        pstmt.setString(1, identificador);
+        pstmt.setBoolean(1, ativo);
         pstmt.setString(2, identificador);
+        pstmt.setString(3, identificador);
         ResultSet resultado = pstmt.executeQuery();
         Usuario usuario = null;
         if (resultado.next()) usuario = obterUsuarioDeResultSet(resultado);
@@ -157,35 +162,36 @@ public class UsuarioDao {
 
     public void ativarUsuario(String email) throws SQLException {
         String md5Login = HashService.obterMd5Email(email);
-        logService.iniciar(UsuarioDao.class.getName(), "Iniciando a ativação do usuário de email " + md5Login);
-        Connection conexao = bd.obterConexao();
-        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATIVAR_USUARIO);
-        pstmt.setBoolean(1, true);
-        pstmt.setString(2, email);
-        pstmt.executeUpdate();
-        logService.sucesso(UsuarioDao.class.getName(), "Sucesso na ativação do usuário de email " + md5Login);
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a ativação do usuário de email " + md5Login);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATIVAR_USUARIO);
+            pstmt.setBoolean(1, true);
+            pstmt.setString(2, email);
+            pstmt.executeUpdate();
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na ativação do usuário de email " + md5Login);
+        }
     }
 
     public void atualizarTentativas(String login, boolean resetarTentativas) throws SQLException, ClassNotFoundException {
         String md5Login = HashService.obterMd5Email(login);
         try {
-            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a atualização nas tentativas de login do usuário de email " + md5Login);
-
-            Usuario usuario = obterUsuario(login);
-            if (usuario == null) {
-                logService.sucesso(UsuarioDao.class.getName(), "Usuário não encontrado para o email " + md5Login);
-                return;
-            }
-
-            Integer tentativasAtuais = usuario.getTentativas();
-            if (tentativasAtuais > 0) {
-                Integer numeroDeTentativas = resetarTentativas ? tentativas : --tentativasAtuais;
-                atualizarTentativasUsuario(numeroDeTentativas, login);
-                logService.sucesso(UsuarioDao.class.getName(), "Sucesso na atualização das tentativas de login do usuário de email " + md5Login);
-            } else {
-                bloquearUsuario(login);
-                logService.sucesso(UsuarioDao.class.getName(), "Sucesso ao bloquear o usuário de email " + md5Login + " ao exceder o limite de tentativas de login");
-            }
+//            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a atualização nas tentativas de login do usuário de email " + md5Login);
+//
+//            Usuario usuario = obterUsuario(login);
+//            if (usuario == null) {
+//                logService.sucesso(UsuarioDao.class.getName(), "Usuário não encontrado para o email " + md5Login);
+//                return;
+//            }
+//
+//            Integer tentativasAtuais = usuario.getTentativas();
+//            if (tentativasAtuais > 0) {
+//                Integer numeroDeTentativas = resetarTentativas ? tentativas : --tentativasAtuais;
+//                atualizarTentativasUsuario(numeroDeTentativas, login);
+//                logService.sucesso(UsuarioDao.class.getName(), "Sucesso na atualização das tentativas de login do usuário de email " + md5Login);
+//            } else {
+//                bloquearUsuario(login);
+//                logService.sucesso(UsuarioDao.class.getName(), "Sucesso ao bloquear o usuário de email " + md5Login + " ao exceder o limite de tentativas de login");
+//            }
         } catch (Exception e) {
             logService.erro(UsuarioDao.class.getName(), "Erro ao atualizar as tentativas de login do usuário de email " + md5Login, e);
             throw e;
@@ -229,8 +235,8 @@ public class UsuarioDao {
             String pesquisaQuery = pesquisa == null ? "" : pesquisa;
             String query = UsuarioQueries.OBTER_USUARIOS_PAGINADOS.replace("PESQUISA", "'%" + pesquisaQuery + "%'");
             PreparedStatement pstmt = conexao.prepareStatement(query);
-            pstmt.setInt(1, numeroInstituicao);
-            pstmt.setInt(2, numeroCidade);
+            pstmt.setInt(1, numeroInstituicao == null ? 0 : numeroInstituicao);
+            pstmt.setInt(2, numeroCidade == null ? 0 : numeroCidade);
             pstmt.setInt(3, tamanhoPagina);
             pstmt.setInt(4, numeroPagina * tamanhoPagina);
             ResultSet resultado = pstmt.executeQuery();
