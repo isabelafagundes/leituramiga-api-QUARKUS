@@ -100,7 +100,7 @@ public class LivroQueries {
                     "LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
                     "WHERE livro.codigo_status_livro = 1\n" +
                     "  AND (\n" +
-                    "      (livro.nome LIKE PESQUISA OR usuario.nome LIKE PESQUISA)\n" +
+                    "      (livro.nome LIKE PESQUISA OR usuario.nome LIKE PESQUISA OR livro.autor LIKE PESQUISA)\n" +
                     "      AND (instituicao.codigo_instituicao = ? OR ? IS NULL)\n" +
                     "      AND (cidade.codigo_cidade = ? OR ? IS NULL)\n" +
                     "      AND (categoria.codigo_categoria = ? OR ? IS NULL)\n" +
