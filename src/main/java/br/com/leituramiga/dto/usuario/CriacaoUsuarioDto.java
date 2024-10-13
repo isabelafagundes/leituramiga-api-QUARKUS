@@ -50,7 +50,8 @@ public class CriacaoUsuarioDto {
                 dto.codigoInstituicao,
                 EnderecoDto.paraModel(dto.endereco),
                 null,
-                null
+                null,
+                0
         );
     }
 

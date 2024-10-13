@@ -6,12 +6,11 @@ public class EnderecoQueries {
             "SELECT * FROM endereco "
                     + "WHERE codigo_endereco = ?;";
 
-    public static final String OBTER_CIDADES_POR_UF ="SELECT cidade.codigo_cidade, " +
+    public static final String OBTER_CIDADES_POR_UF ="SELECT DISTINCT cidade.codigo_cidade, " +
             "cidade.nome, " +
             "cidade.estado " +
             "FROM cidade WHERE cidade.estado = ? " +
-            "OR cidade.estado LIKE PESQUISA " +
-            "OR cidade.nome LIKE PESQUISA " +
+            "AND cidade.nome LIKE PESQUISA " +
             "ORDER BY cidade.nome ASC; ";
 
     public static final String OBTER_ENDERECO_POR_USUARIO =
@@ -44,6 +43,7 @@ public class EnderecoQueries {
             "codigo_cidade = ?, " +
             "endereco_principal = ?, " +
             "numero = ?;";
+
     public static final String SALVAR_ENDERECO =
             "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +

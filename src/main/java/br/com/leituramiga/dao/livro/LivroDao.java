@@ -120,27 +120,47 @@ public class LivroDao {
         logService.iniciar(LivroDao.class.getName(), "Iniciando busca de livros paginados");
 
         try (Connection conexao = bd.obterConexao()) {
-            String filtros = LivroQueries.FILTROS_LIVRO;
-            String tipoSolicitacaoQuery = tipoSolicitacao == null ? "" : tipoSolicitacao.toString();
-            filtros = filtros.replaceAll("TIPO_SOLICITACAO", "'%" + tipoSolicitacaoQuery + "%'");
-            if (emailUsuario != null) filtros += LivroQueries.FILTRO_EMAIL_USUARIO.replaceAll("EMAIL_USUARIO", emailUsuario);
-            String query = LivroQueries.OBTER_LIVROS_PAGINADOS.replaceAll("FILTROS_LIVRO", filtros);
+            String query = LivroQueries.OBTER_LIVROS_PAGINADOS;
+
             String pesquisaQuery = pesquisa == null ? "" : pesquisa;
-            query = query.replaceAll("PESQUISA", "'%" + pesquisaQuery + "%'");
+            query = query.replace("PESQUISA", "'%" + pesquisaQuery + "%'");
+
+            String tipoSolicitacaoQuery = tipoSolicitacao == null ? "" : tipoSolicitacao.toString();
+            query = query.replace("TIPO_SOLICITACAO", "'%" + tipoSolicitacaoQuery + "%'");
+
             System.out.println(query);
+
             PreparedStatement pstmt = conexao.prepareStatement(query);
-            pstmt.setInt(1, (numeroInstituicao != null) ? numeroInstituicao : 0);
-            pstmt.setInt(2, (numeroCategoria != null) ? numeroCategoria : 0);
-            pstmt.setInt(3, (numeroCidade != null) ? numeroCidade : 0);
-            pstmt.setInt(4, tamanhoPagina);
-            pstmt.setInt(5, pagina * tamanhoPagina);
+
+            pstmt.setObject(1, numeroInstituicao);
+            pstmt.setObject(2, numeroInstituicao);
+
+            pstmt.setObject(3, numeroCidade);
+            pstmt.setObject(4, numeroCidade);
+
+            pstmt.setObject(5, numeroCategoria);
+            pstmt.setObject(6, numeroCategoria);
+
+            pstmt.setString(7, String.valueOf(tipoSolicitacao));
+
+            pstmt.setString(8, emailUsuario);
+            pstmt.setString(9, emailUsuario);
+
+            pstmt.setInt(10, tamanhoPagina);
+            pstmt.setInt(11, pagina * tamanhoPagina);
+
+
             ResultSet resultado = pstmt.executeQuery();
             List<Livro> livros = new ArrayList<>();
-            while (resultado.next()) livros.add(obterLivroDeResult(resultado));
+            while (resultado.next()) {
+                livros.add(obterLivroDeResult(resultado));
+            }
+
             logService.sucesso(LivroDao.class.getName(), "Sucesso em obter os livros paginados");
             return livros;
         }
     }
+
 
     public boolean verificarStatusDisponivel(Integer numeroLivro) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a validação do status de disponibilidade do livro");

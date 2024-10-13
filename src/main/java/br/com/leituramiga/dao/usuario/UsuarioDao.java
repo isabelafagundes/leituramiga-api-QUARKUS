@@ -235,10 +235,14 @@ public class UsuarioDao {
             String pesquisaQuery = pesquisa == null ? "" : pesquisa;
             String query = UsuarioQueries.OBTER_USUARIOS_PAGINADOS.replace("PESQUISA", "'%" + pesquisaQuery + "%'");
             PreparedStatement pstmt = conexao.prepareStatement(query);
-            pstmt.setInt(1, numeroInstituicao == null ? 0 : numeroInstituicao);
-            pstmt.setInt(2, numeroCidade == null ? 0 : numeroCidade);
-            pstmt.setInt(3, tamanhoPagina);
-            pstmt.setInt(4, numeroPagina * tamanhoPagina);
+            pstmt.setObject(1, numeroInstituicao);
+            pstmt.setObject(2, numeroInstituicao);
+
+            pstmt.setObject(3, numeroCidade);
+            pstmt.setObject(4, numeroCidade);
+
+            pstmt.setInt(5, tamanhoPagina);
+            pstmt.setInt(6, numeroPagina * tamanhoPagina);
             ResultSet resultado = pstmt.executeQuery();
             List<Usuario> usuarios = new ArrayList<>();
             while (resultado.next()) usuarios.add(obterUsuarioResumidoDeResultSet(resultado));
@@ -256,7 +260,8 @@ public class UsuarioDao {
                 resultado.getString("imagem"),
                 resultado.getInt("codigo_instituicao"),
                 resultado.getString("nome_cidade"),
-                resultado.getString("nome_instituicao")
+                resultado.getString("nome_instituicao"),
+                resultado.getInt("quantidade_livros")
         );
     }
 
@@ -278,7 +283,8 @@ public class UsuarioDao {
                 resultado.getInt("codigo_instituicao"),
                 null,
                 resultado.getString("nome_cidade"),
-                resultado.getString("nome_instituicao")
+                resultado.getString("nome_instituicao"),
+                resultado.getInt("quantidade_livros")
         );
     }
 }

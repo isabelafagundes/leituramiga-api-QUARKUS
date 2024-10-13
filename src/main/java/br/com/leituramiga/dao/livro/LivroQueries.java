@@ -20,11 +20,11 @@ public class LivroQueries {
                     "       livro.tipo_solicitacao," +
                     "       cidade.nome as nome_cidade " +
                     "FROM livro " +
-                    "         INNER JOIN usuario ON usuario.email_usuario = livro.email_usuario " +
-                    "         INNER JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria " +
-                    "         INNER JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao " +
-                    "         INNER JOIN endereco ON endereco.email_usuario = usuario.email_usuario " +
-                    "         INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
+                    "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario " +
+                    "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria " +
+                    "         LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao " +
+                    "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario " +
+                    "         LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
                     " WHERE livro.codigo_livro = ?;";
 
     public static final String OBTER_LIVRO_POR_USUARIO =
@@ -38,10 +38,10 @@ public class LivroQueries {
                     "       NULL as tipo_solicitacao," +
                     "       categoria.nome" +
                     "FROM livro" +
-                    "         INNER JOIN usuario ON usuario.email_usuario = livro.email_usuario" +
-                    "         INNER JOIN instituicao_ensino ON instituicao_ensino.codigo_instituicao = usuario.codigo_instituicao" +
-                    "         INNER JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria" +
-                    "         INNER JOIN cidade ON cidade.codigo_cidade = livro.codigo_cidade" +
+                    "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario" +
+                    "         LEFT JOIN instituicao_ensino ON instituicao_ensino.codigo_instituicao = usuario.codigo_instituicao" +
+                    "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria" +
+                    "         LEFT JOIN cidade ON cidade.codigo_cidade = livro.codigo_cidade" +
                     "WHERE usuario.email_usuario = ?;";
 
     public static final String VALIDAR_STATUS_DISPONIVEL = "SELECT COUNT(1) FROM livro " +
@@ -78,28 +78,36 @@ public class LivroQueries {
                     "       livro.nome,\n" +
                     "       livro.estado_fisico,\n" +
                     "       livro.email_usuario,\n" +
-                    "       usuario.nome as nome_usuario,\n" +
-                    "       instituicao.nome as nome_instituicao,\n" +
-                    "       cidade.nome as nome_cidade,\n" +
+                    "       usuario.nome        AS nome_usuario,\n" +
+                    "       instituicao.nome    AS nome_instituicao,\n" +
+                    "       cidade.nome         AS nome_cidade,\n" +
                     "       cidade.codigo_cidade,\n" +
                     "       livro.autor,\n" +
                     "       livro.descricao,\n" +
-                    "       null as ultima_solicitacao,\n" +
-                    "       null as codigo_ultima_solicitacao,\n" +
-                    "       null as tipo_solicitacao,\n" +
+                    "       NULL                AS ultima_solicitacao,\n" +
+                    "       NULL                AS codigo_ultima_solicitacao,\n" +
+                    "       NULL                AS tipo_solicitacao,\n" +
                     "       livro.descricao,\n" +
                     "       categoria.codigo_categoria,\n" +
                     "       livro.codigo_status_livro,\n" +
                     "       livro.descricao,\n" +
-                    "       categoria.descricao as nome_categoria\n" +
+                    "       categoria.descricao AS nome_categoria\n" +
                     "FROM livro\n" +
-                    "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
-                    "         LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao\n" +
-                    "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
-                    "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario\n" +
-                    "         LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
-                    "FILTROS_LIVRO " +
-                    "LIMIT ? OFFSET ?;";
+                    "LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
+                    "LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao\n" +
+                    "LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
+                    "LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario\n" +
+                    "LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
+                    "WHERE livro.codigo_status_livro = 1\n" +
+                    "  AND (\n" +
+                    "      (livro.nome LIKE PESQUISA OR usuario.nome LIKE PESQUISA)\n" +
+                    "      AND (instituicao.codigo_instituicao = ? OR ? IS NULL)\n" +
+                    "      AND (cidade.codigo_cidade = ? OR ? IS NULL)\n" +
+                    "      AND (categoria.codigo_categoria = ? OR ? IS NULL)\n" +
+                    "      AND (livro.tipo_solicitacao LIKE TIPO_SOLICITACAO OR ? IS NULL)\n" +
+                    "      AND (usuario.email_usuario = ? OR ? IS NULL)\n" +
+                    "  )\n" +
+                    "LIMIT ? OFFSET ?;\n";
 
     public static String FILTROS_LIVRO =
             "WHERE livro.codigo_status_livro = 1 AND (livro.nome LIKE PESQUISA\n" +

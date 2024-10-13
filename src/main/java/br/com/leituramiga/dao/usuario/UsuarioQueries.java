@@ -16,15 +16,16 @@ public class UsuarioQueries {
                     "null as tentativas, " +
                     "null as bloqueado, " +
                     "codigo_alteracao, " +
+                    "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario) as quantidade_livros, " +
                     "usuario.tipo_usuario, " +
                     "usuario.celular, " +
                     "usuario.descricao, " +
                     "usuario.imagem, " +
                     "usuario.ativo " +
                     "FROM usuario " +
-                    "INNER JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
-                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
-                    "INNER JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
+                    "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
+                    "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
                     "WHERE (usuario.ativo = ? AND usuario.bloqueado = 0) " +
                     "AND (usuario.email_usuario = ? " +
                     "OR usuario.username = ?); ";
@@ -58,16 +59,18 @@ public class UsuarioQueries {
             "instituicao.nome as nome_instituicao, " +
             "usuario.codigo_instituicao, " +
             "usuario.descricao, " +
+            "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario) as quantidade_livros, " +
             "usuario.ativo " +
             "FROM usuario " +
             "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
             "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
             "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
             "WHERE usuario.ativo = 1 AND usuario.bloqueado = 0 " +
-            "AND (usuario.nome LIKE PESQUISA " +
-            "OR usuario.username LIKE PESQUISA " +
-            "OR instituicao.codigo_instituicao = ? " +
-            "OR endereco.codigo_cidade = ?) " +
+            "AND (" +
+            "(usuario.nome LIKE PESQUISA OR usuario.username LIKE PESQUISA) " +
+            "AND (instituicao.codigo_instituicao = ? OR ? IS NULL)" +
+            "AND (endereco.codigo_cidade = ? OR ? IS NULL)" +
+            ") " +
             "LIMIT ? OFFSET ?;";
 
     public static final String OBTER_SENHA =

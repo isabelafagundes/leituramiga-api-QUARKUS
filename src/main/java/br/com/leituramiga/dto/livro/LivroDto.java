@@ -54,18 +54,6 @@ public class LivroDto {
         return codigoLivro;
     }
 
-    public void setCodigoLivro(Integer codigoLivro) {
-        this.codigoLivro = codigoLivro;
-    }
-
-    public String getNomeUsuario() {
-        return nomeUsuario;
-    }
-
-    public void setNomeUsuario(String nomeUsuario) {
-        this.nomeUsuario = nomeUsuario;
-    }
-
     public String getTitulo() {
         return titulo;
     }

@@ -61,6 +61,7 @@ public class Livro {
         return livro;
     }
 
+
     public String getTipoSolicitacao() {
         return tipoSolicitacao;
     }

@@ -17,6 +17,7 @@ public class Usuario {
     private String descricao;
     private String imagem;
     private Integer codigoInstituicao;
+    private Integer quantidadeLivros;
     private Endereco endereco;
     private String nomeCidade;
     private String nomeInstituicao;
@@ -32,7 +33,8 @@ public class Usuario {
             String imagem,
             Integer codigoInstituicao,
             String nomeCidade,
-            String nomeInstituicao
+            String nomeInstituicao,
+            Integer quantidadeLivros
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -43,7 +45,7 @@ public class Usuario {
         usuario.codigoInstituicao = codigoInstituicao;
         usuario.nomeCidade = nomeCidade;
         usuario.nomeInstituicao = nomeInstituicao;
-
+        usuario.quantidadeLivros = quantidadeLivros;
         return usuario;
     }
 
@@ -63,7 +65,8 @@ public class Usuario {
             Integer codigoInstituicao,
             Endereco endereco,
             String nomeCidade,
-            String nomeInstituicao
+            String nomeInstituicao,
+            Integer quantidadeLivros
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -82,8 +85,20 @@ public class Usuario {
         usuario.endereco = endereco;
         usuario.nomeCidade = nomeCidade;
         usuario.nomeInstituicao = nomeInstituicao;
-
+        usuario.quantidadeLivros = quantidadeLivros;
         return usuario;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public Integer getQuantidadeLivros() {
+        return quantidadeLivros;
     }
 
     public String getNome() {
