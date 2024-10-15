@@ -3,6 +3,7 @@ package br.com.leituramiga.service.solicitacao;
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dao.solicitacao.SolicitacaoDao;
+import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.model.endereco.Endereco;
 import br.com.leituramiga.model.exception.livro.LivroJaDesativado;
@@ -12,6 +13,7 @@ import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEnt
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoAberta;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoExistente;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoPendente;
+import br.com.leituramiga.model.solicitacao.NotificacaoSolicitacao;
 import br.com.leituramiga.model.solicitacao.Solicitacao;
 import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.livro.LivroService;
@@ -110,6 +112,7 @@ public class SolicitacaoService {
             conexao.setAutoCommit(false);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
             Integer endereco = atualizarEnderecoSolicitacao(solicitacao, conexao);
+            logService.iniciar(SolicitacaoService.class.getName(), "Endereço retornado: " + endereco);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de solicitação");
             Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, endereco, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosUsuarioSolicitante(), numeroSolicitacao, conexao);
@@ -128,10 +131,10 @@ public class SolicitacaoService {
 
     private Integer atualizarEnderecoSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
         Integer endereco = 0;
-        if (!enderecoDao.validarExistencia(solicitacao.getEmailUsuarioSolicitante()) && solicitacao.endereco == null) {
+        if (solicitacao.endereco != null) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
             endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
-        } else {
+        } else if (enderecoDao.validarExistencia(solicitacao.emailUsuarioSolicitante)) {
             Endereco enderecoSolicitante = enderecoDao.obterEnderecoUsuario(solicitacao.getEmailUsuarioSolicitante());
             endereco = enderecoSolicitante.getCodigoEndereco();
         }
@@ -171,5 +174,17 @@ public class SolicitacaoService {
         if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo)) throw new SolicitacaoExcedeuPrazoEntrega();
     }
 
+
+    public List<NotificacaoSolicitacaoDto> obterNotificacoesSolicitacao(String email) throws SQLException {
+        try {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de notificações de solicitação para o email " + email);
+            List<NotificacaoSolicitacao> notificacoes = solicitacaoDao.obterNotificacoesUsuario(email);
+            logService.sucesso(SolicitacaoService.class.getName(), "Busca de notificações de solicitação finalizada para o email " + email);
+            return notificacoes.stream().map(NotificacaoSolicitacaoDto::deModel).toList();
+        } catch (Exception e) {
+            logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca de notificações de solicitação para o email " + email, e);
+            throw e;
+        }
+    }
 
 }

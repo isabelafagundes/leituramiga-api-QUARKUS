@@ -1,10 +1,13 @@
 package br.com.leituramiga.controller.solicitacao;
 
+import br.com.leituramiga.dto.livro.FiltrosDto;
+import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEntrega;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoAberta;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoExistente;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoPendente;
+import br.com.leituramiga.model.solicitacao.NotificacaoSolicitacao;
 import br.com.leituramiga.service.solicitacao.SolicitacaoService;
 import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.RequestScoped;
@@ -102,13 +105,27 @@ public class SolicitacaoController {
     }
 
 
-    @GET
+    @POST
     @Authenticated
     @Path("/solicitacoes")
     @Operation(summary = "Retorna as solicitações do usuário", description = "Retorna as solicitações do usuário do token de autenticação")
-    public Response obterSolicitacoesPaginadas(@QueryParam("pagina") Integer pagina, @QueryParam("tamanhoPagina") Integer tamanhoPagina) {
+        public Response obterSolicitacoesPaginadas(FiltrosDto dto) {
         try {
-            List<SolicitacaoDto> solicitacoes = service.obterSolicitacoesPaginadas(pagina, tamanhoPagina, email);
+            List<SolicitacaoDto> solicitacoes = service.obterSolicitacoesPaginadas(dto.numeroPagina, dto.tamanhoPagina, email);
+            return Response.ok(solicitacoes).build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @GET
+    @Authenticated
+    @Path("/notificacoes")
+    @Operation(summary = "Retorna as notificações do usuário", description = "Retorna as notificações do usuário do token de autenticação")
+    public Response obterNotificacoes() {
+        try {
+            List<NotificacaoSolicitacaoDto> solicitacoes = service.obterNotificacoesSolicitacao(email);
             return Response.ok(solicitacoes).build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

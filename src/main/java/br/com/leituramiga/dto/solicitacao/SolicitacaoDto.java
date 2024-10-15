@@ -48,14 +48,14 @@ public class SolicitacaoDto {
         dto.horaDevolucao = solicitacao.getHoraDevolucao();
         dto.horaEntrega = solicitacao.getHoraEntrega();
         dto.informacoesAdicionais = solicitacao.getInformacoesAdicionais();
-        dto.endereco = EnderecoDto.deModel(solicitacao.getEndereco());
+        dto.endereco = solicitacao.getEndereco() == null ? null : EnderecoDto.deModel(solicitacao.getEndereco());
         dto.motivoRecusa = solicitacao.getMotivoRecusa();
         dto.dataAtualizacao = solicitacao.getDataAtualizacao();
         dto.horaAtualizacao = solicitacao.getHoraAtualizacao();
         dto.dataAceite = solicitacao.getDataAceite();
         dto.horaAceite = solicitacao.getHoraAceite();
-        dto.livrosTroca = solicitacao.getLivrosTroca().stream().map(LivroSolicitacaoDto::deModel).toList();
-        dto.livrosUsuarioSolicitante = solicitacao.getLivrosUsuarioCriador().stream().map(LivroSolicitacaoDto::deModel).toList();
+        dto.livrosTroca = solicitacao.getLivrosTroca() == null ? null : solicitacao.getLivrosTroca().stream().map(LivroSolicitacaoDto::deModel).toList();
+        dto.livrosUsuarioSolicitante = solicitacao.getLivrosUsuarioCriador() == null ? null : solicitacao.getLivrosUsuarioCriador().stream().map(LivroSolicitacaoDto::deModel).toList();
         return dto;
     }
 

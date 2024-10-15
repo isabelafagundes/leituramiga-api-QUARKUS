@@ -132,6 +132,7 @@ public class LivroService {
             for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
                 validarStatusLivro(livroSolicitacaoDto.codigoLivro, email);
             }
+            if (livroSolicitacaoDtos.isEmpty()) return;
             logService.iniciar(LivroService.class.getName(), "Iniciando a atualização dos livros indisponíveis");
             dao.atualizarLivrosIndisponiveis(numeroSolicitacao, livroSolicitacaoDtos, conexao);
             logService.sucesso(LivroService.class.getName(), "Sucesso na atualização dos livros indisponíveis");

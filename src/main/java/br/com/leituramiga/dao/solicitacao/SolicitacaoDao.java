@@ -6,6 +6,7 @@ import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.model.DataHora;
 import br.com.leituramiga.model.endereco.Endereco;
 import br.com.leituramiga.model.livro.LivroSolicitacao;
+import br.com.leituramiga.model.solicitacao.NotificacaoSolicitacao;
 import br.com.leituramiga.model.solicitacao.Solicitacao;
 import br.com.leituramiga.model.solicitacao.TipoSolicitacao;
 import br.com.leituramiga.service.autenticacao.LogService;
@@ -34,7 +35,7 @@ public class SolicitacaoDao {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_PENDENTE);
             ResultSet rs = ps.executeQuery();
             List<Solicitacao> solicitacoes = new ArrayList<>();
-            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs));
+            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs, true));
             return solicitacoes;
         }
     }
@@ -43,15 +44,14 @@ public class SolicitacaoDao {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_ANDAMENTO_PAGINADAS);
             DataHora dataHora = DataHora.hoje();
-            ps.setInt(1, (pagina - 1) * quantidade);
-            ps.setInt(2, quantidade);
-            ps.setString(3, email);
-            ps.setString(4, email);
-            ps.setString(5, dataHora.dataFormatada("yyyy-MM-dd"));
-            ps.setString(6, dataHora.dataFormatada("HH:mm:ss"));
+            ps.setString(1, email);
+            ps.setString(2, email);
+            ps.setInt(3, quantidade);
+            ps.setInt(4, pagina * quantidade);
+
             ResultSet rs = ps.executeQuery();
             List<Solicitacao> solicitacoes = new ArrayList<>();
-            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs));
+            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs, true));
             return solicitacoes;
         }
     }
@@ -63,7 +63,7 @@ public class SolicitacaoDao {
             ps.setInt(1, codigo);
             ResultSet rs = ps.executeQuery();
             Solicitacao solicitacao = new Solicitacao();
-            if (rs.next()) solicitacao = obterSolicitacaoDeResult(rs);
+            if (rs.next()) solicitacao = obterSolicitacaoDeResult(rs, true);
             obterSolicitacaoComLivros(solicitacao);
             logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação " + solicitacao.getCodigoSolicitacao() + " obtida com sucesso");
             return solicitacao;
@@ -87,6 +87,20 @@ public class SolicitacaoDao {
             }
         }
         return null;
+    }
+
+    public List<NotificacaoSolicitacao> obterNotificacoesUsuario(String email) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção das notificações do usuário " + email);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_NOTIFICACOES_SOLICITACAO);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            List<NotificacaoSolicitacao> notificacoes = new ArrayList<>();
+            while (rs.next()) notificacoes.add(obterNotificacaoDeResult(rs));
+            logService.sucesso(SolicitacaoDao.class.getName(), "Notificações do usuário " + email + " obtidas com sucesso");
+            return notificacoes;
+
+        }
     }
 
     private void definirParametrosSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco, PreparedStatement pstmt) throws SQLException {
@@ -135,15 +149,12 @@ public class SolicitacaoDao {
             pstmt.setInt(16, solicitacao.getEndereco().getCodigoEndereco());
             pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
             pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação atualizada com sucesso");
         }
     }
 
     private void obterSolicitacaoComLivros(Solicitacao solicitacao) throws SQLException {
-        System.out.println("EMAIL: " + solicitacao.getEmailUsuarioSolicitante());
-        System.out.println("CODIGO: " + solicitacao.getCodigoSolicitacao());
-
         List<LivroSolicitacao> livroSolicitacao = obterLivrosSolicitacaoUsuarioCriador(solicitacao.getEmailUsuarioSolicitante(), solicitacao.getCodigoSolicitacao());
         System.out.println(livroSolicitacao.size());
         logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + solicitacao.getCodigoSolicitacao() + " do usuário " + solicitacao.getEmailUsuarioSolicitante());
@@ -166,7 +177,7 @@ public class SolicitacaoDao {
             pstmt.setString(3, motivoRecusa);
             pstmt.setInt(4, codigo);
             pstmt.setString(5, email);
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na recusa da solicitação de código " + codigo);
         }
 
@@ -182,7 +193,7 @@ public class SolicitacaoDao {
             pstmt.setString(3, motivoRecusa);
             pstmt.setInt(4, codigo);
             pstmt.setString(5, email);
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso no cancelamento da solicitação de código " + codigo);
         }
     }
@@ -196,9 +207,9 @@ public class SolicitacaoDao {
             pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
             pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
             pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
-            pstmt.setInt(4, codigo);
-            pstmt.setString(5, email);
-            pstmt.executeQuery();
+            pstmt.setInt(5, codigo);
+            pstmt.setString(6, email);
+            pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na aceitação da solicitação de código " + codigo);
         }
     }
@@ -288,7 +299,7 @@ public class SolicitacaoDao {
     }
 
 
-    public Solicitacao obterSolicitacaoDeResult(ResultSet result) throws SQLException {
+    public Solicitacao obterSolicitacaoDeResult(ResultSet result, boolean endereco) throws SQLException {
         return Solicitacao.criar(
                 result.getInt("codigo_solicitacao"),
                 result.getString("data_criacao"),
@@ -309,7 +320,7 @@ public class SolicitacaoDao {
                 result.getString("email_usuario_receptor"),
                 result.getInt("codigo_forma_entrega"),
                 result.getString("codigo_rastreio_correio"),
-                obterEnderecoDeResult(result),
+                endereco ? obterEnderecoDeResult(result) : null,
                 null,
                 null
 
@@ -339,6 +350,14 @@ public class SolicitacaoDao {
                 result.getString("estado"),
                 result.getString("numero"),
                 result.getInt("codigo_cidade")
+        );
+    }
+
+    public NotificacaoSolicitacao obterNotificacaoDeResult(ResultSet result) throws SQLException {
+        return NotificacaoSolicitacao.criar(
+                result.getInt("codigo_solicitacao"),
+                result.getString("nome"),
+                result.getString("email_usuario_solicitante")
         );
     }
 
