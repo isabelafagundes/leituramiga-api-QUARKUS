@@ -40,10 +40,44 @@ public class SolicitacaoDao {
         }
     }
 
+    public void recusarSolicitacoesComLivroIndisponivel(List<LivroSolicitacaoDto> livrosIndisponiveis,Integer codigo) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            String codigosLivros = concatenarCodigosLivros(livrosIndisponiveis);
+            String query = SolicitacaoQueries.RECUSAR_SOLICITACOES_COM_LIVRO.replace("CODIGOS_LIVROS", codigosLivros);
+            PreparedStatement ps = conexao.prepareStatement(query);
+            ps.setInt(1, codigo);
+            ps.executeUpdate();
+        }
+    }
+
+    public List<Solicitacao> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_HISTORICO_SOLICITACOES_PAGINADAS);
+            ps.setString(1, email);
+            ps.setString(2, email);
+            ps.setInt(3, quantidade);
+            ps.setInt(4, pagina * quantidade);
+
+            ResultSet rs = ps.executeQuery();
+            List<Solicitacao> solicitacoes = new ArrayList<>();
+            while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs, true));
+            return solicitacoes;
+        }
+    }
+
+    public String concatenarCodigosLivros(List<LivroSolicitacaoDto> livros) {
+        if (livros == null || livros.isEmpty()) return "";
+        StringBuilder codigos = new StringBuilder();
+        for (LivroSolicitacaoDto livro : livros) {
+            codigos.append(livro.codigoLivro).append(",");
+        }
+        return codigos.substring(0, codigos.length() - 1);
+    }
+
+
     public List<Solicitacao> obterSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_SOLICITACOES_ANDAMENTO_PAGINADAS);
-            DataHora dataHora = DataHora.hoje();
             ps.setString(1, email);
             ps.setString(2, email);
             ps.setInt(3, quantidade);
@@ -167,7 +201,7 @@ public class SolicitacaoDao {
     }
 
 
-    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException {
+    public void recusarSolicitacao(Integer codigo, String motivoRecusa) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a recusa da solicitação de código " + codigo);
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.RECUSAR_SOLICITACAO);
@@ -176,14 +210,13 @@ public class SolicitacaoDao {
             pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
             pstmt.setString(3, motivoRecusa);
             pstmt.setInt(4, codigo);
-            pstmt.setString(5, email);
             pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na recusa da solicitação de código " + codigo);
         }
 
     }
 
-    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException {
+    public void cancelarSolicitacao(Integer codigo, String motivoRecusa) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cancelamento da solicitação de código " + codigo);
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CANCELAR_SOLICITACAO);
@@ -192,7 +225,6 @@ public class SolicitacaoDao {
             pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
             pstmt.setString(3, motivoRecusa);
             pstmt.setInt(4, codigo);
-            pstmt.setString(5, email);
             pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso no cancelamento da solicitação de código " + codigo);
         }
@@ -322,7 +354,8 @@ public class SolicitacaoDao {
                 result.getString("codigo_rastreio_correio"),
                 endereco ? obterEnderecoDeResult(result) : null,
                 null,
-                null
+                null,
+                result.getString("nome_usuario_solicitante")
 
         );
     }

@@ -26,6 +26,7 @@ public class Solicitacao {
     private Integer codigoFormaEntrega;
     private String codigoRastreioCorreio;
     private Endereco endereco;
+    private String nomeUsuarioSolicitante;
     private List<LivroSolicitacao> livrosUsuarioCriador;
     private List<LivroSolicitacao> livrosTroca;
 
@@ -54,7 +55,8 @@ public class Solicitacao {
             String codigoRastreioCorreio,
             Endereco endereco,
             List<LivroSolicitacao> livrosUsuarioCriador,
-            List<LivroSolicitacao> livrosTroca
+            List<LivroSolicitacao> livrosTroca,
+            String nomeUsuarioSolicitante
     ) {
         Solicitacao solicitacao = new Solicitacao();
         solicitacao.setCodigoSolicitacao(codigoSolicitacao);
@@ -79,6 +81,7 @@ public class Solicitacao {
         solicitacao.setLivrosUsuarioCriador(livrosUsuarioCriador);
         solicitacao.setLivrosTroca(livrosTroca);
         solicitacao.setEmailUsuarioReceptor(emailUsuarioReceptor);
+        solicitacao.setNomeUsuarioSolicitante(nomeUsuarioSolicitante);
         return solicitacao;
     }
 
@@ -256,6 +259,26 @@ public class Solicitacao {
 
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public void setCodigoTipoSolicitacao(Integer codigoTipoSolicitacao) {
+        this.codigoTipoSolicitacao = codigoTipoSolicitacao;
+    }
+
+    public void setCodigoStatusSolicitacao(Integer codigoStatusSolicitacao) {
+        this.codigoStatusSolicitacao = codigoStatusSolicitacao;
+    }
+
+    public void setCodigoFormaEntrega(Integer codigoFormaEntrega) {
+        this.codigoFormaEntrega = codigoFormaEntrega;
+    }
+
+    public void setNomeUsuarioSolicitante(String nomeUsuarioSolicitante) {
+        this.nomeUsuarioSolicitante = nomeUsuarioSolicitante;
+    }
+
+    public String getNomeUsuarioSolicitante() {
+        return nomeUsuarioSolicitante;
     }
 }
 

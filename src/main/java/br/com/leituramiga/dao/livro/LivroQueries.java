@@ -57,14 +57,17 @@ public class LivroQueries {
             "WHERE livro.codigo_livro = ? AND livro.codigo_status_livro = 4;";
 
     public static final String ATUALIZAR_LIVROS_INDISPONIVEIS = "UPDATE livro SET" +
-            " codigo_status_livro = 3, ultima_solicitacao = ? WHERE livro.codigo_livro IN(?);";
+            " codigo_status_livro = 3, ultima_solicitacao = ? WHERE livro.codigo_livro IN(CODIGOS_LIVROS);";
+
+    public static final String ATUALIZAR_LIVROS_DISPONIVEIS = "UPDATE livro SET" +
+            " codigo_status_livro = 1, ultima_solicitacao = NULL WHERE livro.codigo_livro IN(CODIGOS_LIVROS);";
 
     public static final String SALVAR_LIVRO =
-            "INSERT INTO livro (nome, descricao, estado_fisico, email_usuario, codigo_categoria, codigo_status_livro, autor) " +
-                    "VALUES (?, ?, ?, ?, ?, 1, ?);";
+            "INSERT INTO livro (nome, descricao, estado_fisico, email_usuario, codigo_categoria, codigo_status_livro, autor, tipo_solicitacao) " +
+                    "VALUES (?, ?, ?, ?, ?, 1, ?, ?);";
 
     public static final String ATUALIZAR_LIVRO =
-            "UPDATE livro SET nome = ?, descricao = ?, estado_fisico = ?, codigo_categoria = ?, autor = ? " +
+            "UPDATE livro SET nome = ?, descricao = ?, estado_fisico = ?, codigo_categoria = ?, autor = ?, tipo_solicitacao = ? " +
                     "WHERE codigo_livro = ? AND email_usuario = ?;";
 
     public static final String DELETAR_LIVRO =

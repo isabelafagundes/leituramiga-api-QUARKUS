@@ -83,8 +83,9 @@ public class LivroDao {
             pstmt.setString(3, livro.getEstadoFisico());
             pstmt.setInt(4, livro.getCodigoCategoria());
             pstmt.setString(5, livro.getAutor());
-            pstmt.setInt(6, livro.getCodigoLivro());
-            pstmt.setString(7, email);
+            pstmt.setString(6, livro.tipoSolicitacao);
+            pstmt.setInt(7, livro.getCodigoLivro());
+            pstmt.setString(8, email);
             pstmt.executeUpdate();
         }
         logService.sucesso(LivroDao.class.getName(), "Atualização do livro finalizada");
@@ -216,11 +217,18 @@ public class LivroDao {
 
     public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros indisponíveis");
-        PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_LIVROS_INDISPONIVEIS);
-        pstmt.setInt(1, numeroSolicitacao);
-        pstmt.setString(2, obterIdsConcatenados(livroSolicitacaoDtos));
+        String query = LivroQueries.ATUALIZAR_LIVROS_DISPONIVEIS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));
+        PreparedStatement pstmt = conexao.prepareStatement(query);
         pstmt.executeUpdate();
         logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
+    }
+
+    public void atualizarLivrosDisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros disponíveis");
+        String query = LivroQueries.ATUALIZAR_LIVROS_DISPONIVEIS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));
+        PreparedStatement pstmt = conexao.prepareStatement(query);
+        pstmt.executeUpdate();
+        logService.sucesso(LivroDao.class.getName(), "Atualização dos livros disponíveis finalizada");
     }
 
     private String obterIdsConcatenados(List<LivroSolicitacaoDto> livroSolicitacaoDtos) {
@@ -239,6 +247,7 @@ public class LivroDao {
         pstmt.setString(4, livro.getEmailUsuario());
         pstmt.setInt(5, livro.getCodigoCategoria());
         pstmt.setString(6, livro.getAutor());
+        pstmt.setString(7, livro.tipoSolicitacao);
     }
 
     public void salvarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {

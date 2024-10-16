@@ -142,4 +142,21 @@ public class LivroService {
         }
     }
 
+    public void atualizarLivrosDisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, String email, Connection conexao) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try {
+            logService.iniciar(LivroService.class.getName(), "Iniciando a validação dos livros da solicitação");
+            for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
+                Integer numeroLivro = livroSolicitacaoDto.codigoLivro;
+                logService.iniciar(LivroService.class.getName(), "Iniciando a validação da existência do livro de número " + numeroLivro + " do usuário de email " + email);
+                if (!dao.verificarExistenciaLivro(numeroLivro)) throw new LivroNaoExistente();
+            }
+            if (livroSolicitacaoDtos.isEmpty()) return;
+            logService.iniciar(LivroService.class.getName(), "Iniciando a atualização dos livros indisponíveis");
+            dao.atualizarLivrosDisponiveis(numeroSolicitacao, livroSolicitacaoDtos, conexao);
+            logService.sucesso(LivroService.class.getName(), "Sucesso na atualização dos livros indisponíveis");
+        } catch (Exception e) {
+            logService.erro(LivroService.class.getName(), "Ocorreu um erro na atualização dos livros indisponíveis", e);
+            throw e;
+        }
+    }
 }

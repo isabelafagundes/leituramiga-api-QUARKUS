@@ -42,9 +42,12 @@ public class SolicitacaoService {
     @Inject
     FabricaDeConexoes bd;
 
-    public void aceitarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente {
-        try {
+    public void aceitarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
             validarAceiteSolicitacao(codigo);
+            SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            atualizarLivrosIndisponiveisSolicitacao(solicitacao, codigo, email, conexao);
+            solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, email);
             logService.sucesso(SolicitacaoService.class.getName(), "Aceitação de solicitação finalizada de código " + codigo);
@@ -54,11 +57,13 @@ public class SolicitacaoService {
         }
     }
 
-    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega {
-        try {
+    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
             validarAceiteSolicitacao(codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando recusa de solicitação de código " + codigo);
-            solicitacaoDao.recusarSolicitacao(codigo, motivoRecusa, email);
+            SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
+            solicitacaoDao.recusarSolicitacao(codigo, motivoRecusa);
             logService.sucesso(SolicitacaoService.class.getName(), "Recusa de solicitação finalizada de código " + codigo);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na recusa de solicitação de código " + codigo, e);
@@ -66,13 +71,16 @@ public class SolicitacaoService {
         }
     }
 
-    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta {
-        try {
+    //TODO: validar se o usuário que está cancelando a solicitação é o mesmo que solicitou ou foi solicitado
+    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validacao do status aberto da solicitação de código " + codigo);
             if (!solicitacaoDao.validarSolicitacaoAberta(codigo)) throw new SolicitacaoNaoAberta();
+            SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cancelamento de solicitação de código " + codigo);
-            solicitacaoDao.cancelarSolicitacao(codigo, motivoRecusa, email);
+            solicitacaoDao.cancelarSolicitacao(codigo, motivoRecusa);
             logService.sucesso(SolicitacaoService.class.getName(), "Cancelamento efetuado com sucesso da solicitação de código " + codigo);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro no cancelamento de solicitação de código " + codigo, e);
@@ -105,6 +113,18 @@ public class SolicitacaoService {
         }
     }
 
+    public List<SolicitacaoDto> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer tamanhoPagina, String email) throws SQLException {
+        try {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca do histórico de solicitações paginadas");
+            List<Solicitacao> solicitacoes = solicitacaoDao.obterHistoricoSolicitacoesPaginadas(pagina, tamanhoPagina, email);
+            logService.sucesso(SolicitacaoService.class.getName(), "Busca do histórico de solicitações paginadas finalizada");
+            return solicitacoes.stream().map(SolicitacaoDto::deModel).toList();
+        } catch (Exception e) {
+            logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca do histórico de solicitações paginadas", e);
+            throw e;
+        }
+    }
+
     public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
         Connection conexao = null;
         try {
@@ -117,7 +137,6 @@ public class SolicitacaoService {
             Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, endereco, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosUsuarioSolicitante(), numeroSolicitacao, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosTroca(), numeroSolicitacao, conexao);
-            atualizarLivrosSolicitacao(solicitacao, numeroSolicitacao, email, conexao);
             logService.sucesso(SolicitacaoService.class.getName(), "Cadastro de solicitação finalizado");
             conexao.commit();
         } catch (Exception e) {
@@ -141,10 +160,17 @@ public class SolicitacaoService {
         return endereco;
     }
 
-    private void atualizarLivrosSolicitacao(SolicitacaoDto solicitacao, Integer numeroSolicitacao, String email, Connection conexao) throws LivroNaoDisponivel, SQLException, LivroJaDesativado, LivroNaoExistente {
+    private void atualizarLivrosIndisponiveisSolicitacao(SolicitacaoDto solicitacao, Integer numeroSolicitacao, String email, Connection conexao) throws LivroNaoDisponivel, SQLException, LivroJaDesativado, LivroNaoExistente {
         livroService.atualizarLivrosIndisponiveis(numeroSolicitacao, solicitacao.getLivrosUsuarioSolicitante(), email, conexao);
         if (solicitacao.getLivrosTroca() != null && !solicitacao.getLivrosTroca().isEmpty()) {
             livroService.atualizarLivrosIndisponiveis(numeroSolicitacao, solicitacao.getLivrosTroca(), email, conexao);
+        }
+    }
+
+    private void atualizarLivrosDisponiveisSolicitacao(SolicitacaoDto solicitacao, Integer numeroSolicitacao, String email, Connection conexao) throws LivroNaoDisponivel, SQLException, LivroJaDesativado, LivroNaoExistente {
+        livroService.atualizarLivrosDisponiveis(numeroSolicitacao, solicitacao.getLivrosUsuarioSolicitante(), email, conexao);
+        if (solicitacao.getLivrosTroca() != null && !solicitacao.getLivrosTroca().isEmpty()) {
+            livroService.atualizarLivrosDisponiveis(numeroSolicitacao, solicitacao.getLivrosTroca(), email, conexao);
         }
     }
 

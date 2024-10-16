@@ -28,6 +28,7 @@ public class SolicitacaoDto {
     public Integer codigoFormaEntrega;
     public String codigoRastreioCorreio;
     public EnderecoDto endereco;
+    public String nomeUsuarioSolicitante;
     public List<LivroSolicitacaoDto> livrosUsuarioSolicitante;
     public List<LivroSolicitacaoDto> livrosTroca;
 
@@ -54,9 +55,30 @@ public class SolicitacaoDto {
         dto.horaAtualizacao = solicitacao.getHoraAtualizacao();
         dto.dataAceite = solicitacao.getDataAceite();
         dto.horaAceite = solicitacao.getHoraAceite();
+        dto.nomeUsuarioSolicitante = solicitacao.getNomeUsuarioSolicitante();
         dto.livrosTroca = solicitacao.getLivrosTroca() == null ? null : solicitacao.getLivrosTroca().stream().map(LivroSolicitacaoDto::deModel).toList();
         dto.livrosUsuarioSolicitante = solicitacao.getLivrosUsuarioCriador() == null ? null : solicitacao.getLivrosUsuarioCriador().stream().map(LivroSolicitacaoDto::deModel).toList();
         return dto;
+    }
+
+    public String getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public String getHoraAtualizacao() {
+        return horaAtualizacao;
+    }
+
+    public String getDataAceite() {
+        return dataAceite;
+    }
+
+    public String getHoraAceite() {
+        return horaAceite;
+    }
+
+    public String getNomeUsuarioSolicitante() {
+        return nomeUsuarioSolicitante;
     }
 
     public Integer getCodigoSolicitacao() {

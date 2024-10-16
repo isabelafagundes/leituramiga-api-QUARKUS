@@ -4,14 +4,14 @@ package br.com.leituramiga.dao.instituicao;
 public class InstituicaoQueries {
 
     public final static String OBTER_INSTITUICAO_POR_ESTADO =
-            "SELECT instituicao.codigo_instituicao,\n" +
+            "SELECT DISTINCT instituicao.codigo_instituicao,\n" +
                     "    instituicao.nome,\n" +
                     "    instituicao.sigla\n" +
                     "FROM instituicao\n" +
                     "ORDER BY instituicao.codigo_instituicao = ? ASC;";
 
     public final static String OBTER_TODAS_INSTITUICOES =
-            "SELECT instituicao.codigo_instituicao, " +
+            "SELECT DISTINCT instituicao.codigo_instituicao, " +
                     "    instituicao.nome, " +
                     "    instituicao.sigla  " +
                     "FROM instituicao " +

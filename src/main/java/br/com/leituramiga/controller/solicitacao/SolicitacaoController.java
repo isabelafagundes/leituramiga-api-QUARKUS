@@ -7,7 +7,6 @@ import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEnt
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoAberta;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoExistente;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoPendente;
-import br.com.leituramiga.model.solicitacao.NotificacaoSolicitacao;
 import br.com.leituramiga.service.solicitacao.SolicitacaoService;
 import io.quarkus.security.Authenticated;
 import jakarta.enterprise.context.RequestScoped;
@@ -109,9 +108,22 @@ public class SolicitacaoController {
     @Authenticated
     @Path("/solicitacoes")
     @Operation(summary = "Retorna as solicitações do usuário", description = "Retorna as solicitações do usuário do token de autenticação")
-        public Response obterSolicitacoesPaginadas(FiltrosDto dto) {
+    public Response obterSolicitacoesPaginadas(FiltrosDto dto) {
         try {
             List<SolicitacaoDto> solicitacoes = service.obterSolicitacoesPaginadas(dto.numeroPagina, dto.tamanhoPagina, email);
+            return Response.ok(solicitacoes).build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Authenticated
+    @Path("/solicitacoes/historico")
+    @Operation(summary = "Retorna as solicitações do usuário", description = "Retorna as solicitações do usuário do token de autenticação")
+    public Response obterHistoricoSolicitacoesPaginadas(FiltrosDto dto) {
+        try {
+            List<SolicitacaoDto> solicitacoes = service.obterHistoricoSolicitacoesPaginadas(dto.numeroPagina, dto.tamanhoPagina, email);
             return Response.ok(solicitacoes).build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

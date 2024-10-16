@@ -76,11 +76,13 @@ public class SolicitacaoQueries {
             "endereco.numero," +
             "endereco.codigo_cidade," +
             "endereco.email_usuario," +
+            "usuario.nome as nome_usuario_solicitante," +
             "cidade.nome as nome_cidade," +
             "cidade.estado " +
             "FROM solicitacao " +
             "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
             "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+            "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
             "WHERE solicitacao.codigo_solicitacao = ? ";
 
     public static final String OBTER_SOLICITACOES_PENDENTE =
@@ -119,13 +121,66 @@ public class SolicitacaoQueries {
                     "endereco.email_usuario," +
                     "cidade.nome as nome_cidade," +
                     "cidade.estado, " +
+                    "solicitacao.codigo_rastreio_correio, " +
+                    "usuario.nome as nome_usuario_solicitante " +
+                    "FROM solicitacao " +
+                    "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
+                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
+                    "WHERE solicitacao.codigo_status_solicitacao = 1 " +
+                    "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
+//                    "AND (solicitacao.data_entrega = CURRENT_DATE OR solicitacao.data_devolucao = CURRENT_DATE OR " +
+//                    "(solicitacao.data_entrega IS NULL AND solicitacao.data_devolucao IS NULL)) " +
+                    "ORDER BY solicitacao.data_entrega ASC, solicitacao.hora_entrega ASC " +
+                    "LIMIT ? OFFSET ? ";
+
+    public static final String RECUSAR_SOLICITACOES_COM_LIVRO = "UPDATE solicitacao SET codigo_status_solicitacao = 5 " +
+            "WHERE ( " +
+            "SELECT livro_solicitacao.codigo_livro FROM livro_solicitacao " +
+            "WHERE livro_solicitacao.codigo_solicitacao = solicitacao.codigo_solicitacao) IN(CODIGOS_LIVROS) " +
+            "AND solicitacao.codigo_solicitacao != ?; ";
+
+    public static final String OBTER_HISTORICO_SOLICITACOES_PAGINADAS =
+            "SELECT solicitacao.codigo_solicitacao," +
+                    "solicitacao.data_entrega," +
+                    "solicitacao.hora_entrega," +
+                    "solicitacao.data_devolucao," +
+                    "solicitacao.hora_devolucao," +
+                    "solicitacao.informacoes_adicionais," +
+                    "solicitacao.codigo_tipo_solicitacao," +
+                    "solicitacao.codigo_status_solicitacao," +
+                    "solicitacao.email_usuario_solicitante," +
+                    "solicitacao.email_usuario_receptor," +
+                    "solicitacao.codigo_forma_entrega," +
+                    "solicitacao.codigo_endereco," +
+                    "null as data_criacao," +
+                    "null as hora_criacao," +
+                    "null as data_atualizacao," +
+                    "null as hora_atualizacao," +
+                    "null as data_aceite," +
+                    "null as hora_aceite," +
+                    "null as motivo_recusa," +
+                    "endereco.codigo_endereco," +
+                    "endereco.logradouro," +
+                    "endereco.complemento," +
+                    "endereco.bairro," +
+                    "endereco.cep," +
+                    "endereco.numero," +
+                    "endereco.codigo_cidade," +
+                    "endereco.email_usuario," +
+                    "cidade.nome as nome_cidade," +
+                    "cidade.estado, " +
+                    "usuario.nome as nome_usuario_solicitante," +
                     "solicitacao.codigo_rastreio_correio " +
                     "FROM solicitacao " +
                     "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
                     "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
-                    "WHERE solicitacao.codigo_status_solicitacao = 1 " +
+                    "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
+                    "WHERE solicitacao.codigo_status_solicitacao = 3 " +
+                    "OR solicitacao.codigo_status_solicitacao = 4 " +
+                    "OR solicitacao.codigo_status_solicitacao = 5 " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
-                    "ORDER BY solicitacao.data_entrega DESC, solicitacao.hora_entrega DESC " +
+                    "ORDER BY solicitacao.data_entrega ASC, solicitacao.hora_entrega ASC " +
                     "LIMIT ? OFFSET ? ";
 
     public static final String RECUSAR_SOLICITACAO = "UPDATE solicitacao SET " +
@@ -133,7 +188,7 @@ public class SolicitacaoQueries {
             "hora_atualizacao = ?, " +
             "motivo_recusa = ?, " +
             "codigo_status_solicitacao = " + TipoStatusSolicitacao.RECUSADA.id +
-            ", WHERE codigo_solicitacao = ?  AND solicitacao.email_usuario_receptor = ?";
+            " WHERE codigo_solicitacao = ?";
 
     public static final String ACEITAR_SOLICITACAO = "UPDATE solicitacao SET " +
             "data_atualizacao = ?, " +
@@ -141,14 +196,14 @@ public class SolicitacaoQueries {
             "data_aceite = ?, " +
             "hora_aceite = ?, " +
             "codigo_status_solicitacao = " + TipoStatusSolicitacao.EM_ANDAMENTO.id +
-            " WHERE codigo_solicitacao = ? AND solicitacao.email_usuario_receptor = ?";
+            " WHERE codigo_solicitacao = ?";
 
     public static final String CANCELAR_SOLICITACAO = "UPDATE solicitacao SET " +
             "data_atualizacao = ?, " +
             "hora_atualizacao = ?, " +
-            "codigo_status_solicitacao = ?, " +
-            "motivo_recusa = " + TipoStatusSolicitacao.CANCELADA.id +
-            ", WHERE codigo_solicitacao = ? AND solicitacao.email_usuario_receptor = ?";
+            "codigo_status_solicitacao = " + TipoStatusSolicitacao.CANCELADA.id +
+            ", motivo_recusa = ?" +
+            " WHERE codigo_solicitacao = ?";
 
     public static final String SOLICITACAO_EXISTE = "SELECT " +
             "COUNT(1) FROM solicitacao " +
@@ -156,8 +211,8 @@ public class SolicitacaoQueries {
 
     public static final String SOLICITACAO_EM_ABERTO = "SELECT " +
             "COUNT(1) FROM solicitacao " +
-            "WHERE solicitacao.status = 1 " +
-            "OR solicitacao.status = 2" +
+            "WHERE solicitacao.codigo_status_solicitacao = 1 " +
+            "OR solicitacao.codigo_status_solicitacao = 2 " +
             "AND solicitacao.codigo_tipo_solicitacao = ?";
 
     public static final String SOLICITACAO_PENDENTE = "SELECT " +
