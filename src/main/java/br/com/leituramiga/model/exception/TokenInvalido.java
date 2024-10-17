@@ -1,6 +1,6 @@
 package br.com.leituramiga.model.exception;
 
-public class TokenInvalido extends ErroDominio {
+public class TokenInvalido extends ErroModel {
 
 
     @Override

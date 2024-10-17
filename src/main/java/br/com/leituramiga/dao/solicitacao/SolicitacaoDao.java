@@ -230,7 +230,7 @@ public class SolicitacaoDao {
         }
     }
 
-    public void aceitarSolicitacao(Integer codigo, String email) throws SQLException {
+    public void aceitarSolicitacao(Integer codigo) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a aceitação da solicitação de código " + codigo);
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ACEITAR_SOLICITACAO);
@@ -240,9 +240,21 @@ public class SolicitacaoDao {
             pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
             pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
             pstmt.setInt(5, codigo);
-            pstmt.setString(6, email);
             pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na aceitação da solicitação de código " + codigo);
+        }
+    }
+
+    public void finalizarSolicitacao(Integer codigo) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a finalização da solicitação de código " + codigo);
+            PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.FINALIZAR_SOLICITACAO);
+            DataHora dataHora = DataHora.hoje();
+            pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+            pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+            pstmt.setInt(3, codigo);
+            pstmt.executeUpdate();
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na finalização da solicitação de código " + codigo);
         }
     }
 
@@ -382,7 +394,8 @@ public class SolicitacaoDao {
                 result.getString("email_usuario"),
                 result.getString("estado"),
                 result.getString("numero"),
-                result.getInt("codigo_cidade")
+                result.getInt("codigo_cidade"),
+                result.getBoolean("endereco_principal")
         );
     }
 

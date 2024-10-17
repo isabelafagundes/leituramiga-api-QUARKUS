@@ -47,7 +47,7 @@ public class EnderecoService {
     public void salvarEndereco(EnderecoDto endereco, String email) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
-            enderecoDao.salvarEndereco(endereco, conexao, email);
+            enderecoDao.salvarEndereco(endereco, conexao, email, true);
             logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
         } catch (Exception e) {
             logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);

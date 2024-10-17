@@ -3,6 +3,7 @@ package br.com.leituramiga.controller.solicitacao;
 import br.com.leituramiga.dto.livro.FiltrosDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
+import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEntrega;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoAberta;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoExistente;
@@ -60,6 +61,8 @@ public class SolicitacaoController {
             throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);
         } catch (SolicitacaoNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (UsuarioNaoPertenceASolicitacao erro) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         } catch (SolicitacaoNaoPendente erro) {
             throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
         } catch (Exception erro) {
@@ -79,6 +82,29 @@ public class SolicitacaoController {
             throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);
         } catch (SolicitacaoNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (UsuarioNaoPertenceASolicitacao erro) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
+        } catch (SolicitacaoNaoPendente erro) {
+            throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Authenticated
+    @Path("/solicitacao/{id}/finalizar")
+    @Operation(summary = "Finaliza uma solicitação", description = "Finaliza uma solicitação a partir do seu código de identificação")
+    public Response finalizarSolicitacao(@PathParam("id") Integer numero) {
+        try {
+            service.finalizarSolicitacao(numero, email);
+            return Response.ok().build();
+        } catch (SolicitacaoExcedeuPrazoEntrega erro) {
+            throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);
+        } catch (SolicitacaoNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (UsuarioNaoPertenceASolicitacao erro) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         } catch (SolicitacaoNaoPendente erro) {
             throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
         } catch (Exception erro) {
@@ -98,6 +124,8 @@ public class SolicitacaoController {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (SolicitacaoNaoAberta erro) {
             throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+        } catch (UsuarioNaoPertenceASolicitacao erro) {
+            throw new WebApplicationException(Response.Status.FORBIDDEN);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -151,7 +179,7 @@ public class SolicitacaoController {
     @Operation(summary = "Cadastra uma solicitação", description = "Cadastra uma solicitação do usuário do token de autenticação")
     public Response cadastrarSolicitacao(SolicitacaoDto dto) {
         try {
-            service.cadastrarSolicitacao(dto, email);
+            service.cadastrarSolicitacao(dto);
             return Response.ok().build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

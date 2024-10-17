@@ -1,6 +1,6 @@
 package br.com.leituramiga.model.exception;
 
-public class UsernameExiste extends ErroDominio {
+public class UsernameExiste extends ErroModel {
 
     @Override
     public String toString() {

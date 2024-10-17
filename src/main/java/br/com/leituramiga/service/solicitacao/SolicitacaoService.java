@@ -6,6 +6,7 @@ import br.com.leituramiga.dao.solicitacao.SolicitacaoDao;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.model.endereco.Endereco;
+import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
 import br.com.leituramiga.model.exception.livro.LivroJaDesativado;
 import br.com.leituramiga.model.exception.livro.LivroNaoDisponivel;
 import br.com.leituramiga.model.exception.livro.LivroNaoExistente;
@@ -19,6 +20,8 @@ import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,6 +30,7 @@ import java.util.List;
 @ApplicationScoped
 public class SolicitacaoService {
 
+    private static final Logger log = LoggerFactory.getLogger(SolicitacaoService.class);
     @Inject
     EnderecoDao enderecoDao;
 
@@ -42,14 +46,15 @@ public class SolicitacaoService {
     @Inject
     FabricaDeConexoes bd;
 
-    public void aceitarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void aceitarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao {
         try (Connection conexao = bd.obterConexao()) {
             validarAceiteSolicitacao(codigo);
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            validarUsuarioPertenceSolicitacao(solicitacao, email);
             atualizarLivrosIndisponiveisSolicitacao(solicitacao, codigo, email, conexao);
             solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
-            solicitacaoDao.aceitarSolicitacao(codigo, email);
+            solicitacaoDao.aceitarSolicitacao(codigo);
             logService.sucesso(SolicitacaoService.class.getName(), "Aceitação de solicitação finalizada de código " + codigo);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na aceitação de solicitação de código " + codigo, e);
@@ -57,11 +62,13 @@ public class SolicitacaoService {
         }
     }
 
-    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao {
         try (Connection conexao = bd.obterConexao()) {
-            validarAceiteSolicitacao(codigo);
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
+            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo)) throw new SolicitacaoExcedeuPrazoEntrega();
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando recusa de solicitação de código " + codigo);
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            validarUsuarioPertenceSolicitacao(solicitacao, email);
             atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
             solicitacaoDao.recusarSolicitacao(codigo, motivoRecusa);
             logService.sucesso(SolicitacaoService.class.getName(), "Recusa de solicitação finalizada de código " + codigo);
@@ -71,13 +78,28 @@ public class SolicitacaoService {
         }
     }
 
-    //TODO: validar se o usuário que está cancelando a solicitação é o mesmo que solicitou ou foi solicitado
-    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void finalizarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
+            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo)) throw new SolicitacaoExcedeuPrazoEntrega();
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando finalização de solicitação de código " + codigo);
+            SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            validarUsuarioPertenceSolicitacao(solicitacao, email);
+            solicitacaoDao.finalizarSolicitacao(codigo);
+            logService.sucesso(SolicitacaoService.class.getName(), "Finalização de solicitação finalizada de código " + codigo);
+        } catch (Exception e) {
+            logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na finalização de solicitação de código " + codigo, e);
+            throw e;
+        }
+    }
+
+    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao {
         try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validacao do status aberto da solicitação de código " + codigo);
             if (!solicitacaoDao.validarSolicitacaoAberta(codigo)) throw new SolicitacaoNaoAberta();
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
+            validarUsuarioPertenceSolicitacao(solicitacao, email);
             atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cancelamento de solicitação de código " + codigo);
             solicitacaoDao.cancelarSolicitacao(codigo, motivoRecusa);
@@ -125,14 +147,13 @@ public class SolicitacaoService {
         }
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {
         Connection conexao = null;
         try {
             conexao = bd.obterConexao();
             conexao.setAutoCommit(false);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
             Integer endereco = atualizarEnderecoSolicitacao(solicitacao, conexao);
-            logService.iniciar(SolicitacaoService.class.getName(), "Endereço retornado: " + endereco);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de solicitação");
             Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, endereco, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosUsuarioSolicitante(), numeroSolicitacao, conexao);
@@ -148,11 +169,18 @@ public class SolicitacaoService {
         }
     }
 
+    private void validarUsuarioPertenceSolicitacao(SolicitacaoDto solicitacao, String email) throws UsuarioNaoPertenceASolicitacao {
+        logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação de pertencimento do usuário a solicitação");
+        if (!solicitacao.emailUsuarioReceptor.equals(email) && !solicitacao.emailUsuarioSolicitante.equals(email)) {
+            throw new UsuarioNaoPertenceASolicitacao();
+        }
+    }
+
     private Integer atualizarEnderecoSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
         Integer endereco = 0;
         if (solicitacao.endereco != null) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
-            endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
+            endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, false);
         } else if (enderecoDao.validarExistencia(solicitacao.emailUsuarioSolicitante)) {
             Endereco enderecoSolicitante = enderecoDao.obterEnderecoUsuario(solicitacao.getEmailUsuarioSolicitante());
             endereco = enderecoSolicitante.getCodigoEndereco();
@@ -178,7 +206,7 @@ public class SolicitacaoService {
         try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(solicitacao.getCodigoSolicitacao());
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de solicitação de código " + solicitacao.getCodigoSolicitacao());
-            enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante);
+            enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, false);
             solicitacaoDao.atualizarSolicitacao(solicitacao);
             logService.sucesso(SolicitacaoService.class.getName(), "Atualização de solicitação finalizada de código " + solicitacao.getCodigoSolicitacao());
         } catch (Exception e) {

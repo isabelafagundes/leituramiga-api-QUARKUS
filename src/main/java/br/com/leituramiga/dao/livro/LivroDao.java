@@ -217,8 +217,9 @@ public class LivroDao {
 
     public void atualizarLivrosIndisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros indisponíveis");
-        String query = LivroQueries.ATUALIZAR_LIVROS_DISPONIVEIS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));
+        String query = LivroQueries.ATUALIZAR_LIVROS_INDISPONIVEIS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));
         PreparedStatement pstmt = conexao.prepareStatement(query);
+        pstmt.setInt(1, numeroSolicitacao);
         pstmt.executeUpdate();
         logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
     }

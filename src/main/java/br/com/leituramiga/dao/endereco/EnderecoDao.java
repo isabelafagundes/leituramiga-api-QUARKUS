@@ -37,10 +37,10 @@ public class EnderecoDao {
         }
     }
 
-    public Integer salvarEndereco(EnderecoDto endereco, Connection conexao, String email) throws SQLException {
+    public Integer salvarEndereco(EnderecoDto endereco, Connection conexao, String email, Boolean emailPrincipal) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando salvamento de endereço");
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.INSERIR_ENDERECO, PreparedStatement.RETURN_GENERATED_KEYS);
-        definirParametrosDeSalvamento(pstmt, endereco, email);
+        definirParametrosDeSalvamento(pstmt, endereco, email, emailPrincipal);
         int linhasAfetadas = pstmt.executeUpdate();
 
         if (linhasAfetadas > 0) {
@@ -94,14 +94,14 @@ public class EnderecoDao {
         }
     }
 
-    public void definirParametrosDeSalvamento(PreparedStatement pstmt, EnderecoDto endereco, String email) throws SQLException {
+    public void definirParametrosDeSalvamento(PreparedStatement pstmt, EnderecoDto endereco, String email, Boolean emailPrincipal) throws SQLException {
         pstmt.setString(1, endereco.getLogradouro());
         pstmt.setString(2, endereco.getComplemento());
         pstmt.setString(3, endereco.getBairro());
         pstmt.setString(4, endereco.getCep());
         pstmt.setInt(5, endereco.getCodigoCidade());
         pstmt.setString(6, email);
-        pstmt.setBoolean(7, true);
+        pstmt.setBoolean(7, emailPrincipal);
         pstmt.setString(8, endereco.getNumero());
     }
 
@@ -124,7 +124,8 @@ public class EnderecoDao {
                 resultado.getString("email_usuario"),
                 resultado.getString("nome_estado"),
                 resultado.getString("numero"),
-                resultado.getInt("codigo_cidade")
+                resultado.getInt("codigo_cidade"),
+                resultado.getBoolean("endereco_principal")
         );
     }
 

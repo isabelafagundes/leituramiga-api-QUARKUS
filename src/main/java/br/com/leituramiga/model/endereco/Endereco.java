@@ -12,6 +12,7 @@ public class Endereco {
     private String nomeCidade;
     private Integer codigoCidade;
     private String estado;
+    private Boolean enderecoPrincipal;
 
     public Integer getCodigoCidade() {
         return codigoCidade;
@@ -41,6 +42,8 @@ public class Endereco {
         endereco.estado = enderecoDto.getEstado();
         endereco.emailUsuario = enderecoDto.getEmailUsuario();
         endereco.numero = enderecoDto.getNumero();
+        endereco.codigoEndereco = enderecoDto.getCodigoEndereco();
+        endereco.enderecoPrincipal = enderecoDto.getEnderecoPrincipal();
         return endereco;
     }
 
@@ -54,7 +57,8 @@ public class Endereco {
             String emailUsuario,
             String estado,
             String numero,
-            Integer codigoCidade) {
+            Integer codigoCidade,
+            Boolean enderecoPrincipal) {
         Endereco endereco = new Endereco();
         endereco.codigoEndereco = id;
         endereco.logradouro = logradouro;
@@ -66,7 +70,12 @@ public class Endereco {
         endereco.estado = estado;
         endereco.numero = numero;
         endereco.codigoCidade = codigoCidade;
+        endereco.enderecoPrincipal = enderecoPrincipal;
         return endereco;
+    }
+
+    public Boolean getEnderecoPrincipal() {
+        return enderecoPrincipal;
     }
 
     public void setCodigoCidade(Integer codigoCidade) {
@@ -131,5 +140,13 @@ public class Endereco {
 
     public void setEmailUsuario(String emailUsuario) {
         this.emailUsuario = emailUsuario;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public void setEnderecoPrincipal(Boolean enderecoPrincipal) {
+        this.enderecoPrincipal = enderecoPrincipal;
     }
 }

@@ -2,12 +2,11 @@ package br.com.leituramiga.service.autenticacao;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.endereco.EnderecoDao;
+import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
-import br.com.leituramiga.dto.usuario.UsuarioDto;
-import br.com.leituramiga.dao.usuario.UsuarioDao;
-import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.model.exception.*;
+import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.email.EmailService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -173,7 +172,8 @@ public class AutenticacaoService {
             usuarioDto.setSenha(senhaCriptografada);
             validarUsuario(usuarioDto);
             dao.salvarUsuario(usuarioDto, conexao);
-            if (usuarioDto.endereco != null) enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email);
+            if (usuarioDto.endereco != null)
+                enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email, true);
             String codigo = salvarCodigo(usuarioDto.email, conexao);
             emailService.enviarEmailCodigoVerificacao(usuarioDto.email, codigo, usuarioDto.nome);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);

@@ -23,7 +23,7 @@ public class UsuarioQueries {
                     "usuario.imagem, " +
                     "usuario.ativo " +
                     "FROM usuario " +
-                    "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
+                    "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario AND endereco.endereco_principal = 1 " +
                     "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
                     "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
                     "WHERE (usuario.ativo = ? AND usuario.bloqueado = 0) " +
@@ -62,10 +62,10 @@ public class UsuarioQueries {
             "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario) as quantidade_livros, " +
             "usuario.ativo " +
             "FROM usuario " +
-            "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario " +
+            "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario AND endereco.endereco_principal = 1 " +
             "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
             "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
-            "WHERE usuario.ativo = 1 AND usuario.bloqueado = 0 " +
+            "WHERE usuario.ativo = 1 AND usuario.bloqueado = 0  " +
             "AND (" +
             "(usuario.nome LIKE PESQUISA OR usuario.username LIKE PESQUISA) " +
             "AND (instituicao.codigo_instituicao = ? OR ? IS NULL)" +

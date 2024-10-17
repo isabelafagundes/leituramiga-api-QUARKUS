@@ -75,6 +75,7 @@ public class SolicitacaoQueries {
             "endereco.cep," +
             "endereco.numero," +
             "endereco.codigo_cidade," +
+            "endereco.endereco_principal," +
             "endereco.email_usuario," +
             "usuario.nome as nome_usuario_solicitante," +
             "cidade.nome as nome_cidade," +
@@ -115,6 +116,7 @@ public class SolicitacaoQueries {
                     "endereco.logradouro," +
                     "endereco.complemento," +
                     "endereco.bairro," +
+                    "endereco.endereco_principal," +
                     "endereco.cep," +
                     "endereco.numero," +
                     "endereco.codigo_cidade," +
@@ -124,9 +126,9 @@ public class SolicitacaoQueries {
                     "solicitacao.codigo_rastreio_correio, " +
                     "usuario.nome as nome_usuario_solicitante " +
                     "FROM solicitacao " +
-                    "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
-                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
-                    "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
+                    "LEFT JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
+                    "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "LEFT JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 1 " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
 //                    "AND (solicitacao.data_entrega = CURRENT_DATE OR solicitacao.data_devolucao = CURRENT_DATE OR " +
@@ -165,6 +167,7 @@ public class SolicitacaoQueries {
                     "endereco.complemento," +
                     "endereco.bairro," +
                     "endereco.cep," +
+                    "endereco.endereco_principal," +
                     "endereco.numero," +
                     "endereco.codigo_cidade," +
                     "endereco.email_usuario," +
@@ -198,6 +201,12 @@ public class SolicitacaoQueries {
             "codigo_status_solicitacao = " + TipoStatusSolicitacao.EM_ANDAMENTO.id +
             " WHERE codigo_solicitacao = ?";
 
+    public static final String FINALIZAR_SOLICITACAO = "UPDATE solicitacao SET " +
+            "data_atualizacao = ?, " +
+            "hora_atualizacao = ?, " +
+            "codigo_status_solicitacao = " + TipoStatusSolicitacao.FINALIZADA.id +
+            " WHERE codigo_solicitacao = ?";
+
     public static final String CANCELAR_SOLICITACAO = "UPDATE solicitacao SET " +
             "data_atualizacao = ?, " +
             "hora_atualizacao = ?, " +
@@ -222,9 +231,10 @@ public class SolicitacaoQueries {
 
     public static final String SOLICITACAO_DENTRO_PRAZO_ENTREGA = "SELECT " +
             "COUNT(1) FROM solicitacao " +
-            "WHERE solicitacao.data_entrega >= ? " +
+            "WHERE (solicitacao.data_entrega >= ? " +
             "AND solicitacao.hora_entrega <= ? " +
-            "AND solicitacao.codigo_solicitacao = ?";
+            "AND solicitacao.codigo_solicitacao = ? ) " +
+            "OR solicitacao.data_entrega IS NULL";
 
     public static final String SOLICITACAO_DENTRO_PRAZO_DEVOLUCAO = "SELECT " +
             "COUNT(1) FROM solicitacao " +

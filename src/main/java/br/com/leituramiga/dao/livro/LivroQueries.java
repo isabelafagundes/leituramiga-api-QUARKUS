@@ -23,7 +23,7 @@ public class LivroQueries {
                     "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario " +
                     "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria " +
                     "         LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao " +
-                    "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario " +
+                    "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario AND endereco.endereco_principal = 1" +
                     "         LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
                     " WHERE livro.codigo_livro = ?;";
 
@@ -99,7 +99,7 @@ public class LivroQueries {
                     "LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
                     "LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao\n" +
                     "LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
-                    "LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario\n" +
+                    "LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario AND endereco.endereco_principal = 1\n" +
                     "LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
                     "WHERE livro.codigo_status_livro = 1\n" +
                     "  AND (\n" +

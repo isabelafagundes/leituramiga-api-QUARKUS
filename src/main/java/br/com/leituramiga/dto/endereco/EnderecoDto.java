@@ -16,6 +16,7 @@ public class EnderecoDto {
     public Integer codigoCidade;
     public String estado;
     public String emailUsuario;
+    public Boolean enderecoPrincipal;
 
     public static EnderecoDto deModel(
             Endereco endereco
@@ -31,6 +32,7 @@ public class EnderecoDto {
         dto.nomeCidade = endereco.getNomeCidade();
         dto.codigoCidade = endereco.getCodigoCidade();
         dto.emailUsuario = endereco.getEmailUsuario();
+        dto.enderecoPrincipal = endereco.getEnderecoPrincipal();
         return dto;
     }
 
@@ -45,10 +47,56 @@ public class EnderecoDto {
         endereco.setNomeCidade(dto.nomeCidade);
         endereco.setCodigoCidade(dto.codigoCidade);
         endereco.setEmailUsuario(dto.emailUsuario);
+        endereco.setEnderecoPrincipal(dto.enderecoPrincipal);
+        endereco.setNumero(dto.numero);
         return endereco;
     }
 
     public EnderecoDto() {
+    }
+
+    public void setCodigoEndereco(Integer codigoEndereco) {
+        this.codigoEndereco = codigoEndereco;
+    }
+
+    public void setLogradouro(String logradouro) {
+        this.logradouro = logradouro;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
+    }
+
+    public void setCep(String cep) {
+        this.cep = cep;
+    }
+
+    public void setNomeCidade(String nomeCidade) {
+        this.nomeCidade = nomeCidade;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public void setCodigoCidade(Integer codigoCidade) {
+        this.codigoCidade = codigoCidade;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public void setEmailUsuario(String emailUsuario) {
+        this.emailUsuario = emailUsuario;
+    }
+
+    public void setEnderecoPrincipal(Boolean enderecoPrincipal) {
+        this.enderecoPrincipal = enderecoPrincipal;
     }
 
     public String getLogradouro() {
@@ -89,5 +137,9 @@ public class EnderecoDto {
 
     public String getNumero() {
         return numero;
+    }
+
+    public Boolean getEnderecoPrincipal() {
+        return enderecoPrincipal;
     }
 }
