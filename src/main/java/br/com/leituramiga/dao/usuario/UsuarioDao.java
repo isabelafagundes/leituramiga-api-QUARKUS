@@ -2,6 +2,7 @@ package br.com.leituramiga.dao.usuario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
+import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.autenticacao.CodigoUtil;
@@ -45,6 +46,19 @@ public class UsuarioDao {
         PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);
         definirParametros(pstmt, usuario);
         pstmt.executeUpdate();
+    }
+
+    public void atualizarUsuario(UsuarioDto usuario) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_USUARIO);
+            pstmt.setString(1, usuario.nome);
+            pstmt.setString(2, usuario.celular);
+            pstmt.setString(3, usuario.descricao);
+            pstmt.setString(4, usuario.imagem);
+            pstmt.setInt(5, usuario.codigoInstituicao);
+            pstmt.setString(6, usuario.email);
+            pstmt.executeUpdate();
+        }
     }
 
     public void definirParametros(PreparedStatement pstmt, CriacaoUsuarioDto usuario) throws SQLException {

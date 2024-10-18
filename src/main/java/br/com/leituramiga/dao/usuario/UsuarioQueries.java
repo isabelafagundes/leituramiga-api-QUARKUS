@@ -16,7 +16,7 @@ public class UsuarioQueries {
                     "null as tentativas, " +
                     "null as bloqueado, " +
                     "codigo_alteracao, " +
-                    "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario) as quantidade_livros, " +
+                    "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario AND livro.codigo_status_livro = 1) as quantidade_livros, " +
                     "usuario.tipo_usuario, " +
                     "usuario.celular, " +
                     "usuario.descricao, " +
@@ -48,6 +48,14 @@ public class UsuarioQueries {
                     "    imagem = VALUES(imagem)," +
                     "    codigo_instituicao = VALUES(codigo_instituicao);";
 
+
+    public static final String ATUALIZAR_USUARIO = "UPDATE usuario SET nome = ?, " +
+            "celular = ?, " +
+            "descricao = ?, " +
+            "imagem = ?, " +
+            "codigo_instituicao = ? " +
+            "WHERE usuario.email_usuario = ?; ";
+
     public static final String OBTER_USUARIOS_PAGINADOS = "SELECT " +
             "usuario.nome, " +
             "usuario.username, " +
@@ -59,7 +67,7 @@ public class UsuarioQueries {
             "instituicao.nome as nome_instituicao, " +
             "usuario.codigo_instituicao, " +
             "usuario.descricao, " +
-            "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario) as quantidade_livros, " +
+            "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario AND livro.codigo_status_livro = 1) as quantidade_livros, " +
             "usuario.ativo " +
             "FROM usuario " +
             "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario AND endereco.endereco_principal = 1 " +

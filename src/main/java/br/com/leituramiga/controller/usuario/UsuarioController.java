@@ -3,7 +3,6 @@ package br.com.leituramiga.controller.usuario;
 import br.com.leituramiga.dto.livro.FiltrosDto;
 import br.com.leituramiga.dto.usuario.*;
 import br.com.leituramiga.model.exception.*;
-import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import io.quarkus.security.Authenticated;
@@ -152,6 +151,23 @@ public class UsuarioController {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (UsuarioExistente erro) {
             throw new WebApplicationException(Response.Status.CONFLICT);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Authenticated
+    @Operation(summary = "Atualiza o usuário", description = "Atualiza o usuário a partir do token de autenticação")
+    @Path("/atualizar-usuario")
+    public Response atualizarUsuario(UsuarioDto dto) {
+        try {
+            usuarioService.atualizarUsuario(dto);
+            return Response.ok().build();
+        } catch (UsuarioNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

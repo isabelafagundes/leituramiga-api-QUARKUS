@@ -15,6 +15,7 @@ public class InstituicaoQueries {
                     "    instituicao.nome, " +
                     "    instituicao.sigla  " +
                     "FROM instituicao " +
+                    "GROUP BY instituicao.codigo_instituicao, instituicao.nome, instituicao.sigla " +
                     "ORDER BY instituicao.nome ASC;";
 
     public final static String OBTER_TODAS_INSTITUICOES_COM_PESQUISA =

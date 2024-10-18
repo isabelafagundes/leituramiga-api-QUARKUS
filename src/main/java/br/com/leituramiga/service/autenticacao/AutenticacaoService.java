@@ -5,6 +5,7 @@ import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
+import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.*;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.UsuarioService;
