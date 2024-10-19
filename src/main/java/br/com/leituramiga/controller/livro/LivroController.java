@@ -16,6 +16,7 @@ import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -67,6 +68,8 @@ public class LivroController {
             return Response.ok(livros).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
@@ -80,6 +83,8 @@ public class LivroController {
             return Response.ok(livros).build();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 

@@ -11,7 +11,7 @@ public class HashService {
 //        try {
 //            byte[] hash = MessageDigest.getInstance("MD5").digest(email.getBytes("UTF-8"));
 //            return new BigInteger(1, hash).toString(16);
-            return email;
+        return email;
 //        }
 //        catch (NoSuchAlgorithmException e) {
 //            throw new RuntimeException(e);
@@ -19,6 +19,17 @@ public class HashService {
 //        catch (UnsupportedEncodingException e) {
 //            throw new RuntimeException(e);
 //        }
+    }
+
+    public static String obterMd5(String texto) {
+        try {
+            byte[] hash = MessageDigest.getInstance("MD5").digest(texto.getBytes("UTF-8"));
+            return new BigInteger(1, hash).toString(16);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static String ObterMd5Comentario(String idComentario) {

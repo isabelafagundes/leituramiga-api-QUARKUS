@@ -64,13 +64,22 @@ public class LivroDao {
         }
     }
 
-    public void salvarLivro(LivroDto livro) throws SQLException {
+    public Integer salvarLivro(LivroDto livro) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando o salvamento do livro");
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_LIVRO);
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_LIVRO, PreparedStatement.RETURN_GENERATED_KEYS);
             definirParametrosDeSalvamento(pstmt, livro);
-            pstmt.executeUpdate();
+            int linhasAfetadas = pstmt.executeUpdate();
+            if (linhasAfetadas > 0) {
+                try (ResultSet result = pstmt.getGeneratedKeys()) {
+                    if (result.next()) {
+                        Integer idGerado = result.getInt(1);
+                        return idGerado;
+                    }
+                }
+            }
             logService.sucesso(LivroDao.class.getName(), "Salvamento do livro concluído");
+            return null;
         }
     }
 
@@ -280,7 +289,8 @@ public class LivroDao {
                 resultado.getInt("codigo_categoria"),
                 resultado.getInt("codigo_status_livro"),
                 resultado.getInt("codigo_cidade"),
-                resultado.getString("tipo_solicitacao")
+                resultado.getString("tipo_solicitacao"),
+                null
         );
     }
 

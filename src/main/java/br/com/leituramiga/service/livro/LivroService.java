@@ -10,9 +10,11 @@ import br.com.leituramiga.model.exception.livro.LivroNaoExistente;
 import br.com.leituramiga.model.livro.Livro;
 import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
+import br.com.leituramiga.service.imagem.ImagemService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -27,14 +29,19 @@ public class LivroService {
     LogService logService;
 
     @Inject
+    ImagemService imagemService;
+
+    @Inject
     FabricaDeConexoes bd;
 
-    public LivroDto obterLivro(Integer numero) throws SQLException, LivroNaoExistente {
+    public LivroDto obterLivro(Integer numero) throws SQLException, LivroNaoExistente, IOException {
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a validação da existência do livro de número " + numero);
             if (!dao.verificarExistenciaLivro(numero)) throw new LivroNaoExistente();
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção do livro de número " + numero);
             Livro livro = dao.obterLivroPorNumero(numero);
+            String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+            livro.setImagem(imagemLivro);
             return LivroDto.deModel(livro);
         } catch (Exception erro) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção do livro de número " + numero, erro);
@@ -51,11 +58,15 @@ public class LivroService {
             Integer numeroInstituicao,
             Integer tipoSolicitacao,
             String emailUsuario
-            ) throws SQLException {
+    ) throws SQLException, IOException {
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina);
             List<Livro> livros = dao.obterLivrosPaginados(pagina, tamanhoPagina, pesquisa, numeroCategoria, numeroInstituicao, numeroCidade, tipoSolicitacao, emailUsuario);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina);
+            for (Livro livro : livros) {
+                String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+                livro.setImagem(imagemLivro);
+            }
             return livros.stream().map(LivroDto::deModel).toList();
         } catch (Exception erro) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina, erro);
@@ -63,11 +74,15 @@ public class LivroService {
         }
     }
 
-    public List<LivroDto> obterLivrosUsuario(String email) throws SQLException {
+    public List<LivroDto> obterLivrosUsuario(String email) throws SQLException, IOException {
         String md5Login = HashService.obterMd5Email(email);
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             List<Livro> livros = dao.obterLivroPorUsuario(email);
+            for (Livro livro : livros) {
+                String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+                livro.setImagem(imagemLivro);
+            }
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
             return livros.stream().map(LivroDto::deModel).toList();
         } catch (Exception e) {
@@ -76,12 +91,13 @@ public class LivroService {
         }
     }
 
-    public void salvarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void salvarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, IOException {
         String md5Login = HashService.obterMd5Email(email);
         try {
             if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
-            dao.salvarLivro(livro);
+            Integer id = dao.salvarLivro(livro);
+            if (livro.imagem != null) imagemService.salvarImagemLivro(livro.imagem, email, id);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);
@@ -89,12 +105,13 @@ public class LivroService {
         }
     }
 
-    public void atualizarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+    public void atualizarLivro(LivroDto livro, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, IOException {
         String md5Login = HashService.obterMd5Email(email);
         try {
             if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             dao.atualizarLivro(livro, email);
+            if (livro.imagem != null) imagemService.salvarImagemLivro(livro.imagem, email, livro.codigoLivro);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);

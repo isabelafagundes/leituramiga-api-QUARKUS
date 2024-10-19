@@ -19,6 +19,7 @@ public class Livro {
     private Integer codigoCategoria;
     private Integer codigoStatusLivro;
     public String tipoSolicitacao;
+    public String imagem;
 
     public Livro() {
     }
@@ -39,7 +40,8 @@ public class Livro {
             Integer codigoCategoria,
             Integer codigoStatusLivro,
             Integer codigoCidade,
-            String tipoSolicitacao
+            String tipoSolicitacao,
+            String imagem
     ) {
         Livro livro = new Livro();
         livro.codigoLivro = codigoLivro;
@@ -58,9 +60,13 @@ public class Livro {
         livro.codigoStatusLivro = codigoStatusLivro;
         livro.codigoCidade = codigoCidade;
         livro.tipoSolicitacao = tipoSolicitacao;
+        livro.imagem = imagem;
         return livro;
     }
 
+    public String getImagem() {
+        return imagem;
+    }
 
     public String getTipoSolicitacao() {
         return tipoSolicitacao;
@@ -128,5 +134,9 @@ public class Livro {
 
     public Integer getCodigoStatusLivro() {
         return codigoStatusLivro;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
     }
 }

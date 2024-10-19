@@ -12,6 +12,7 @@ public class LivroDto {
     public String autor;
     public String descricao;
     public String categoria;
+    public String imagem;
     public Integer codigoCategoria;
     public String estadoFisico;
     public String nomeInstituicao;
@@ -40,6 +41,7 @@ public class LivroDto {
         dto.dataUltimaSolicitacao = livro.getDataUltimaSolicitacao();
         dto.tipoSolicitacao = livro.getTipoSolicitacao();
         dto.codigoStatusLivro = livro.getCodigoStatusLivro();
+        dto.imagem = livro.getImagem();
         return dto;
     }
 
