@@ -142,4 +142,8 @@ public class EnderecoDto {
     public Boolean getEnderecoPrincipal() {
         return enderecoPrincipal;
     }
+
+    public String obterEnderecoFormatado() {
+        return bairro + ", " + nomeCidade + " - " + estado;
+    }
 }

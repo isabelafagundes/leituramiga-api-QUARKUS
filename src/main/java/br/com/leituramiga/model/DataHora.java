@@ -14,7 +14,7 @@ public class DataHora {
 
     public static DataHora deString(String data) throws DataInvalida {
         try {
-            Date dateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(data);
+            Date dateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(data);
             return new DataHora(dateTime);
         } catch (ParseException e) {
             throw new DataInvalida();

@@ -2,8 +2,10 @@ package br.com.leituramiga.controller.solicitacao;
 
 import br.com.leituramiga.dto.livro.FiltrosDto;
 import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
+import br.com.leituramiga.dto.solicitacao.MotivoRecusaDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
+import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEntrega;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoAberta;
@@ -60,7 +62,7 @@ public class SolicitacaoController {
             return Response.ok().build();
         } catch (SolicitacaoExcedeuPrazoEntrega erro) {
             throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);
-        } catch (SolicitacaoNaoExistente erro) {
+        } catch (SolicitacaoNaoExistente | UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (UsuarioNaoPertenceASolicitacao erro) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -75,13 +77,13 @@ public class SolicitacaoController {
     @Authenticated
     @Path("/solicitacao/{id}/recusar")
     @Operation(summary = "Recusa uma solicitação", description = "Recusa uma solicitação a partir do seu código de identificação")
-    public Response recusarSolicitacao(@PathParam("id") Integer numero, String motivoRecusa) {
+    public Response recusarSolicitacao(@PathParam("id") Integer numero, MotivoRecusaDto dto) {
         try {
-            service.recusarSolicitacao(numero, motivoRecusa, email);
+            service.recusarSolicitacao(numero, dto.motivo, email);
             return Response.ok().build();
         } catch (SolicitacaoExcedeuPrazoEntrega erro) {
             throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);
-        } catch (SolicitacaoNaoExistente erro) {
+        } catch (SolicitacaoNaoExistente | UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (UsuarioNaoPertenceASolicitacao erro) {
             throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -117,11 +119,11 @@ public class SolicitacaoController {
     @Authenticated
     @Path("/solicitacao/{id}/cancelar")
     @Operation(summary = "Cancela uma solicitação", description = "Cancela uma solicitação a partir do seu código de identificação")
-    public Response cancelarSolicitacao(@PathParam("id") Integer numero, String motivoRecusa) {
+    public Response cancelarSolicitacao(@PathParam("id") Integer numero, MotivoRecusaDto dto) {
         try {
-            service.cancelarSolicitacao(numero, motivoRecusa, email);
+            service.cancelarSolicitacao(numero, dto.motivo, email);
             return Response.ok().build();
-        } catch (SolicitacaoNaoExistente erro) {
+        } catch (SolicitacaoNaoExistente | UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (SolicitacaoNaoAberta erro) {
             throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);

@@ -3,8 +3,21 @@ package br.com.leituramiga.dao.endereco;
 public class EnderecoQueries {
 
     public static final String OBTER_ENDERECO_POR_ID =
-            "SELECT * FROM endereco "
-                    + "WHERE codigo_endereco = ?;";
+            "SELECT endereco.codigo_endereco, " +
+                    "endereco.cep, " +
+                    "endereco.logradouro, " +
+                    "endereco.numero, " +
+                    "endereco.complemento, " +
+                    "endereco.bairro, " +
+                    "endereco.endereco_principal, " +
+                    "endereco.codigo_cidade, " +
+                    "cidade.nome as nome_cidade, " +
+                    "cidade.estado as nome_estado, " +
+                    "cidade.codigo_cidade, " +
+                    "endereco.email_usuario " +
+                    "FROM endereco " +
+                    "INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
+                    "WHERE codigo_endereco = ?;";
 
     public static final String OBTER_CIDADES_POR_UF ="SELECT DISTINCT cidade.codigo_cidade, " +
             "cidade.nome, " +
@@ -30,7 +43,6 @@ public class EnderecoQueries {
                     "INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
                     "WHERE endereco.email_usuario = ? AND endereco.endereco_principal = 1;";
 
-
     public static final String INSERIR_ENDERECO =
             "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
@@ -42,7 +54,8 @@ public class EnderecoQueries {
             "cep = ?, " +
             "codigo_cidade = ?, " +
             "endereco_principal = ?, " +
-            "numero = ?;";
+            "numero = ?" +
+            "WHERE endereco.codigo_endereco = ?;";
 
     public static final String SALVAR_ENDERECO =
             "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +

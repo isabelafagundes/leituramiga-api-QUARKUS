@@ -139,7 +139,7 @@ public class SolicitacaoQueries {
     public static final String RECUSAR_SOLICITACOES_COM_LIVRO = "UPDATE solicitacao SET codigo_status_solicitacao = 5 " +
             "WHERE ( " +
             "SELECT livro_solicitacao.codigo_livro FROM livro_solicitacao " +
-            "WHERE livro_solicitacao.codigo_solicitacao = solicitacao.codigo_solicitacao) IN(CODIGOS_LIVROS) " +
+            "WHERE livro_solicitacao.codigo_livro IN (CODIGOS_LIVROS) LIMIT 1) " +
             "AND solicitacao.codigo_solicitacao != ?; ";
 
     public static final String OBTER_HISTORICO_SOLICITACOES_PAGINADAS =

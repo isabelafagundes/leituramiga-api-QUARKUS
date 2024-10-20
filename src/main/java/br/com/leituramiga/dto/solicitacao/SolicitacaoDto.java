@@ -2,6 +2,7 @@ package br.com.leituramiga.dto.solicitacao;
 
 import br.com.leituramiga.dto.endereco.EnderecoDto;
 import br.com.leituramiga.dto.livro.LivroSolicitacaoDto;
+import br.com.leituramiga.model.DataHora;
 import br.com.leituramiga.model.solicitacao.Solicitacao;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -89,6 +90,25 @@ public class SolicitacaoDto {
         return dataEntrega;
     }
 
+    public String dataEntregaFormatada() {
+        try {
+            if (dataEntrega == null || dataEntrega.isEmpty()) return null;
+            System.out.println(dataEntrega + horaEntrega);
+            return DataHora.deString(dataEntrega + horaEntrega).formatar();
+        } catch (Exception e) {
+            return dataEntrega;
+        }
+    }
+
+    public String dataDevolucaoFormatada() {
+        try {
+            if (dataDevolucao == null || dataDevolucao.isEmpty()) return null;
+            return DataHora.deString(dataDevolucao + horaDevolucao).formatar();
+        } catch (Exception e) {
+            return dataDevolucao;
+        }
+    }
+
     public String getHoraEntrega() {
         return horaEntrega;
     }
@@ -143,5 +163,13 @@ public class SolicitacaoDto {
 
     public List<LivroSolicitacaoDto> getLivrosTroca() {
         return livrosTroca;
+    }
+
+    public String obterLivrosFormatados() {
+        StringBuilder livros = new StringBuilder();
+        for (LivroSolicitacaoDto livro : getLivrosUsuarioSolicitante()) {
+            livros.append(livro.titulo).append(",");
+        }
+        return livros.indexOf(",") > 0 ? livros.substring(0, livros.length() - 1) : livros.toString();
     }
 }

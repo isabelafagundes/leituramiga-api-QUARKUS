@@ -280,5 +280,13 @@ public class Solicitacao {
     public String getNomeUsuarioSolicitante() {
         return nomeUsuarioSolicitante;
     }
+
+    public String obterLivrosFormatados() {
+        StringBuilder livros = new StringBuilder();
+        for (LivroSolicitacao livro : livrosUsuarioCriador) {
+            livros.append(livro.getTitulo());
+        }
+        return livros.toString();
+    }
 }
 

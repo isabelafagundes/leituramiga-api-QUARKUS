@@ -38,7 +38,7 @@ public class LivroQueries {
                     "       instituicao_ensino.nome," +
                     "       cidade.nome," +
                     "       imagem_livro.imagem," +
-                    "       NULL as tipo_solicitacao," +
+                    "       livro.tipo_solicitacao," +
                     "       categoria.nome" +
                     "FROM livro" +
                     "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario" +
@@ -93,7 +93,7 @@ public class LivroQueries {
                     "       livro.descricao,\n" +
                     "       NULL                AS ultima_solicitacao,\n" +
                     "       NULL                AS codigo_ultima_solicitacao,\n" +
-                    "       NULL                AS tipo_solicitacao,\n" +
+                    "       livro.tipo_solicitacao,\n" +
                     "       livro.descricao,\n" +
                     "       categoria.codigo_categoria,\n" +
                     "       livro.codigo_status_livro,\n" +

@@ -149,4 +149,8 @@ public class Endereco {
     public void setEnderecoPrincipal(Boolean enderecoPrincipal) {
         this.enderecoPrincipal = enderecoPrincipal;
     }
+
+    public String obterEnderecoFormatado() {
+        return logradouro + ", " + numero + " - " + bairro + ", " + nomeCidade + " - " + estado + ", " + cep;
+    }
 }
