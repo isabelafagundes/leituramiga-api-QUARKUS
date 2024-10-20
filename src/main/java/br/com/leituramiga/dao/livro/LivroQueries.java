@@ -17,11 +17,13 @@ public class LivroQueries {
                     "       usuario.nome as nome_usuario," +
                     "       instituicao.nome as nome_instituicao," +
                     "       livro.autor," +
+                    "       imagem_livro.imagem," +
                     "       livro.tipo_solicitacao," +
                     "       cidade.nome as nome_cidade " +
                     "FROM livro " +
                     "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario " +
                     "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria " +
+                    "         LEFT JOIN imagem_livro ON imagem_livro.codigo_livro = livro.codigo_livro " +
                     "         LEFT JOIN instituicao ON instituicao.codigo_instituicao = usuario.codigo_instituicao " +
                     "         LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario AND endereco.endereco_principal = 1" +
                     "         LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
@@ -35,10 +37,12 @@ public class LivroQueries {
                     "       usuario.nome," +
                     "       instituicao_ensino.nome," +
                     "       cidade.nome," +
+                    "       imagem_livro.imagem," +
                     "       NULL as tipo_solicitacao," +
                     "       categoria.nome" +
                     "FROM livro" +
                     "         LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario" +
+                    "         LEFT JOIN imagem_livro ON imagem_livro.codigo_livro = livro.codigo_livro\n" +
                     "         LEFT JOIN instituicao_ensino ON instituicao_ensino.codigo_instituicao = usuario.codigo_instituicao" +
                     "         LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria" +
                     "         LEFT JOIN cidade ON cidade.codigo_cidade = livro.codigo_cidade" +
@@ -94,6 +98,7 @@ public class LivroQueries {
                     "       categoria.codigo_categoria,\n" +
                     "       livro.codigo_status_livro,\n" +
                     "       livro.descricao,\n" +
+                    "       imagem_livro.imagem," +
                     "       categoria.descricao AS nome_categoria\n" +
                     "FROM livro\n" +
                     "LEFT JOIN usuario ON usuario.email_usuario = livro.email_usuario\n" +
@@ -101,6 +106,7 @@ public class LivroQueries {
                     "LEFT JOIN categoria ON categoria.codigo_categoria = livro.codigo_categoria\n" +
                     "LEFT JOIN endereco ON endereco.email_usuario = usuario.email_usuario AND endereco.endereco_principal = 1\n" +
                     "LEFT JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade\n" +
+                    "LEFT JOIN imagem_livro ON imagem_livro.codigo_livro = livro.codigo_livro\n" +
                     "WHERE livro.codigo_status_livro = 1\n" +
                     "  AND (\n" +
                     "      (livro.nome LIKE PESQUISA OR usuario.nome LIKE PESQUISA OR livro.autor LIKE PESQUISA)\n" +
@@ -112,21 +118,13 @@ public class LivroQueries {
                     "  )\n" +
                     "LIMIT ? OFFSET ?;\n";
 
-    public static String FILTROS_LIVRO =
-            "WHERE livro.codigo_status_livro = 1 AND (livro.nome LIKE PESQUISA\n" +
-                    "OR livro.descricao LIKE PESQUISA\n" +
-                    "OR categoria.descricao LIKE PESQUISA\n" +
-                    "OR instituicao.nome LIKE PESQUISA\n" +
-                    "OR usuario.nome LIKE PESQUISA\n" +
-                    "OR instituicao.codigo_instituicao = ?\n" +
-                    "OR categoria.codigo_categoria = ?\n" +
-                    "OR cidade.codigo_cidade = ?\n" +
-                    "OR livro.tipo_solicitacao LIKE TIPO_SOLICITACAO)";
-
-    public static String FILTRO_EMAIL_USUARIO = " AND usuario.email_usuario = EMAIL_USUARIO";
 
     public static String SALVAR_IMAGEM = "INSERT INTO imagem_livro (imagem, codigo_livro) " +
-            "VALUES (?, ?)";
+            "VALUES (?, ?);";
+
+    public static String IMAGEM_EXISTE = "SELECT COUNT(1) FROM imagem_livro WHERE codigo_livro = ?;";
+
+    public static String ATUALIZAR_IMAGEM = "UPDATE imagem_livro SET imagem = ? WHERE codigo_livro = ?;";
 
     public static String LIVRO_EXISTE = "SELECT COUNT(1) FROM livro WHERE livro.codigo_livro = ?;";
 

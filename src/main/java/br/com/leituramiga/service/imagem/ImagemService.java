@@ -5,10 +5,7 @@ import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Base64;
 
 @ApplicationScoped
@@ -22,10 +19,12 @@ public class ImagemService {
     final String NOME_ARQUIVO_USUARIO = "usuarios";
 
 
-    public void salvarImagemLivro(String arquivoBase64, String email, Integer numeroLivro) throws IOException {
+    public String salvarImagemLivro(String arquivoBase64, String email, Integer numeroLivro) throws IOException {
         try {
             logService.iniciar(ImagemService.class.getName(), "Iniciando a salvar a imagem do livro");
-            byte[] arquivo = Base64.getDecoder().decode(arquivoBase64);
+            if(!arquivoBase64.contains(",")) return null;
+            String arquivoBase64SemCabecalho = arquivoBase64.split(",")[1];
+            byte[] arquivo = Base64.getDecoder().decode(arquivoBase64SemCabecalho);
 
             String diretorio = System.getProperty("user.home") + "/" + NOME_ARQUIVO_PAI + "/" + NOME_ARQUIVO_LIVROS;
 
@@ -39,7 +38,8 @@ public class ImagemService {
             }
 
             String emailUsuario = HashService.obterMd5(email);
-            String nomeArquivo = emailUsuario + "_" + numeroLivro + ".png";
+            String extensao = identificarExtensao(arquivoBase64);
+            String nomeArquivo = emailUsuario + "_" + numeroLivro + "." + extensao;
             File arquivoImagemLivro = new File(diretorio, nomeArquivo);
 
             logService.iniciar(ImagemService.class.getName(), "Salvando a imagem do livro no diretório: " + arquivoImagemLivro.getAbsolutePath());
@@ -48,45 +48,57 @@ public class ImagemService {
                 outputStream.write(arquivo);
             }
 
+            return arquivoImagemLivro.getAbsolutePath();
+
         } catch (Exception e) {
             logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao salvar a imagem do livro", e);
             throw e;
         }
     }
 
-    public String obterImagemLivro(String email, Integer numeroLivro) throws IOException {
+    public String identificarExtensao(String base64String) {
+        if (base64String.startsWith("data:image/jpeg")) {
+            return "jpeg";
+        } else if (base64String.startsWith("data:image/png")) {
+            return "png";
+        } else if (base64String.startsWith("data:image/gif")) {
+            return "gif";
+        } else {
+            return "desconhecido";
+        }
+    }
+
+
+    public String obterImagemLivro(String path) throws IOException {
         try {
             logService.iniciar(ImagemService.class.getName(), "Iniciando a obter a imagem do livro");
-            String diretorio = System.getProperty("user.home") + "/" + NOME_ARQUIVO_PAI + "/" + NOME_ARQUIVO_LIVROS;
 
-            File pastaDestino = new File(diretorio);
+            if (path == null || path.isEmpty()) return null;
 
-            if (!pastaDestino.exists()) {
-                boolean pastaCriada = pastaDestino.mkdirs();
-                if (!pastaCriada) {
-                    throw new IOException("Falha ao criar diretório: " + diretorio);
+            File arquivoImagem = new File(path);
+
+            if (!arquivoImagem.exists()) {
+                return null;
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (FileInputStream fileInputStream = new FileInputStream(arquivoImagem)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                    baos.write(buffer, 0, bytesRead);
                 }
             }
 
-            String emailUsuario = HashService.obterMd5(email);
-            String nomeArquivo = emailUsuario + "_" + numeroLivro + ".png";
-            File arquivoImagemLivro = new File(diretorio, nomeArquivo);
-
-            if (!arquivoImagemLivro.exists()) return null;
-
-            logService.iniciar(ImagemService.class.getName(), "Obtendo a imagem do livro no diretório: " + arquivoImagemLivro.getAbsolutePath());
-
-            byte[] arquivo = new byte[(int) arquivoImagemLivro.length()];
-
-            try (FileOutputStream fileInputStream = new FileOutputStream(arquivoImagemLivro)) {
-                fileInputStream.write(arquivo);
-            }
-
-            return Base64.getEncoder().encodeToString(arquivo);
+            byte[] arquivo = baos.toByteArray();
+            String imagemBase64 = Base64.getEncoder().encodeToString(arquivo);
+            return imagemBase64;
         } catch (Exception e) {
             logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao obter a imagem do livro", e);
             throw e;
         }
     }
+
+
 
 }

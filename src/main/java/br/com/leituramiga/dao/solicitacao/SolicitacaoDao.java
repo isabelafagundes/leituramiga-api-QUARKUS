@@ -230,8 +230,7 @@ public class SolicitacaoDao {
         }
     }
 
-    public void aceitarSolicitacao(Integer codigo) throws SQLException {
-        try (Connection conexao = bd.obterConexao()) {
+    public void aceitarSolicitacao(Integer codigo, Connection conexao) throws SQLException {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a aceitação da solicitação de código " + codigo);
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ACEITAR_SOLICITACAO);
             DataHora dataHora = DataHora.hoje();
@@ -242,7 +241,6 @@ public class SolicitacaoDao {
             pstmt.setInt(5, codigo);
             pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na aceitação da solicitação de código " + codigo);
-        }
     }
 
     public void finalizarSolicitacao(Integer codigo) throws SQLException {

@@ -1,6 +1,7 @@
 package br.com.leituramiga.controller.solicitacao;
 
 import br.com.leituramiga.dto.livro.FiltrosDto;
+import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
@@ -53,9 +54,9 @@ public class SolicitacaoController {
     @Authenticated
     @Path("/solicitacao/{id}/aceitar")
     @Operation(summary = "Aceita uma solicitação", description = "Aceita uma solicitação a partir do seu código de identificação")
-    public Response aceitarSolicitacao(@PathParam("id") Integer numero) {
+    public Response aceitarSolicitacao(@PathParam("id") Integer numero, AceiteSolicitacaoDto dto) {
         try {
-            service.aceitarSolicitacao(numero, email);
+            service.aceitarSolicitacao(numero, dto, email);
             return Response.ok().build();
         } catch (SolicitacaoExcedeuPrazoEntrega erro) {
             throw new WebApplicationException(Response.Status.REQUEST_TIMEOUT);

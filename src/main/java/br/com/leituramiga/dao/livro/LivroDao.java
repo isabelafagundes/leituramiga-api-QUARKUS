@@ -266,10 +266,34 @@ public class LivroDao {
             PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.SALVAR_IMAGEM);
             pstmt.setString(1, caminhoImagem);
             pstmt.setInt(2, codigoLivro);
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             logService.sucesso(LivroDao.class.getName(), "Sucesso em salvar a imagem do livro de código " + codigoLivro);
         }
 
+    }
+
+    public Boolean validarExistenciaImagem(Integer codigoLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a validação da existência da imagem do livro");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.IMAGEM_EXISTE);
+            pstmt.setInt(1, codigoLivro);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(LivroDao.class.getName(), "Sucesso na validação da existência da imagem do livro");
+            return quantidade > 0;
+        }
+    }
+
+    public void atualizarImagemLivro(String caminhoImagem, Integer codigoLivro) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização da imagem do livro de código" + codigoLivro);
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_IMAGEM);
+            pstmt.setString(1, caminhoImagem);
+            pstmt.setInt(2, codigoLivro);
+            pstmt.executeQuery();
+            logService.sucesso(LivroDao.class.getName(), "Sucesso em atualizar a imagem do livro de código " + codigoLivro);
+        }
     }
 
     public Livro obterLivroDeResult(ResultSet resultado) throws SQLException {
@@ -290,7 +314,8 @@ public class LivroDao {
                 resultado.getInt("codigo_status_livro"),
                 resultado.getInt("codigo_cidade"),
                 resultado.getString("tipo_solicitacao"),
-                null
+                null,
+                resultado.getString("imagem")
         );
     }
 

@@ -13,6 +13,8 @@ import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.imagem.ImagemService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,6 +24,7 @@ import java.util.List;
 @ApplicationScoped
 public class LivroService {
 
+    private static final Logger log = LoggerFactory.getLogger(LivroService.class);
     @Inject
     LivroDao dao;
 
@@ -40,7 +43,7 @@ public class LivroService {
             if (!dao.verificarExistenciaLivro(numero)) throw new LivroNaoExistente();
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção do livro de número " + numero);
             Livro livro = dao.obterLivroPorNumero(numero);
-            String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+            String imagemLivro = imagemService.obterImagemLivro(livro.getCaminhoImagem());
             livro.setImagem(imagemLivro);
             return LivroDto.deModel(livro);
         } catch (Exception erro) {
@@ -64,7 +67,7 @@ public class LivroService {
             List<Livro> livros = dao.obterLivrosPaginados(pagina, tamanhoPagina, pesquisa, numeroCategoria, numeroInstituicao, numeroCidade, tipoSolicitacao, emailUsuario);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros da página " + pagina + " e tamanho " + tamanhoPagina);
             for (Livro livro : livros) {
-                String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+                String imagemLivro = imagemService.obterImagemLivro(livro.getCaminhoImagem());
                 livro.setImagem(imagemLivro);
             }
             return livros.stream().map(LivroDto::deModel).toList();
@@ -80,7 +83,7 @@ public class LivroService {
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             List<Livro> livros = dao.obterLivroPorUsuario(email);
             for (Livro livro : livros) {
-                String imagemLivro = imagemService.obterImagemLivro(livro.getEmailUsuario(), livro.getCodigoLivro());
+                String imagemLivro = imagemService.obterImagemLivro(livro.getCaminhoImagem());
                 livro.setImagem(imagemLivro);
             }
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
@@ -97,10 +100,32 @@ public class LivroService {
             if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             Integer id = dao.salvarLivro(livro);
-            if (livro.imagem != null) imagemService.salvarImagemLivro(livro.imagem, email, id);
+            salvarImagemLivro(livro, email, id);
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);
+            throw e;
+        }
+    }
+
+    public void salvarImagemLivro(LivroDto livro, String email, Integer id) throws IOException, SQLException {
+        try {
+            logService.iniciar(ImagemService.class.getName(), "Iniciando o salvamento da imagem do livro");
+            String caminhoImagem;
+            if (livro.imagem != null) {
+                boolean imagemExiste = dao.validarExistenciaImagem(id);
+                caminhoImagem = imagemService.salvarImagemLivro(livro.imagem, email, id);
+                if (caminhoImagem == null) return;
+                if (imagemExiste) {
+                    logService.iniciar(LivroService.class.getName(), "Sucesso em atualizar a imagem do livro do usuário de email " + email);
+                    dao.atualizarImagemLivro(caminhoImagem, id);
+                } else {
+                    logService.iniciar(LivroService.class.getName(), "Sucesso em salvar a imagem do livro do usuário de email " + email);
+                    dao.salvarImagemLivro(caminhoImagem, id);
+                }
+            }
+        } catch (Exception e) {
+            logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao salvar a imagem do livro", e);
             throw e;
         }
     }
@@ -111,7 +136,7 @@ public class LivroService {
             if (livro.getCodigoLivro() != null) validarStatusLivro(livro.getCodigoLivro(), email);
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção dos livros do usuário de email " + md5Login);
             dao.atualizarLivro(livro, email);
-            if (livro.imagem != null) imagemService.salvarImagemLivro(livro.imagem, email, livro.codigoLivro);
+            salvarImagemLivro(livro, email, livro.getCodigoLivro());
             logService.sucesso(LivroService.class.getName(), "Sucesso na obtenção dos livros do usuário de email " + md5Login);
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na obtenção dos livros do usuário de email " + md5Login, e);

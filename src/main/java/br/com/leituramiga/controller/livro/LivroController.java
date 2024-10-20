@@ -107,7 +107,7 @@ public class LivroController {
         }
     }
 
-    @PUT
+    @POST
     @Authenticated
     @Path("/livro/{id}")
     @Operation(summary = "Atualiza um livro", description = "Atualiza um livro do usuário do token de autenticação")
