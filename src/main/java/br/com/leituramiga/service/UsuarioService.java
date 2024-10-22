@@ -23,7 +23,7 @@ public class UsuarioService {
     @Inject
     UsuarioDao dao;
 
-    public UsuarioDto obterUsuarioPorIdentificador(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, ClassNotFoundException {
+    public UsuarioDto obterUsuarioPorIdentificador(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException {
         String md5Email = HashService.obterMd5Email(identificador);
         try {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção do usuário de identificador " + md5Email);

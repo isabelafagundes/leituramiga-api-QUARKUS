@@ -21,6 +21,7 @@ import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoExistente;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoNaoPendente;
 import br.com.leituramiga.model.solicitacao.NotificacaoSolicitacao;
 import br.com.leituramiga.model.solicitacao.Solicitacao;
+import br.com.leituramiga.model.solicitacao.TipoSolicitacao;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.email.EmailService;
@@ -63,9 +64,15 @@ public class SolicitacaoService {
             validarAceiteSolicitacao(codigo);
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
-            atualizarLivrosIndisponiveisSolicitacao(solicitacao, codigo, email, conexao);
-            if (aceiteSolicitacaoDto.livros != null)
+            if (aceiteSolicitacaoDto.livros != null) {
                 solicitacaoDao.salvarLivroSolicitacao(aceiteSolicitacaoDto.livros, solicitacao.codigoSolicitacao, conexao);
+            }
+            solicitacao.livrosTroca = aceiteSolicitacaoDto.livros;
+            if (solicitacao.codigoTipoSolicitacao == TipoSolicitacao.EMPRESTIMO.id) {
+                atualizarLivrosEmprestadosSolicitacao(solicitacao, codigo, email, conexao);
+            } else {
+                atualizarLivrosIndisponiveisSolicitacao(solicitacao, codigo, email, conexao);
+            }
             solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, conexao);
@@ -107,7 +114,7 @@ public class SolicitacaoService {
         }
     }
 
-    public void finalizarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao {
+    public void finalizarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, UsuarioNaoPertenceASolicitacao {
         try {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
             if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo))
@@ -236,6 +243,13 @@ public class SolicitacaoService {
         livroService.atualizarLivrosIndisponiveis(numeroSolicitacao, solicitacao.getLivrosUsuarioSolicitante(), email, conexao);
         if (solicitacao.getLivrosTroca() != null && !solicitacao.getLivrosTroca().isEmpty()) {
             livroService.atualizarLivrosIndisponiveis(numeroSolicitacao, solicitacao.getLivrosTroca(), email, conexao);
+        }
+    }
+
+    private void atualizarLivrosEmprestadosSolicitacao(SolicitacaoDto solicitacao, Integer numeroSolicitacao, String email, Connection conexao) throws LivroNaoDisponivel, SQLException, LivroJaDesativado, LivroNaoExistente {
+        livroService.atualizarLivrosEmprestados(numeroSolicitacao, solicitacao.getLivrosUsuarioSolicitante(), email, conexao);
+        if (solicitacao.getLivrosTroca() != null && !solicitacao.getLivrosTroca().isEmpty()) {
+            livroService.atualizarLivrosEmprestados(numeroSolicitacao, solicitacao.getLivrosTroca(), email, conexao);
         }
     }
 

@@ -17,7 +17,7 @@ public class EnderecoQueries {
                     "endereco.email_usuario " +
                     "FROM endereco " +
                     "INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
-                    "WHERE codigo_endereco = ?;";
+                    "WHERE codigo_endereco = ? AND endereco.ativo = 1;";
 
     public static final String OBTER_CIDADES_POR_UF ="SELECT DISTINCT cidade.codigo_cidade, " +
             "cidade.nome, " +
@@ -41,20 +41,20 @@ public class EnderecoQueries {
                     "endereco.email_usuario " +
                     "FROM endereco " +
                     "INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
-                    "WHERE endereco.email_usuario = ? AND endereco.endereco_principal = 1;";
+                    "WHERE endereco.email_usuario = ? AND endereco.endereco_principal = 1 AND endereco.ativo = 1;";
 
     public static final String INSERIR_ENDERECO =
             "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) ";
 
-    public static final String ATUALIZAR_ENDERECO = "UPDATE endereco SET" +
+    public static final String ATUALIZAR_ENDERECO = "UPDATE endereco SET " +
             "logradouro = ?, " +
             "complemento = ?, " +
             "bairro = ?," +
             "cep = ?, " +
             "codigo_cidade = ?, " +
             "endereco_principal = ?, " +
-            "numero = ?" +
+            "numero = ? " +
             "WHERE endereco.codigo_endereco = ?;";
 
     public static final String SALVAR_ENDERECO =
@@ -71,11 +71,11 @@ public class EnderecoQueries {
 
 
     public static final String EXCLUIR_ENDERECO =
-            "DELETE FROM endereco WHERE codigo_endereco = ?;";
+            "UPDATE endereco SET ativo = 0 WHERE codigo_endereco = ?;";
 
-    public static final String EXCLUIR_ENDERECO_POR_USUARIO =
-            "DELETE FROM endereco WHERE email_usuario = ?;";
-
-    public static final String VALIDAR_EXISTENCIA =
+    public static final String VALIDAR_EXISTENCIA_ENDERECO_EMAIL =
             "SELECT COUNT(endereco.codigo_endereco) FROM endereco WHERE endereco.email_usuario = ? AND endereco_principal = 1;";
+
+    public static final String VALIDAR_EXISTENCIA_ENDERECO_ID =
+            "SELECT COUNT(endereco.codigo_endereco) FROM endereco WHERE endereco.codigo_endereco = ?;";
 }

@@ -174,13 +174,28 @@ public class LivroService {
             for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
                 validarStatusLivro(livroSolicitacaoDto.codigoLivro, email);
             }
-            System.out.println("livroSolicitacaoDtos: " + livroSolicitacaoDtos.size());
             if (livroSolicitacaoDtos.isEmpty()) return;
             logService.iniciar(LivroService.class.getName(), "Iniciando a atualização dos livros indisponíveis");
             dao.atualizarLivrosIndisponiveis(numeroSolicitacao, livroSolicitacaoDtos, conexao);
             logService.sucesso(LivroService.class.getName(), "Sucesso na atualização dos livros indisponíveis");
         } catch (Exception e) {
             logService.erro(LivroService.class.getName(), "Ocorreu um erro na atualização dos livros indisponíveis", e);
+            throw e;
+        }
+    }
+
+    public void atualizarLivrosEmprestados(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, String email, Connection conexao) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try {
+            logService.iniciar(LivroService.class.getName(), "Iniciando a validação dos livros da solicitação");
+            for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
+                validarStatusLivro(livroSolicitacaoDto.codigoLivro, email);
+            }
+            if (livroSolicitacaoDtos.isEmpty()) return;
+            logService.iniciar(LivroService.class.getName(), "Iniciando a atualização dos livros emprestados");
+            dao.atualizarLivrosEmprestados(numeroSolicitacao, livroSolicitacaoDtos, conexao);
+            logService.sucesso(LivroService.class.getName(), "Sucesso na atualização dos livros emprestados");
+        } catch (Exception e) {
+            logService.erro(LivroService.class.getName(), "Ocorreu um erro na atualização dos livros emprestados", e);
             throw e;
         }
     }

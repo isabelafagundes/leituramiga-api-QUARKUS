@@ -50,10 +50,40 @@ public class EnderecoController {
     @Produces(MediaType.APPLICATION_JSON)
     @Authenticated
     @Operation(summary = "Altera o endereço do usuário", description = "Altera o endereço do usuário a partir do token de autenticação")
-    @Path("/endereco")
+    @Path("/criar-endereco")
     public Response salvarEndereco(EnderecoDto endereco) {
         try {
             enderecoService.salvarEndereco(endereco, email);
+            return Response.ok().build();
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Authenticated
+    @Operation(summary = "Altera o endereço do usuário", description = "Altera o endereço do usuário a partir do token de autenticação")
+    @Path("/atualizar-endereco")
+    public Response atualizarEndereco(EnderecoDto endereco) {
+        try {
+            enderecoService.atualizarEndereco(endereco, email);
+            return Response.ok().build();
+        } catch (EnderecoNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    @Authenticated
+    @Operation(summary = "Deleta o endereço do usuário", description = "Deleta o endereço do usuário a partir do token de autenticação")
+    @Path("/endereco/{codigoEndereco}")
+    public Response deletarEndereco(@PathParam("codigoEndereco") Integer codigoEndereco) {
+        try {
+            enderecoService.deletarEndereco(codigoEndereco);
             return Response.ok().build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -72,6 +102,7 @@ public class EnderecoController {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 }

@@ -233,6 +233,15 @@ public class LivroDao {
         logService.sucesso(LivroDao.class.getName(), "Atualização dos livros indisponíveis finalizada");
     }
 
+    public void atualizarLivrosEmprestados(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros emprestados");
+        String query = LivroQueries.ATUALIZAR_LIVROS_EMPRESTADOS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));
+        PreparedStatement pstmt = conexao.prepareStatement(query);
+        pstmt.setInt(1, numeroSolicitacao);
+        pstmt.executeUpdate();
+        logService.sucesso(LivroDao.class.getName(), "Atualização dos livros emprestados finalizada");
+    }
+
     public void atualizarLivrosDisponiveis(Integer numeroSolicitacao, List<LivroSolicitacaoDto> livroSolicitacaoDtos, Connection conexao) throws SQLException {
         logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização dos livros disponíveis");
         String query = LivroQueries.ATUALIZAR_LIVROS_DISPONIVEIS.replaceAll("CODIGOS_LIVROS", obterIdsConcatenados(livroSolicitacaoDtos));

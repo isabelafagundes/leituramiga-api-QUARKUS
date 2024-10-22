@@ -63,6 +63,9 @@ public class LivroQueries {
     public static final String ATUALIZAR_LIVROS_INDISPONIVEIS = "UPDATE livro SET" +
             " codigo_status_livro = 3, ultima_solicitacao = ? WHERE livro.codigo_livro IN(CODIGOS_LIVROS);";
 
+    public static final String ATUALIZAR_LIVROS_EMPRESTADOS = "UPDATE livro SET" +
+            " codigo_status_livro = 2, ultima_solicitacao = ? WHERE livro.codigo_livro IN(CODIGOS_LIVROS);";
+
     public static final String ATUALIZAR_LIVROS_DISPONIVEIS = "UPDATE livro SET" +
             " codigo_status_livro = 1, ultima_solicitacao = NULL WHERE livro.codigo_livro IN(CODIGOS_LIVROS);";
 

@@ -55,6 +55,18 @@ public class EnderecoService {
         }
     }
 
+    public void atualizarEndereco(EnderecoDto endereco, String email) throws SQLException, EnderecoNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
+            if (!enderecoDao.validarExistenciaPorId(endereco.getCodigoEndereco())) throw new EnderecoNaoExistente();
+            logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
+            enderecoDao.atualizarEndereco(endereco, conexao, email, endereco.enderecoPrincipal);
+            logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
+        } catch (Exception e) {
+            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);
+            throw e;
+        }
+    }
+
     public void deletarEndereco(int numeroEndereco) throws SQLException {
         try {
             logService.iniciar(EnderecoService.class.getName(), "Iniciando exclusão de endereço do usuário de email " + numeroEndereco);

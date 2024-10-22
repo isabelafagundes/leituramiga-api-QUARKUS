@@ -97,7 +97,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void desativarUsuario(String email) throws UsuarioNaoExistente, SQLException, ClassNotFoundException {
+    public void desativarUsuario(String email) throws UsuarioNaoExistente, SQLException {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de exclusão do usuário de email " + md5Email);

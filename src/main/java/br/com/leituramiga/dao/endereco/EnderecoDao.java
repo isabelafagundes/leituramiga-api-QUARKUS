@@ -96,8 +96,21 @@ public class EnderecoDao {
     public boolean validarExistencia(String email) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação de existência de endereço");
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_EXISTENCIA);
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_EXISTENCIA_ENDERECO_EMAIL);
             pstmt.setString(1, email);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int quantidade = resultado.getInt(1);
+            logService.sucesso(EnderecoDao.class.getName(), "Validação de existência de endereço finalizada");
+            return quantidade > 0;
+        }
+    }
+
+    public boolean validarExistenciaPorId(Integer id) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação de existência de endereço");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_EXISTENCIA_ENDERECO_ID);
+            pstmt.setInt(1, id);
             ResultSet resultado = pstmt.executeQuery();
             resultado.next();
             int quantidade = resultado.getInt(1);
