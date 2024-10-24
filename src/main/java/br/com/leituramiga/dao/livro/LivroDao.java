@@ -300,7 +300,7 @@ public class LivroDao {
             PreparedStatement pstmt = conexao.prepareStatement(LivroQueries.ATUALIZAR_IMAGEM);
             pstmt.setString(1, caminhoImagem);
             pstmt.setInt(2, codigoLivro);
-            pstmt.executeQuery();
+            pstmt.executeUpdate();
             logService.sucesso(LivroDao.class.getName(), "Sucesso em atualizar a imagem do livro de código " + codigoLivro);
         }
     }
