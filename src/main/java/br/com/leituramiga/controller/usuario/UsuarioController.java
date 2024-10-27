@@ -79,7 +79,7 @@ public class UsuarioController {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Authenticated
+    @PermitAll
     @Path("/usuarios")
     @Operation(summary = "Retorna os usuários paginados", description = "Retorna os usuários paginados a partir dos filtros")
     public Response obterUsuarios(FiltrosDto dto) {

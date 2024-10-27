@@ -2,7 +2,7 @@ package br.com.leituramiga.model.comentario;
 
 public class Comentario {
 
-    private Integer id;
+    private Integer codigoComentario;
     private String descricao;
     private String dataCriacao;
     private String horaCriacao;
@@ -27,7 +27,7 @@ public class Comentario {
 
     ) {
         Comentario comentario = new Comentario();
-        comentario.id = id;
+        comentario.codigoComentario = id;
         comentario.descricao = descricao;
         comentario.dataCriacao = dataCriacao;
         comentario.horaCriacao = horaCriacao;
@@ -37,12 +37,12 @@ public class Comentario {
         return comentario;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getCodigoComentario() {
+        return codigoComentario;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCodigoComentario(Integer codigoComentario) {
+        this.codigoComentario = codigoComentario;
     }
 
     public String getDescricao() {

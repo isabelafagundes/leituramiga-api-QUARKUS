@@ -21,7 +21,7 @@ public class ComentarioDto {
         dto.emailUsuarioCriador = comentario.getEmailUsuarioCriador();
         dto.emailUsuarioPerfil = comentario.getEmailUsuarioPerfil();
         dto.nomeUsuarioCriador = comentario.getNomeUsuarioCriador();
-        dto.codigoComentario = comentario.getId();
+        dto.codigoComentario = comentario.getCodigoComentario();
         dto.descricao = comentario.getDescricao();
         dto.dataCriacao = comentario.getdataCriacao();
         dto.horaCriacao = comentario.gethoraCriacao();

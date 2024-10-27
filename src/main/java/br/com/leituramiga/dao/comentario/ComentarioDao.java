@@ -2,6 +2,7 @@ package br.com.leituramiga.dao.comentario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dto.comentario.ComentarioDto;
+import br.com.leituramiga.model.DataHora;
 import br.com.leituramiga.model.comentario.Comentario;
 import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -50,10 +51,10 @@ public class ComentarioDao {
         logService.iniciar(ComentarioDao.class.getName(), "Iniciando salvamento de comentário");
 
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstms = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
-            definirParametrosDeSalvamento(pstms, comentario);
+            PreparedStatement pstmst = conexao.prepareStatement(ComentarioQueries.SALVAR_COMENTARIO, PreparedStatement.RETURN_GENERATED_KEYS);
+            definirParametrosDeSalvamento(pstmst, comentario);
 
-            int linhasAfetadas = pstms.executeUpdate();
+            int linhasAfetadas = pstmst.executeUpdate();
 
             if (linhasAfetadas > 0) {
                 logService.sucesso(ComentarioDao.class.getName(), "Salvamento de comentário finalizado com sucesso");
@@ -81,21 +82,23 @@ public class ComentarioDao {
     }
 
     public void definirParametrosDeSalvamento(PreparedStatement pstmt, ComentarioDto comentario) throws SQLException {
-        pstmt.setInt(1, comentario.getCodigoComentario());
-        pstmt.setString(2, comentario.getDescricao());
-        pstmt.setString(3, comentario.getDataCriacao());
-        pstmt.setString(4, comentario.getHoraCriacao());
+        DataHora dataHora = DataHora.hoje();
+        pstmt.setString(1, comentario.getDescricao());
+        pstmt.setString(2, dataHora.dataFormatada("yyyy-MM-dd"));
+        pstmt.setString(3, dataHora.dataFormatada("HH:mm:ss"));
+        pstmt.setString(4, comentario.getEmailUsuarioCriador());
+        pstmt.setString(5, comentario.getEmailUsuarioPerfil());
     }
 
     public Comentario obterComentarioDeResult(ResultSet resultado) throws SQLException {
         return Comentario.carregar(
-                resultado.getInt("id"),
+                resultado.getInt("codigo_comentario"),
                 resultado.getString("descricao"),
-                resultado.getString("dataCriacao"),
-                resultado.getString("horaCriacao"),
-                resultado.getString("emailUsuarioCriador"),
-                resultado.getString("emailUsuarioPerfil"),
-                resultado.getString("nomeUsuarioCriador")
+                resultado.getString("data_criacao"),
+                resultado.getString("hora_criacao"),
+                resultado.getString("email_usuario_criador"),
+                resultado.getString("email_usuario_perfil"),
+                resultado.getString("nome_usuario_criador")
         );
     }
 

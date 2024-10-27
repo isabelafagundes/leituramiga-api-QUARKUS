@@ -193,6 +193,7 @@ public class EmailStyles {
                                 <li><strong>Livros Solicitados: {{livros}}</strong></li>
                                 {{dataEntrega}}
                                 {{dataDevolucao}}
+                                {{informacoesAdicionais}}
                             </ul>
                             <p>Acesse o LeiturAmiga para visualizar mais detalhes e escolher entre aceitar e recusar a proposta!</p>
                         </div>

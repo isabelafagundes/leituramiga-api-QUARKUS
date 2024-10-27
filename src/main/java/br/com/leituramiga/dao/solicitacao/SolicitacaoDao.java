@@ -160,7 +160,7 @@ public class SolicitacaoDao {
         pstmt.setString(19, solicitacao.getCodigoRastreioCorreio());
     }
 
-    public void atualizarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {
+    public void atualizarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a atualização da solicitação");
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ATUALIZAR_SOLICITACAO);
@@ -180,7 +180,7 @@ public class SolicitacaoDao {
             pstmt.setString(13, solicitacao.getEmailUsuarioSolicitante());
             pstmt.setString(14, solicitacao.getEmailUsuarioReceptor());
             pstmt.setInt(15, solicitacao.getCodigoFormaEntrega());
-            pstmt.setInt(16, solicitacao.getEndereco().getCodigoEndereco());
+            pstmt.setInt(16, codigoEndereco);
             pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
             pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
             pstmt.executeUpdate();

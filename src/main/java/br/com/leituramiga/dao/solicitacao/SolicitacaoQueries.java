@@ -41,7 +41,7 @@ public class SolicitacaoQueries {
             "codigo_tipo_solicitacao = ?, " +
             "codigo_status_solicitacao = ?, " +
             "email_usuario_solicitante = ?, " +
-            "email_usuario_recepetor = ?, " +
+            "email_usuario_receptor = ?, " +
             "codigo_forma_entrega = ?, " +
             "codigo_endereco = ?, " +
             "codigo_rastreio_correio = ? " +
@@ -155,8 +155,8 @@ public class SolicitacaoQueries {
                     "solicitacao.email_usuario_receptor," +
                     "solicitacao.codigo_forma_entrega," +
                     "solicitacao.codigo_endereco," +
-                    "null as data_criacao," +
-                    "null as hora_criacao," +
+                    "solicitacao.data_criacao," +
+                    "solicitacao.hora_criacao," +
                     "null as data_atualizacao," +
                     "null as hora_atualizacao," +
                     "null as data_aceite," +
@@ -183,7 +183,7 @@ public class SolicitacaoQueries {
                     "OR solicitacao.codigo_status_solicitacao = 4 " +
                     "OR solicitacao.codigo_status_solicitacao = 5 " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
-                    "ORDER BY solicitacao.data_entrega ASC, solicitacao.hora_entrega ASC " +
+                    "ORDER BY solicitacao.data_criacao ASC, solicitacao.hora_criacao ASC " +
                     "LIMIT ? OFFSET ? ";
 
     public static final String RECUSAR_SOLICITACAO = "UPDATE solicitacao SET " +
