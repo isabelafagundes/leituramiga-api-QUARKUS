@@ -56,6 +56,8 @@ public class UsuarioQueries {
             "codigo_instituicao = ? " +
             "WHERE usuario.email_usuario = ?; ";
 
+    public static final String USUARIO_ATIVO = "SELECT ativo FROM usuario WHERE email_usuario = ?;";
+
     public static final String OBTER_USUARIOS_PAGINADOS = "SELECT " +
             "usuario.nome, " +
             "usuario.username, " +

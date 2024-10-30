@@ -166,17 +166,14 @@ public class AutenticacaoService {
             conexao = bd.obterConexao();
             conexao.setAutoCommit(false);
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o usuário de email " + md5Email);
-            if (!usuarioDto.email.contains("@")) throw new InformacoesInvalidas();
-            boolean existencia = dao.validarExistencia(usuarioDto.email, usuarioDto.username);
-            if (existencia) throw new UsuarioExistente();
+            validarCriacaoUsuario(usuarioDto);
             String senhaCriptografada = obterSenhaCriptografada(usuarioDto.senha);
             usuarioDto.setSenha(senhaCriptografada);
             validarUsuario(usuarioDto);
             dao.salvarUsuario(usuarioDto, conexao);
             if (usuarioDto.endereco != null)
                 enderecoDao.salvarEndereco(usuarioDto.endereco, conexao, usuarioDto.email, true);
-            String codigo = salvarCodigo(usuarioDto.email, conexao);
-            emailService.enviarEmailCodigoVerificacao(usuarioDto.email, codigo, usuarioDto.nome);
+            salvarCodigoAlteracaoUsuario(usuarioDto.email, usuarioDto.nome, conexao);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o usuário de email " + md5Email);
             conexao.commit();
         } catch (Exception e) {
@@ -186,6 +183,37 @@ public class AutenticacaoService {
         } finally {
             bd.desconectar(conexao);
         }
+    }
+
+    private void salvarCodigoAlteracaoUsuario(String email, String nome, Connection conexao) throws SQLException {
+        String md5Email = HashService.obterMd5Email(email);
+        try {
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o código de alteração do usuário de email " + md5Email);
+            String codigo = dao.salvarCodigoAlteracao(email, conexao);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de salvar o código de alteração do usuário de email " + md5Email);
+            emailService.enviarEmailCodigoVerificacao(email, codigo, nome);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de salvar o código de alteração do usuário de email " + md5Email, e);
+            throw e;
+        }
+    }
+
+    public String obterTokenAlteracao(String email) throws SQLException {
+        try {
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do token de alteração do usuário de email " + email);
+            Usuario usuario = dao.obterUsuario(email);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do token de alteração do usuário de email " + email);
+            return service.gerarTokenAlteracao(usuario);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do token de alteração do usuário de email " + email, e);
+            throw e;
+        }
+    }
+
+    private void validarCriacaoUsuario(CriacaoUsuarioDto usuarioDto) throws InformacoesInvalidas, UsuarioExistente, SQLException {
+        if (!usuarioDto.email.contains("@")) throw new InformacoesInvalidas();
+        boolean existencia = dao.validarExistencia(usuarioDto.email, usuarioDto.username);
+        if (existencia) throw new UsuarioExistente();
     }
 
     public void verificarCodigo(String email, String codigo) throws SQLException, CodigoIncorreto, UsuarioNaoExistente {
@@ -205,4 +233,31 @@ public class AutenticacaoService {
         }
     }
 
+    public void iniciarRecuperacaoDeSenha(String email) throws SQLException, UsuarioNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(AutenticacaoService.class.getName(), "Sucesso no processo de recuperação de senha do usuário de email " + email);
+            usuarioService.validarIdentificadorUsuario(email);
+            Usuario usuario = dao.obterUsuario(email);
+            salvarCodigoAlteracaoUsuario(email, usuario.getNome(), conexao);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de recuperação de senha do usuário de email " + email);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de recuperação de senha do usuário de email " + email, e);
+            throw e;
+        }
+    }
+
+
+    public void atualizarSenhaUsuario(String email, String novaSenha, String tipoToken) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, RefreshTokenInvalido {
+        try {
+            if (!"change".equals(tipoToken)) throw new RefreshTokenInvalido();
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a atualização da nova senha do usuário");
+            usuarioService.validarIdentificadorUsuario(email);
+            if (!usuarioService.verificarSeUsuarioAtivo(email)) throw new UsuarioNaoAtivo();
+            String senhaCriptografada = obterSenhaCriptografada(novaSenha);
+            usuarioService.atualizarSenhaUsuario(email, senhaCriptografada);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de validação da senha do usuário", e);
+            throw e;
+        }
+    }
 }

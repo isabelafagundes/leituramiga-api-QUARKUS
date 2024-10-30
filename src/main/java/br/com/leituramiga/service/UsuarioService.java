@@ -65,6 +65,18 @@ public class UsuarioService {
         }
     }
 
+    public boolean verificarSeUsuarioAtivo(String email) throws SQLException {
+        try {
+            logService.iniciar(UsuarioService.class.getName(), "Verificando se o usuário de email " + email + " está ativo");
+            boolean ativo = dao.verificarUsuarioAtivo(email);
+            logService.sucesso(UsuarioService.class.getName(), "Sucesso na verificação do usuário de email " + email + " ativo");
+            return ativo;
+        } catch (Exception e) {
+            logService.erro(UsuarioService.class.getName(), "Ocorreu um erro na verificação do usuário de email " + email + " ativo", e);
+            throw e;
+        }
+    }
+
     public void validarUsuarioAtivo(Usuario usuario) throws UsuarioNaoAtivo {
         logService.iniciar(UsuarioService.class.getName(), "Verificando se o usuário está ativo na base de dados");
         if (usuario == null || !usuario.isAtivo()) throw new UsuarioNaoAtivo();
@@ -87,8 +99,19 @@ public class UsuarioService {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a atualização do usuário de email " + usuarioDto.email);
             dao.atualizarUsuario(usuarioDto);
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na atualização do usuário de email " + usuarioDto.email);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logService.erro(UsuarioService.class.getName(), "Ocorreu um erro na atualização do usuário de email  " + usuarioDto.email, e);
+            throw e;
+        }
+    }
+
+    public void atualizarSenhaUsuario(String email, String senha) throws SQLException {
+        try {
+            logService.iniciar(UsuarioService.class.getName(), "Iniciando a atualização da senha do usuário de email " + email);
+            dao.atualizarSenha(senha, email);
+            logService.iniciar(UsuarioService.class.getName(), "Sucesso na atualização do usuário de email " + email);
+        } catch (Exception e) {
+            logService.erro(UsuarioService.class.getName(), "Ocorreu um erro na atualização da senha do usuário de email  " + email, e);
             throw e;
         }
     }

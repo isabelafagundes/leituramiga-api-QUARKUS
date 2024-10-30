@@ -48,6 +48,15 @@ public class UsuarioDao {
         pstmt.executeUpdate();
     }
 
+    public boolean verificarUsuarioAtivo(String email) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.USUARIO_ATIVO);
+            pstmt.setString(1, email);
+            ResultSet resultado = pstmt.executeQuery();
+            return resultado.next() && resultado.getBoolean(1);
+        }
+    }
+
     public void atualizarUsuario(UsuarioDto usuario) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_USUARIO);

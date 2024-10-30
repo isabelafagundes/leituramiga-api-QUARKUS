@@ -62,7 +62,7 @@ public class TokenService {
     }
 
     public String gerarTokenAlteracao(Usuario usuario) {
-        return obterToken(Duration.ofMinutes(30), "password", usuario);
+        return obterToken(Duration.ofMinutes(30), "change", usuario);
     }
 
     private String obterToken(Duration duration, String type, Usuario usuario) {
