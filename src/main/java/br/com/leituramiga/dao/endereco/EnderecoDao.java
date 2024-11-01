@@ -83,8 +83,8 @@ public class EnderecoDao {
         pstmt.executeUpdate();
     }
 
-    public void atualizarEndereco(EnderecoDto endereco, Connection conexao, String email, Boolean enderecoPrincipal) throws SQLException {
-        logService.iniciar(EnderecoDao.class.getName(), "Iniciando atualização de endereço");
+    public void atualizarEnderecoSolicitacao(EnderecoDto endereco, Connection conexao, String email, Boolean enderecoPrincipal) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando atualização de endereço da solicitação");
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_ENDERECO);
         pstmt.setString(1, endereco.getLogradouro());
         pstmt.setString(2, endereco.getComplemento());
@@ -95,7 +95,24 @@ public class EnderecoDao {
         pstmt.setString(7, endereco.getNumero());
         pstmt.setInt(8, endereco.getCodigoEndereco());
         pstmt.executeUpdate();
-        logService.sucesso(EnderecoDao.class.getName(), "Atualização de endereço finalizada");
+        logService.sucesso(EnderecoDao.class.getName(), "Atualização de endereço da solicitação finalizada");
+    }
+
+    public void atualizarEndereco(EnderecoDto endereco, Boolean enderecoPrincipal) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(EnderecoDao.class.getName(), "Iniciando atualização de endereço");
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_ENDERECO);
+            pstmt.setString(1, endereco.getLogradouro());
+            pstmt.setString(2, endereco.getComplemento());
+            pstmt.setString(3, endereco.getBairro());
+            pstmt.setString(4, endereco.getCep());
+            pstmt.setInt(5, endereco.getCodigoCidade());
+            pstmt.setBoolean(6, enderecoPrincipal);
+            pstmt.setString(7, endereco.getNumero());
+            pstmt.setInt(8, endereco.getCodigoEndereco());
+            pstmt.executeUpdate();
+            logService.sucesso(EnderecoDao.class.getName(), "Atualização de endereço finalizada");
+        }
     }
 
 

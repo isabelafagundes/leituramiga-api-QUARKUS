@@ -67,7 +67,7 @@ public class EnderecoController {
     @Path("/atualizar-endereco")
     public Response atualizarEndereco(EnderecoDto endereco) {
         try {
-            enderecoService.atualizarEndereco(endereco, email);
+            enderecoService.atualizarEndereco(endereco);
             return Response.ok().build();
         } catch (EnderecoNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
