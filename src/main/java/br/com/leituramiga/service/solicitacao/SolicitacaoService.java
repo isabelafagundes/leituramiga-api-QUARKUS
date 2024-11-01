@@ -102,7 +102,8 @@ public class SolicitacaoService {
     public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
-            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo)) throw new SolicitacaoExcedeuPrazoEntrega();
+            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo))
+                throw new SolicitacaoExcedeuPrazoEntrega();
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando recusa de solicitação de código " + codigo);
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
@@ -207,17 +208,17 @@ public class SolicitacaoService {
         }
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, EnderecoNaoExistente {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, EnderecoNaoExistente {
         Connection conexao = null;
         try {
             conexao = bd.obterConexao();
             conexao.setAutoCommit(false);
-            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
-            atualizarEnderecoCadastroSolicitacao(solicitacao, conexao, email);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de solicitação");
             Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosUsuarioSolicitante(), numeroSolicitacao, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosTroca(), numeroSolicitacao, conexao);
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
+            atualizarEnderecoCadastroSolicitacao(solicitacao, conexao, email);
             logService.sucesso(SolicitacaoService.class.getName(), "Cadastro de solicitação finalizado");
             conexao.commit();
             enviarEmailSolicitacao(solicitacao, solicitacao.getEndereco().getCodigoEndereco());
@@ -293,8 +294,8 @@ public class SolicitacaoService {
         try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(solicitacao.getCodigoSolicitacao());
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de solicitação de código " + solicitacao.getCodigoSolicitacao());
-            atualizarEnderecoDaSolicitacao(solicitacao, conexao, email);
             solicitacaoDao.atualizarSolicitacao(solicitacao);
+            atualizarEnderecoDaSolicitacao(solicitacao, conexao, email);
             logService.sucesso(SolicitacaoService.class.getName(), "Atualização de solicitação finalizada de código " + solicitacao.getCodigoSolicitacao());
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na atualização de solicitação de código " + solicitacao.getCodigoSolicitacao(), e);
