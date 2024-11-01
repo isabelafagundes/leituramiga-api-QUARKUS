@@ -53,7 +53,7 @@ public class EnderecoController {
     @Path("/criar-endereco")
     public Response salvarEndereco(EnderecoDto endereco) {
         try {
-            enderecoService.salvarEndereco(endereco, email);
+            enderecoService.cadastrarEndereco(endereco, email);
             return Response.ok().build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);

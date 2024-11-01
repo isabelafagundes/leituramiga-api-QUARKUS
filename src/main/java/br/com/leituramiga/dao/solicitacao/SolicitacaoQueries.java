@@ -22,9 +22,8 @@ public class SolicitacaoQueries {
             "email_usuario_receptor, " +
             "email_usuario_solicitante, " +
             "codigo_forma_entrega, " +
-            "codigo_endereco, " +
             "codigo_rastreio_correio" +
-            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
+            ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) ";
 
 
     public static final String ATUALIZAR_SOLICITACAO = "UPDATE solicitacao SET " +
@@ -43,7 +42,6 @@ public class SolicitacaoQueries {
             "email_usuario_solicitante = ?, " +
             "email_usuario_receptor = ?, " +
             "codigo_forma_entrega = ?, " +
-            "codigo_endereco = ?, " +
             "codigo_rastreio_correio = ? " +
             "WHERE codigo_solicitacao = ? ";
 
@@ -66,7 +64,6 @@ public class SolicitacaoQueries {
             "solicitacao.email_usuario_solicitante," +
             "solicitacao.email_usuario_receptor," +
             "solicitacao.codigo_forma_entrega," +
-            "solicitacao.codigo_endereco," +
             "solicitacao.codigo_rastreio_correio, " +
             "endereco.codigo_endereco," +
             "endereco.logradouro," +
@@ -81,7 +78,8 @@ public class SolicitacaoQueries {
             "cidade.nome as nome_cidade," +
             "cidade.estado " +
             "FROM solicitacao " +
-            "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
+            "INNER JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
+            "INNER JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
             "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
             "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
             "WHERE solicitacao.codigo_solicitacao = ? ";
@@ -104,7 +102,6 @@ public class SolicitacaoQueries {
                     "solicitacao.email_usuario_solicitante," +
                     "solicitacao.email_usuario_receptor," +
                     "solicitacao.codigo_forma_entrega," +
-                    "solicitacao.codigo_endereco," +
                     "null as data_criacao," +
                     "null as hora_criacao," +
                     "null as data_atualizacao," +
@@ -126,13 +123,12 @@ public class SolicitacaoQueries {
                     "solicitacao.codigo_rastreio_correio, " +
                     "usuario.nome as nome_usuario_solicitante " +
                     "FROM solicitacao " +
-                    "LEFT JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
+                    "LEFT JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
+                    "LEFT JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
                     "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
                     "LEFT JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 1 " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
-//                    "AND (solicitacao.data_entrega = CURRENT_DATE OR solicitacao.data_devolucao = CURRENT_DATE OR " +
-//                    "(solicitacao.data_entrega IS NULL AND solicitacao.data_devolucao IS NULL)) " +
                     "ORDER BY solicitacao.data_entrega ASC, solicitacao.hora_entrega ASC " +
                     "LIMIT ? OFFSET ? ";
 
@@ -154,7 +150,6 @@ public class SolicitacaoQueries {
                     "solicitacao.email_usuario_solicitante," +
                     "solicitacao.email_usuario_receptor," +
                     "solicitacao.codigo_forma_entrega," +
-                    "solicitacao.codigo_endereco," +
                     "solicitacao.data_criacao," +
                     "solicitacao.hora_criacao," +
                     "null as data_atualizacao," +
@@ -176,7 +171,8 @@ public class SolicitacaoQueries {
                     "usuario.nome as nome_usuario_solicitante," +
                     "solicitacao.codigo_rastreio_correio " +
                     "FROM solicitacao " +
-                    "INNER JOIN endereco ON solicitacao.codigo_endereco = endereco.codigo_endereco " +
+                    "INNER JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
+                    "INNER JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
                     "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
                     "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 3 " +

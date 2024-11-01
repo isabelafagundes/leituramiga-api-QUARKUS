@@ -182,7 +182,7 @@ public class SolicitacaoController {
     @Operation(summary = "Cadastra uma solicitação", description = "Cadastra uma solicitação do usuário do token de autenticação")
     public Response cadastrarSolicitacao(SolicitacaoDto dto) {
         try {
-            service.cadastrarSolicitacao(dto);
+            service.cadastrarSolicitacao(dto, email);
             return Response.ok().build();
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -196,7 +196,7 @@ public class SolicitacaoController {
     @Operation(summary = "Atualiza uma solicitação", description = "Atualiza uma solicitação a partir do seu código de identificação")
     public Response atualizarSolicitacao(@PathParam("id") Integer numero, SolicitacaoDto dto) {
         try {
-            service.atualizarSoliciacao(dto);
+            service.atualizarSolicitacao(dto, email);
             return Response.ok().build();
         } catch (SolicitacaoNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);

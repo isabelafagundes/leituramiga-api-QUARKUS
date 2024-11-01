@@ -104,10 +104,10 @@ public class SolicitacaoDao {
         }
     }
 
-    public Integer cadastrarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
+    public Integer cadastrarSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
         logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando o cadastro da solicitação");
         PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.CADASTRAR_SOLICITACAO, PreparedStatement.RETURN_GENERATED_KEYS);
-        definirParametrosSolicitacao(solicitacao, codigoEndereco, pstmt);
+        definirParametrosSolicitacao(solicitacao, pstmt);
 
         int linhasAfetadas = pstmt.executeUpdate();
 
@@ -137,7 +137,7 @@ public class SolicitacaoDao {
         }
     }
 
-    private void definirParametrosSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco, PreparedStatement pstmt) throws SQLException {
+    private void definirParametrosSolicitacao(SolicitacaoDto solicitacao, PreparedStatement pstmt) throws SQLException {
         DataHora dataHora = DataHora.hoje();
         pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
         pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
@@ -156,11 +156,10 @@ public class SolicitacaoDao {
         pstmt.setString(15, solicitacao.getEmailUsuarioReceptor());
         pstmt.setString(16, solicitacao.getEmailUsuarioSolicitante());
         pstmt.setInt(17, solicitacao.getCodigoFormaEntrega());
-        pstmt.setInt(18, codigoEndereco);
-        pstmt.setString(19, solicitacao.getCodigoRastreioCorreio());
+        pstmt.setString(18, solicitacao.getCodigoRastreioCorreio());
     }
 
-    public void atualizarSolicitacao(SolicitacaoDto solicitacao, Integer codigoEndereco) throws SQLException {
+    public void atualizarSolicitacao(SolicitacaoDto solicitacao) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a atualização da solicitação");
             PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ATUALIZAR_SOLICITACAO);
@@ -180,9 +179,8 @@ public class SolicitacaoDao {
             pstmt.setString(13, solicitacao.getEmailUsuarioSolicitante());
             pstmt.setString(14, solicitacao.getEmailUsuarioReceptor());
             pstmt.setInt(15, solicitacao.getCodigoFormaEntrega());
-            pstmt.setInt(16, codigoEndereco);
-            pstmt.setString(17, solicitacao.getCodigoRastreioCorreio());
-            pstmt.setInt(18, solicitacao.getCodigoSolicitacao());
+            pstmt.setString(16, solicitacao.getCodigoRastreioCorreio());
+            pstmt.setInt(17, solicitacao.getCodigoSolicitacao());
             pstmt.executeUpdate();
             logService.sucesso(SolicitacaoDao.class.getName(), "Solicitação atualizada com sucesso");
         }

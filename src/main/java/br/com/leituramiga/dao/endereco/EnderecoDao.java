@@ -66,7 +66,23 @@ public class EnderecoDao {
         }
         return null;
     }
-    
+
+    public void atualizarEnderecoSolicitacao(String email, Integer codigoSolicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_ENDERECO_SOLICITACAO);
+        pstmt.setInt(1, codigoEndereco);
+        pstmt.setInt(2, codigoSolicitacao);
+        pstmt.setString(3, email);
+        pstmt.executeUpdate();
+    }
+
+    public void salvarEnderecoSolicitacao(Integer codigoEndereco, Integer codigoSolicitacao, String email, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.INSERIR_ENDERECO_SOLICITACAO);
+        pstmt.setInt(1, codigoEndereco);
+        pstmt.setInt(2, codigoSolicitacao);
+        pstmt.setString(3, email);
+        pstmt.executeUpdate();
+    }
+
     public void atualizarEndereco(EnderecoDto endereco, Connection conexao, String email, Boolean enderecoPrincipal) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando atualização de endereço");
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_ENDERECO);

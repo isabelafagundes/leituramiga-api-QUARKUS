@@ -1,14 +1,13 @@
 package br.com.leituramiga.service.solicitacao;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
-import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dao.solicitacao.SolicitacaoDao;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
 import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
-import br.com.leituramiga.model.endereco.Endereco;
+import br.com.leituramiga.model.exception.EnderecoNaoExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
@@ -25,6 +24,7 @@ import br.com.leituramiga.model.solicitacao.TipoSolicitacao;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.email.EmailService;
+import br.com.leituramiga.service.endereco.EnderecoService;
 import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -37,7 +37,7 @@ import java.util.List;
 public class SolicitacaoService {
 
     @Inject
-    EnderecoDao enderecoDao;
+    EnderecoService enderecoService;
 
     @Inject
     UsuarioService usuarioService;
@@ -102,8 +102,7 @@ public class SolicitacaoService {
     public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
-            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo))
-                throw new SolicitacaoExcedeuPrazoEntrega();
+            if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo)) throw new SolicitacaoExcedeuPrazoEntrega();
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando recusa de solicitação de código " + codigo);
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
@@ -208,20 +207,20 @@ public class SolicitacaoService {
         }
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDto solicitacao) throws SQLException, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, EnderecoNaoExistente {
         Connection conexao = null;
         try {
             conexao = bd.obterConexao();
             conexao.setAutoCommit(false);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação do endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
-            Integer endereco = atualizarEnderecoSolicitacao(solicitacao, conexao);
+            atualizarEnderecoCadastroSolicitacao(solicitacao, conexao, email);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de solicitação");
-            Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, endereco, conexao);
+            Integer numeroSolicitacao = solicitacaoDao.cadastrarSolicitacao(solicitacao, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosUsuarioSolicitante(), numeroSolicitacao, conexao);
             solicitacaoDao.salvarLivroSolicitacao(solicitacao.getLivrosTroca(), numeroSolicitacao, conexao);
             logService.sucesso(SolicitacaoService.class.getName(), "Cadastro de solicitação finalizado");
             conexao.commit();
-            enviarEmailSolicitacao(solicitacao, endereco);
+            enviarEmailSolicitacao(solicitacao, solicitacao.getEndereco().getCodigoEndereco());
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro no cadastro de solicitação", e);
             if (conexao != null) conexao.rollback();
@@ -234,9 +233,8 @@ public class SolicitacaoService {
     private void enviarEmailSolicitacao(SolicitacaoDto solicitacao, Integer endereco) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente {
         UsuarioDto usuarioReceptor = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioReceptor());
         UsuarioDto usuarioSolicitante = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioSolicitante());
-        Endereco enderecoDto = enderecoDao.obterEnderecoPorId(endereco);
-        EnderecoDto enderecoSolicitante = EnderecoDto.deModel(enderecoDto);
-        solicitacao.endereco = enderecoSolicitante;
+        EnderecoDto enderecoDto = enderecoService.obterEnderecoPorId(endereco);
+        solicitacao.endereco = enderecoDto;
         emailService.enviarEmailSolicitacaoDeLivros(solicitacao.getEmailUsuarioReceptor(), solicitacao, usuarioReceptor.nome, usuarioSolicitante.nome);
     }
 
@@ -247,16 +245,27 @@ public class SolicitacaoService {
         }
     }
 
-    private Integer atualizarEnderecoSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
-        Integer endereco = 0;
-        if (solicitacao.endereco != null) {
-            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
-            endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, false);
-        } else if (enderecoDao.validarExistencia(solicitacao.emailUsuarioSolicitante)) {
-            Endereco enderecoSolicitante = enderecoDao.obterEnderecoUsuario(solicitacao.getEmailUsuarioSolicitante());
-            endereco = enderecoSolicitante.getCodigoEndereco();
+    private void atualizarEnderecoCadastroSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email) throws SQLException, EnderecoNaoExistente {
+        Integer numeroEndereco = solicitacao.getEndereco().getCodigoEndereco();
+        if (solicitacao.endereco != null && numeroEndereco == null) {
+            cadastrarEnderecoSolicitacao(solicitacao, email, conexao);
+        } else if (solicitacao.endereco != null) {
+            atualizarEnderecoSolicitacao(solicitacao, email, conexao);
+        } else if (enderecoService.validarExistenciaPorEmail(solicitacao.emailUsuarioSolicitante)) {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
+            enderecoService.obterEnderecoUsuario(solicitacao.getEmailUsuarioSolicitante());
+            enderecoService.salvarEnderecoSolicitacao(solicitacao.getEndereco(), email, solicitacao.getCodigoSolicitacao(), conexao, true);
         }
-        return endereco;
+    }
+
+    private void cadastrarEnderecoSolicitacao(SolicitacaoDto solicitacao, String email, Connection conexao) throws SQLException {
+        logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
+        enderecoService.salvarEnderecoSolicitacao(solicitacao.getEndereco(), email, solicitacao.getCodigoSolicitacao(), conexao, false);
+    }
+
+    private void atualizarEnderecoSolicitacao(SolicitacaoDto solicitacao, String email, Connection conexao) throws EnderecoNaoExistente, SQLException {
+        logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
+        enderecoService.atualizarEnderecoSolicitacao(solicitacao.getEndereco(), email, conexao, false);
     }
 
     private void atualizarLivrosIndisponiveisSolicitacao(SolicitacaoDto solicitacao, Integer numeroSolicitacao, String email, Connection conexao) throws LivroNaoDisponivel, SQLException, LivroJaDesativado, LivroNaoExistente {
@@ -280,13 +289,12 @@ public class SolicitacaoService {
         }
     }
 
-    public void atualizarSoliciacao(SolicitacaoDto solicitacao) throws SQLException, SolicitacaoNaoExistente {
+    public void atualizarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, SolicitacaoNaoExistente, EnderecoNaoExistente {
         try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(solicitacao.getCodigoSolicitacao());
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando atualização de solicitação de código " + solicitacao.getCodigoSolicitacao());
-            Integer endereco = atualizarEnderecoDaSolicitacao(solicitacao, conexao);
-            solicitacaoDao.atualizarSolicitacao(solicitacao, endereco);
-            enderecoDao.atualizarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, solicitacao.getEndereco().enderecoPrincipal);
+            atualizarEnderecoDaSolicitacao(solicitacao, conexao, email);
+            solicitacaoDao.atualizarSolicitacao(solicitacao);
             logService.sucesso(SolicitacaoService.class.getName(), "Atualização de solicitação finalizada de código " + solicitacao.getCodigoSolicitacao());
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na atualização de solicitação de código " + solicitacao.getCodigoSolicitacao(), e);
@@ -294,17 +302,16 @@ public class SolicitacaoService {
         }
     }
 
-    public Integer atualizarEnderecoDaSolicitacao(SolicitacaoDto solicitacao, Connection conexao) throws SQLException {
-        Integer endereco = solicitacao.getEndereco().getCodigoEndereco();
+    public void atualizarEnderecoDaSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email) throws SQLException, EnderecoNaoExistente {
         if (solicitacao.endereco != null && !solicitacao.endereco.enderecoPrincipal) {
             if (solicitacao.getEndereco().getEnderecoPrincipal() == null) {
-                endereco = enderecoDao.salvarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, false);
+                enderecoService.salvarEnderecoSolicitacao(solicitacao.getEndereco(), email, solicitacao.codigoSolicitacao, conexao, false);
             } else {
-                enderecoDao.atualizarEndereco(solicitacao.getEndereco(), conexao, solicitacao.emailUsuarioSolicitante, false);
+                enderecoService.atualizarEnderecoSolicitacao(solicitacao.getEndereco(), email, conexao, false);
             }
         }
-        return endereco;
     }
+
 
     private void validarExistenciaSolicitacao(Integer codigo) throws SQLException, SolicitacaoNaoExistente {
         logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da existência da solicitação de código " + codigo);
@@ -331,5 +338,6 @@ public class SolicitacaoService {
             throw e;
         }
     }
+
 
 }
