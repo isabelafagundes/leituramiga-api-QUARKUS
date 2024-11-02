@@ -201,7 +201,7 @@ public class AutenticacaoService {
     public String obterTokenAlteracao(String email) throws SQLException {
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do token de alteração do usuário de email " + email);
-            Usuario usuario = dao.obterUsuario(email);
+            Usuario usuario = dao.obterUsuarioPorEmail(email);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do token de alteração do usuário de email " + email);
             return service.gerarTokenAlteracao(usuario);
         } catch (Exception e) {
@@ -216,9 +216,10 @@ public class AutenticacaoService {
         if (existencia) throw new UsuarioExistente();
     }
 
-    public void verificarCodigo(String email, String codigo) throws SQLException, CodigoIncorreto, UsuarioNaoExistente {
+    public void verificarCodigo(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
         String md5Email = HashService.obterMd5Email(email);
         try {
+            if (!"change".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
             usuarioService.validarIdentificadorUsuario(email);
             boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo);
@@ -247,9 +248,9 @@ public class AutenticacaoService {
     }
 
 
-    public void atualizarSenhaUsuario(String email, String novaSenha, String tipoToken) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, RefreshTokenInvalido {
+    public void atualizarSenhaUsuario(String email, String novaSenha, String tipoToken) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, TokenDeValidacaoInvalido {
         try {
-            if (!"change".equals(tipoToken)) throw new RefreshTokenInvalido();
+            if (!"change".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a atualização da nova senha do usuário");
             usuarioService.validarIdentificadorUsuario(email);
             if (!usuarioService.verificarSeUsuarioAtivo(email)) throw new UsuarioNaoAtivo();

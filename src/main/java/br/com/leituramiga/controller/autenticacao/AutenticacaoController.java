@@ -2,7 +2,6 @@ package br.com.leituramiga.controller.autenticacao;
 
 import br.com.leituramiga.dto.usuario.*;
 import br.com.leituramiga.model.exception.*;
-import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.PermitAll;
@@ -101,9 +100,9 @@ public class AutenticacaoController {
     @Path("/verificar-codigo-seguranca")
     public Response verificarCodigoSeguranca(CodigoDto dto) {
         try {
-            autenticacaoService.verificarCodigo(dto.email, dto.codigo);
+            autenticacaoService.verificarCodigo(dto.email, dto.codigo, tipoToken);
             return Response.ok().build();
-        } catch (CodigoIncorreto erro) {
+        } catch (CodigoIncorreto | TokenDeValidacaoInvalido erro) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
@@ -138,6 +137,8 @@ public class AutenticacaoController {
         try {
             autenticacaoService.atualizarSenhaUsuario(dto.email, dto.senha, tipoToken);
             return Response.ok().build();
+        } catch (TokenDeValidacaoInvalido erro) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

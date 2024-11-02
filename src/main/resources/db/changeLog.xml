@@ -5,6 +5,4 @@
 
 
   <include file="scripts/leituramiga-v1.sql" relativeToChangelogFile="true"/>
-  <include file="scripts/solicitacao-v2.sql" relativeToChangelogFile="true"/>
-  <include file="scripts/endereco-v3.sql" relativeToChangelogFile="true"/>
 </databaseChangeLog>

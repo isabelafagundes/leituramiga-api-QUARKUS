@@ -41,6 +41,18 @@ public class UsuarioDao {
         }
     }
 
+    public Usuario obterUsuarioPorEmail(String email) throws SQLException {
+        String md5Email = HashService.obterMd5Email(email);
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de email " + md5Email);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL);
+            pstmt.setString(1, email);
+            ResultSet resultado = pstmt.executeQuery();
+            logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
+            return resultado.next() ? obterUsuarioDeResultSet(resultado) : null;
+        }
+    }
+
 
     public void salvarUsuario(CriacaoUsuarioDto usuario, Connection conexao) throws SQLException {
         PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.SALVAR_USUARIO);

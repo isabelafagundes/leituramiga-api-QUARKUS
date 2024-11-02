@@ -30,6 +30,32 @@ public class UsuarioQueries {
                     "AND (usuario.email_usuario = ? " +
                     "OR usuario.username = ?); ";
 
+    public static final String OBTER_USUARIO_POR_EMAIL =
+            "SELECT usuario.nome, " +
+                    "usuario.username, " +
+                    "usuario.email_usuario, " +
+                    "usuario.imagem, " +
+                    "usuario.codigo_instituicao, " +
+                    "endereco.codigo_cidade, " +
+                    "cidade.nome as nome_cidade, " +
+                    "instituicao.nome as nome_instituicao, " +
+                    "usuario.codigo_instituicao, " +
+                    "usuario.senha, " +
+                    "null as tentativas, " +
+                    "null as bloqueado, " +
+                    "codigo_alteracao, " +
+                    "(SELECT COUNT(livro.codigo_livro) FROM livro WHERE livro.email_usuario = usuario.email_usuario AND livro.codigo_status_livro = 1) as quantidade_livros, " +
+                    "usuario.tipo_usuario, " +
+                    "usuario.celular, " +
+                    "usuario.descricao, " +
+                    "usuario.imagem, " +
+                    "usuario.ativo " +
+                    "FROM usuario " +
+                    "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario AND endereco.endereco_principal = 1 " +
+                    "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
+                    "WHERE usuario.email_usuario = ?; ";
+
     public static final String VERIFICAR_EXISTENCIA =
             "SELECT COUNT(usuario.email_usuario) FROM usuario "
                     + "WHERE email_usuario = ?"

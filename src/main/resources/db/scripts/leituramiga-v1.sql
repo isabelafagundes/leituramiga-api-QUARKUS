@@ -12,8 +12,7 @@ CREATE TABLE IF NOT EXISTS cidade
     codigo_cidade BIGINT PRIMARY KEY AUTO_INCREMENT,
     nome          VARCHAR(60) NOT NULL,
     estado        VARCHAR(2)  NOT NULL,
-    codigo_ibge   VARCHAR(7),
-    CONSTRAINT uk_cidade UNIQUE (nome, estado, codigo_ibge)
+    codigo_ibge   VARCHAR(7)
 );
 
 CREATE TABLE IF NOT EXISTS instituicao
@@ -36,7 +35,7 @@ CREATE TABLE IF NOT EXISTS usuario
     ativo              BIT         NOT NULL DEFAULT 1,
     tentativas         INTEGER     NOT NULL DEFAULT 3,
     bloqueado          BIT         NOT NULL DEFAULT 0,
-    codigo_alteracao   VARCHAR(40),
+    codigo_alteracao   VARCHAR(60),
     codigo_instituicao BIGINT,
     FOREIGN KEY (codigo_instituicao) REFERENCES instituicao (codigo_instituicao)
 );
@@ -50,6 +49,7 @@ CREATE TABLE IF NOT EXISTS endereco
     complemento        VARCHAR(120),
     bairro             VARCHAR(120) NOT NULL,
     endereco_principal BIT          NOT NULL DEFAULT 0,
+    ativo              INTEGER      NOT NULL DEFAULT 1,
     codigo_cidade      BIGINT       NOT NULL,
     email_usuario      VARCHAR(260) NOT NULL,
     FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario),
@@ -63,8 +63,8 @@ CREATE TABLE IF NOT EXISTS solicitacao
     hora_criacao              VARCHAR(8)  NOT NULL,
     data_atualizacao          VARCHAR(10) NOT NULL,
     hora_atualizacao          VARCHAR(8)  NOT NULL,
-    data_entrega              VARCHAR(10) NOT NULL,
-    hora_entrega              VARCHAR(8)  NOT NULL,
+    data_entrega              VARCHAR(10),
+    hora_entrega              VARCHAR(8),
     data_devolucao            VARCHAR(10),
     hora_devolucao            VARCHAR(8),
     data_aceite               VARCHAR(10),
@@ -76,11 +76,9 @@ CREATE TABLE IF NOT EXISTS solicitacao
     email_usuario_solicitante VARCHAR(260),
     email_usuario_receptor    VARCHAR(260),
     codigo_forma_entrega      INTEGER     NOT NULL,
-    codigo_endereco           BIGINT      NOT NULL,
     codigo_rastreio_correio   VARCHAR(120),
     FOREIGN KEY (email_usuario_solicitante) REFERENCES usuario (email_usuario),
-    FOREIGN KEY (email_usuario_receptor) REFERENCES usuario (email_usuario),
-    FOREIGN KEY (codigo_endereco) REFERENCES endereco (codigo_endereco)
+    FOREIGN KEY (email_usuario_receptor) REFERENCES usuario (email_usuario)
 );
 
 CREATE TABLE IF NOT EXISTS livro
@@ -100,6 +98,18 @@ CREATE TABLE IF NOT EXISTS livro
     FOREIGN KEY (codigo_ultima_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
     FOREIGN KEY (codigo_categoria) REFERENCES categoria (codigo_categoria)
 );
+
+CREATE TABLE solicitacao_endereco
+(
+    codigo_endereco_solicitacao BIGINT AUTO_INCREMENT PRIMARY KEY,
+    codigo_endereco             BIGINT       NOT NULL,
+    codigo_solicitacao          BIGINT       NOT NULL,
+    email_usuario               VARCHAR(260) NOT NULL,
+    FOREIGN KEY (codigo_endereco) REFERENCES endereco (codigo_endereco),
+    FOREIGN KEY (codigo_solicitacao) REFERENCES solicitacao (codigo_solicitacao),
+    FOREIGN KEY (email_usuario) REFERENCES usuario (email_usuario)
+);
+
 
 CREATE TABLE IF NOT EXISTS imagem_livro
 (
