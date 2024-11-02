@@ -44,7 +44,7 @@ public class EmailService {
                 .replace("{{emailSolicitante}}", solicitacao.getEmailUsuarioSolicitante())
                 .replace("{{dataEntrega}}", dataEntrega)
                 .replace("{{dataDevolucao}}", dataDevolucao)
-                .replace("{{endereco}}", solicitacao.getEndereco().obterEnderecoFormatado())
+                .replace("{{endereco}}", solicitacao.getEnderecoSolicitante().obterEnderecoFormatado())
                 .replace("{{livros}}", solicitacao.obterLivrosFormatados())
                 .replace("{{informacoesAdicionais}}", informacoesAdicionais);
         enviarEmailSimples(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de solicitação de livros enviado para " + destinatario));

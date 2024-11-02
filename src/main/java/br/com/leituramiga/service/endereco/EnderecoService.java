@@ -55,11 +55,25 @@ public class EnderecoService {
         }
     }
 
-    public void salvarEnderecoSolicitacao(EnderecoDto endereco, String email, Integer codigoSolicitacao, Connection conexao, boolean enderecoPrincipal) throws SQLException {
+    public Integer salvarEnderecoSolicitacao(EnderecoDto endereco, String email, Integer codigoSolicitacao, Connection conexao, boolean enderecoPrincipal) throws SQLException {
         try {
             logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
-            enderecoDao.atualizarEnderecoSolicitacao(endereco, conexao, email, enderecoPrincipal);
-            enderecoDao.atualizarEnderecoSolicitacao(email, codigoSolicitacao, endereco.codigoEndereco, conexao);
+            Integer codigoEndereco = enderecoDao.salvarEndereco(endereco, conexao, email, enderecoPrincipal);
+            enderecoDao.vincularEnderecoSolicitacao(codigoEndereco, codigoSolicitacao, email, conexao);
+            logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
+            return codigoEndereco;
+        } catch (Exception e) {
+            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);
+            throw e;
+        }
+    }
+
+    public void atualizarEnderecoSolicitacao(EnderecoDto endereco, Connection conexao, Integer codigoSolicitacao, boolean enderecoPrincipal) throws SQLException, EnderecoNaoExistente {
+        try {
+            if (!enderecoDao.validarExistenciaPorId(endereco.getCodigoEndereco())) throw new EnderecoNaoExistente();
+            logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
+            enderecoDao.atualizarEnderecoSolicitacao(endereco, conexao, enderecoPrincipal);
+            enderecoDao.vincularEnderecoSolicitacao(endereco.getCodigoEndereco(), codigoSolicitacao, endereco.emailUsuario, conexao);
             logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
         } catch (Exception e) {
             logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);
@@ -67,14 +81,25 @@ public class EnderecoService {
         }
     }
 
-    public void atualizarEnderecoSolicitacao(EnderecoDto endereco, String email, Connection conexao, boolean enderecoPrincipal) throws SQLException, EnderecoNaoExistente {
+    public void vincularEnderecoSolicitacao(Integer codigoEndereco, Integer codigoSolicitacao, String email, Connection conexao) throws SQLException {
         try {
-            if (!enderecoDao.validarExistenciaPorId(endereco.getCodigoEndereco())) throw new EnderecoNaoExistente();
-            logService.iniciar(EnderecoService.class.getName(), "Iniciando salvamento de endereço do usuário de email " + endereco.emailUsuario);
-            enderecoDao.atualizarEnderecoSolicitacao(endereco, conexao, email, enderecoPrincipal);
-            logService.sucesso(EnderecoService.class.getName(), "Salvamento de endereço do usuário finalizado de email " + endereco.emailUsuario);
+            logService.iniciar(EnderecoService.class.getName(), "Iniciando vinculação de endereço do usuário de email " + email);
+            enderecoDao.vincularEnderecoSolicitacao(codigoEndereco, codigoSolicitacao, email, conexao);
+            logService.sucesso(EnderecoService.class.getName(), "Vinculação de endereço do usuário finalizada de email " + email);
         } catch (Exception e) {
-            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro no salvamento de endereço do usuário de email " + endereco.emailUsuario, e);
+            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro na vinculação de endereço do usuário de email " + email, e);
+            throw e;
+        }
+
+    }
+
+    public void atualizarVinculoEnderecoSolicitacao(String email, Integer codigoSolicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
+        try {
+            logService.iniciar(EnderecoService.class.getName(), "Iniciando atualização de vinculação de endereço do usuário de email " + email);
+            enderecoDao.atualizarVinculoEnderecoSolicitacao(email, codigoSolicitacao, codigoEndereco, conexao);
+            logService.sucesso(EnderecoService.class.getName(), "Atualização de vinculação de endereço do usuário finalizada de email " + email);
+        } catch (Exception e) {
+            logService.erro(EnderecoService.class.getName(), "Ocorreu um erro na atualização de vinculação de endereço do usuário de email " + email, e);
             throw e;
         }
     }

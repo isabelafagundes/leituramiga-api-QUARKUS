@@ -5,7 +5,6 @@ import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
-import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.*;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.UsuarioService;
@@ -198,12 +197,38 @@ public class AutenticacaoService {
         }
     }
 
-    public String obterTokenAlteracao(String email) throws SQLException {
+    public void enviarCodigoUsuario(String email) throws SQLException, UsuarioNaoExistente {
+        String md5Email = HashService.obterMd5Email(email);
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de envio do código de criação do usuário de email " + md5Email);
+            usuarioService.validarIdentificadorUsuario(email);
+            Usuario usuario = dao.obterUsuarioPorEmail(email);
+            salvarCodigoAlteracaoUsuario(email, usuario.getNome(), conexao);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de envio do código de criação do usuário de email " + md5Email);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de envio do código de criação do usuário de email " + md5Email, e);
+            throw e;
+        }
+    }
+
+    public String obterTokenUsuario(String email) throws SQLException {
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do token de alteração do usuário de email " + email);
             Usuario usuario = dao.obterUsuarioPorEmail(email);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do token de alteração do usuário de email " + email);
-            return service.gerarTokenAlteracao(usuario);
+            return service.gerarTokenUsuario(usuario);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do token de alteração do usuário de email " + email, e);
+            throw e;
+        }
+    }
+
+    public String obterTokenSenha(String email) throws SQLException {
+        try {
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a obtenção do token de alteração do usuário de email " + email);
+            Usuario usuario = dao.obterUsuarioPorEmail(email);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na obtenção do token de alteração do usuário de email " + email);
+            return service.gerarTokenSenha(usuario);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na obtenção do token de alteração do usuário de email " + email, e);
             throw e;
@@ -219,7 +244,7 @@ public class AutenticacaoService {
     public void verificarCodigo(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
         String md5Email = HashService.obterMd5Email(email);
         try {
-            if (!"change".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
+            if (!"user".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
             usuarioService.validarIdentificadorUsuario(email);
             boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo);
@@ -250,7 +275,7 @@ public class AutenticacaoService {
 
     public void atualizarSenhaUsuario(String email, String novaSenha, String tipoToken) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, TokenDeValidacaoInvalido {
         try {
-            if (!"change".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
+            if (!"password".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a atualização da nova senha do usuário");
             usuarioService.validarIdentificadorUsuario(email);
             if (!usuarioService.verificarSeUsuarioAtivo(email)) throw new UsuarioNaoAtivo();

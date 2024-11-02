@@ -28,7 +28,8 @@ public class SolicitacaoDto {
     public String emailUsuarioReceptor;
     public Integer codigoFormaEntrega;
     public String codigoRastreioCorreio;
-    public EnderecoDto endereco;
+    public EnderecoDto enderecoSolicitante;
+    public EnderecoDto enderecoReceptor;
     public String nomeUsuarioSolicitante;
     public List<LivroSolicitacaoDto> livrosUsuarioSolicitante;
     public List<LivroSolicitacaoDto> livrosTroca;
@@ -50,13 +51,14 @@ public class SolicitacaoDto {
         dto.horaDevolucao = solicitacao.getHoraDevolucao();
         dto.horaEntrega = solicitacao.getHoraEntrega();
         dto.informacoesAdicionais = solicitacao.getInformacoesAdicionais();
-        dto.endereco = solicitacao.getEndereco() == null ? null : EnderecoDto.deModel(solicitacao.getEndereco());
+        dto.enderecoSolicitante = solicitacao.getEnderecoSolicitante() == null ? null : EnderecoDto.deModel(solicitacao.getEnderecoSolicitante());
         dto.motivoRecusa = solicitacao.getMotivoRecusa();
         dto.dataAtualizacao = solicitacao.getDataAtualizacao();
         dto.horaAtualizacao = solicitacao.getHoraAtualizacao();
         dto.dataAceite = solicitacao.getDataAceite();
         dto.horaAceite = solicitacao.getHoraAceite();
         dto.nomeUsuarioSolicitante = solicitacao.getNomeUsuarioSolicitante();
+        dto.enderecoReceptor = solicitacao.getEnderecoReceptor() == null ? null : EnderecoDto.deModel(solicitacao.getEnderecoReceptor());
         dto.livrosTroca = solicitacao.getLivrosTroca() == null ? null : solicitacao.getLivrosTroca().stream().map(LivroSolicitacaoDto::deModel).toList();
         dto.livrosUsuarioSolicitante = solicitacao.getLivrosUsuarioCriador() == null ? null : solicitacao.getLivrosUsuarioCriador().stream().map(LivroSolicitacaoDto::deModel).toList();
         return dto;
@@ -153,8 +155,8 @@ public class SolicitacaoDto {
         return codigoRastreioCorreio;
     }
 
-    public EnderecoDto getEndereco() {
-        return endereco;
+    public EnderecoDto getEnderecoSolicitante() {
+        return enderecoSolicitante;
     }
 
     public List<LivroSolicitacaoDto> getLivrosUsuarioSolicitante() {

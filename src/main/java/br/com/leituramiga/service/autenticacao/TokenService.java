@@ -3,7 +3,6 @@ package br.com.leituramiga.service.autenticacao;
 import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.model.exception.RefreshTokenInvalido;
-import io.smallrye.jwt.auth.principal.JWTParser;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -61,8 +60,12 @@ public class TokenService {
         return obterToken(Duration.ofDays(5), "refresh", usuario);
     }
 
-    public String gerarTokenAlteracao(Usuario usuario) {
-        return obterToken(Duration.ofMinutes(30), "change", usuario);
+    public String gerarTokenUsuario(Usuario usuario) {
+        return obterToken(Duration.ofMinutes(30), "user", usuario);
+    }
+
+    public String gerarTokenSenha(Usuario usuario) {
+        return obterToken(Duration.ofMinutes(30), "password", usuario);
     }
 
     private String obterToken(Duration duration, String type, Usuario usuario) {

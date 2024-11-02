@@ -25,7 +25,8 @@ public class Solicitacao {
     private String emailUsuarioReceptor;
     private Integer codigoFormaEntrega;
     private String codigoRastreioCorreio;
-    private Endereco endereco;
+    private Endereco enderecoSolicitante;
+    private Endereco enderecoReceptor;
     private String nomeUsuarioSolicitante;
     private List<LivroSolicitacao> livrosUsuarioCriador;
     private List<LivroSolicitacao> livrosTroca;
@@ -53,7 +54,8 @@ public class Solicitacao {
             String emailUsuarioReceptor,
             Integer codigoFormaEntrega,
             String codigoRastreioCorreio,
-            Endereco endereco,
+            Endereco enderecoSolicitante,
+            Endereco enderecoReceptor,
             List<LivroSolicitacao> livrosUsuarioCriador,
             List<LivroSolicitacao> livrosTroca,
             String nomeUsuarioSolicitante
@@ -77,11 +79,13 @@ public class Solicitacao {
         solicitacao.setEmailUsuarioSolicitante(emailUsuarioSolicitante);
         solicitacao.setCodigoFormaEntrega(codigoFormaEntrega);
         solicitacao.setCodigoRastreioCorreio(codigoRastreioCorreio);
-        solicitacao.setEndereco(endereco);
+        solicitacao.setEnderecoSolicitante(enderecoSolicitante);
         solicitacao.setLivrosUsuarioCriador(livrosUsuarioCriador);
         solicitacao.setLivrosTroca(livrosTroca);
         solicitacao.setEmailUsuarioReceptor(emailUsuarioReceptor);
         solicitacao.setNomeUsuarioSolicitante(nomeUsuarioSolicitante);
+        solicitacao.setEnderecoSolicitante(enderecoSolicitante);
+        solicitacao.setEnderecoReceptor(enderecoReceptor);
         return solicitacao;
     }
 
@@ -249,16 +253,16 @@ public class Solicitacao {
         this.codigoRastreioCorreio = codigoRastreioCorreio;
     }
 
-    public Endereco getEndereco() {
-        return endereco;
+    public Endereco getEnderecoSolicitante() {
+        return enderecoSolicitante;
     }
 
     public String getEmailUsuarioReceptor() {
         return emailUsuarioReceptor;
     }
 
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
+    public void setEnderecoSolicitante(Endereco enderecoSolicitante) {
+        this.enderecoSolicitante = enderecoSolicitante;
     }
 
     public void setCodigoTipoSolicitacao(Integer codigoTipoSolicitacao) {
@@ -287,6 +291,14 @@ public class Solicitacao {
             livros.append(livro.getTitulo());
         }
         return livros.toString();
+    }
+
+    public Endereco getEnderecoReceptor() {
+        return enderecoReceptor;
+    }
+
+    public void setEnderecoReceptor(Endereco enderecoReceptor) {
+        this.enderecoReceptor = enderecoReceptor;
     }
 }
 

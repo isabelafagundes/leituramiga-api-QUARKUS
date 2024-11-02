@@ -40,7 +40,7 @@ public class SolicitacaoDao {
         }
     }
 
-    public void recusarSolicitacoesComLivroIndisponivel(List<LivroSolicitacaoDto> livrosIndisponiveis,Integer codigo) throws SQLException {
+    public void recusarSolicitacoesComLivroIndisponivel(List<LivroSolicitacaoDto> livrosIndisponiveis, Integer codigo) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             String codigosLivros = concatenarCodigosLivros(livrosIndisponiveis);
             String query = SolicitacaoQueries.RECUSAR_SOLICITACOES_COM_LIVRO.replace("CODIGOS_LIVROS", codigosLivros);
@@ -229,16 +229,16 @@ public class SolicitacaoDao {
     }
 
     public void aceitarSolicitacao(Integer codigo, Connection conexao) throws SQLException {
-            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a aceitação da solicitação de código " + codigo);
-            PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ACEITAR_SOLICITACAO);
-            DataHora dataHora = DataHora.hoje();
-            pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
-            pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
-            pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
-            pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
-            pstmt.setInt(5, codigo);
-            pstmt.executeUpdate();
-            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na aceitação da solicitação de código " + codigo);
+        logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a aceitação da solicitação de código " + codigo);
+        PreparedStatement pstmt = conexao.prepareStatement(SolicitacaoQueries.ACEITAR_SOLICITACAO);
+        DataHora dataHora = DataHora.hoje();
+        pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
+        pstmt.setString(2, dataHora.dataFormatada("HH:mm:ss"));
+        pstmt.setString(3, dataHora.dataFormatada("yyyy-MM-dd"));
+        pstmt.setString(4, dataHora.dataFormatada("HH:mm:ss"));
+        pstmt.setInt(5, codigo);
+        pstmt.executeUpdate();
+        logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na aceitação da solicitação de código " + codigo);
     }
 
     public void finalizarSolicitacao(Integer codigo) throws SQLException {
@@ -313,8 +313,7 @@ public class SolicitacaoDao {
             PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.SOLICITACAO_DENTRO_PRAZO_ENTREGA);
             DataHora dataHora = DataHora.hoje();
             ps.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));
-            ps.setString(2, dataHora.dataFormatada("HH:mm:ss"));
-            ps.setInt(3, numero);
+            ps.setInt(2, numero);
             ResultSet rs = ps.executeQuery();
             rs.next();
             boolean existe = rs.getInt(1) > 0;
@@ -360,7 +359,8 @@ public class SolicitacaoDao {
                 result.getString("email_usuario_receptor"),
                 result.getInt("codigo_forma_entrega"),
                 result.getString("codigo_rastreio_correio"),
-                endereco ? obterEnderecoDeResult(result) : null,
+                obterEnderecoSolictanteDeResult(result),
+                obterEnderecoReceptorDeResult(result),
                 null,
                 null,
                 result.getString("nome_usuario_solicitante")
@@ -379,21 +379,42 @@ public class SolicitacaoDao {
     }
 
 
-    public Endereco obterEnderecoDeResult(ResultSet result) throws SQLException {
+    public Endereco obterEnderecoSolictanteDeResult(ResultSet result) throws SQLException {
+        Integer codigoEnderecoSolicitante = result.getInt("codigo_endereco_solicitante");
+        if (codigoEnderecoSolicitante == 0 || codigoEnderecoSolicitante == null) return null;
         return Endereco.carregar(
-                result.getInt("codigo_endereco"),
-                result.getString("logradouro"),
-                result.getString("complemento"),
-                result.getString("bairro"),
-                result.getString("cep"),
-                result.getString("nome_cidade"),
-                result.getString("email_usuario"),
-                result.getString("estado"),
-                result.getString("numero"),
-                result.getInt("codigo_cidade"),
-                result.getBoolean("endereco_principal")
+                result.getInt("codigo_endereco_solicitante"),
+                result.getString("logradouro_solicitante"),
+                result.getString("complemento_solicitante"),
+                result.getString("bairro_solicitante"),
+                result.getString("cep_solicitante"),
+                result.getString("nome_cidade_solicitante"),
+                result.getString("email_usuario_solicitante"),
+                result.getString("estado_solicitante"),
+                result.getString("numero_solicitante"),
+                result.getInt("codigo_cidade_solicitante"),
+                result.getBoolean("endereco_principal_solicitante")
         );
     }
+
+    public Endereco obterEnderecoReceptorDeResult(ResultSet result) throws SQLException {
+        Integer codigoEnderecoReceptor = result.getInt("codigo_endereco_receptor");
+        if (codigoEnderecoReceptor == 0 || codigoEnderecoReceptor == null) return null;
+        return Endereco.carregar(
+                result.getInt("codigo_endereco_receptor"),
+                result.getString("logradouro_receptor"),
+                result.getString("complemento_receptor"),
+                result.getString("bairro_receptor"),
+                result.getString("cep_receptor"),
+                result.getString("nome_cidade_receptor"),
+                result.getString("email_usuario_receptor"),
+                result.getString("estado_receptor"),
+                result.getString("numero_receptor"),
+                result.getInt("codigo_cidade_receptor"),
+                result.getBoolean("endereco_principal_receptor")
+        );
+    }
+
 
     public NotificacaoSolicitacao obterNotificacaoDeResult(ResultSet result) throws SQLException {
         return NotificacaoSolicitacao.criar(

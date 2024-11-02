@@ -65,22 +65,36 @@ public class SolicitacaoQueries {
             "solicitacao.email_usuario_receptor," +
             "solicitacao.codigo_forma_entrega," +
             "solicitacao.codigo_rastreio_correio, " +
-            "endereco.codigo_endereco," +
-            "endereco.logradouro," +
-            "endereco.complemento," +
-            "endereco.bairro," +
-            "endereco.cep," +
-            "endereco.numero," +
-            "endereco.codigo_cidade," +
-            "endereco.endereco_principal," +
-            "endereco.email_usuario," +
             "usuario.nome as nome_usuario_solicitante," +
-            "cidade.nome as nome_cidade," +
-            "cidade.estado " +
+            "e1.codigo_endereco as codigo_endereco_solicitante," +
+            "e1.logradouro as logradouro_solicitante," +
+            "e1.complemento as complemento_solicitante," +
+            "e1.bairro as bairro_solicitante," +
+            "e1.cep as cep_solicitante," +
+            "e1.endereco_principal as endereco_principal_solicitante," +
+            "e1.numero as numero_solicitante," +
+            "e1.codigo_cidade as codigo_cidade_solicitante," +
+            "e1.email_usuario as email_usuario_solicitante," +
+            "e2.codigo_endereco as codigo_endereco_receptor," +
+            "e2.logradouro as logradouro_receptor," +
+            "e2.complemento as complemento_receptor," +
+            "e2.bairro as bairro_receptor," +
+            "e2.cep as cep_receptor," +
+            "e2.endereco_principal as endereco_principal_receptor," +
+            "e2.numero as numero_receptor," +
+            "e2.codigo_cidade as codigo_cidade_receptor," +
+            "e2.email_usuario as email_usuario_receptor," +
+            "c1.nome as nome_cidade_solicitante," +
+            "c1.estado as estado_solicitante, " +
+            "c2.nome as nome_cidade_receptor," +
+            "c2.estado as estado_receptor " +
             "FROM solicitacao " +
-            "INNER JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
-            "INNER JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
-            "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+            "LEFT JOIN solicitacao_endereco se1 ON solicitacao.codigo_solicitacao = se1.codigo_solicitacao AND se1.email_usuario = solicitacao.email_usuario_solicitante " +
+            "LEFT JOIN solicitacao_endereco se2 ON solicitacao.codigo_solicitacao = se2.codigo_solicitacao AND se2.email_usuario = solicitacao.email_usuario_receptor " +
+            "LEFT JOIN endereco e1 ON e1.email_usuario = se1.email_usuario AND e1.codigo_endereco = se1.codigo_endereco " +
+            "LEFT JOIN endereco e2 ON e2.email_usuario = se2.email_usuario AND e2.codigo_endereco = se2.codigo_endereco " +
+            "LEFT JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
+            "LEFT JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
             "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
             "WHERE solicitacao.codigo_solicitacao = ? ";
 
@@ -109,23 +123,37 @@ public class SolicitacaoQueries {
                     "null as data_aceite," +
                     "null as hora_aceite," +
                     "null as motivo_recusa," +
-                    "endereco.codigo_endereco," +
-                    "endereco.logradouro," +
-                    "endereco.complemento," +
-                    "endereco.bairro," +
-                    "endereco.endereco_principal," +
-                    "endereco.cep," +
-                    "endereco.numero," +
-                    "endereco.codigo_cidade," +
-                    "endereco.email_usuario," +
-                    "cidade.nome as nome_cidade," +
-                    "cidade.estado, " +
+                    "e1.codigo_endereco as codigo_endereco_solicitante," +
+                    "e1.logradouro as logradouro_solicitante," +
+                    "e1.complemento as complemento_solicitante," +
+                    "e1.bairro as bairro_solicitante," +
+                    "e1.cep as cep_solicitante," +
+                    "e1.endereco_principal as endereco_principal_solicitante," +
+                    "e1.numero as numero_solicitante," +
+                    "e1.codigo_cidade as codigo_cidade_solicitante," +
+                    "e1.email_usuario as email_usuario_solicitante," +
+                    "e2.codigo_endereco as codigo_endereco_receptor," +
+                    "e2.logradouro as logradouro_receptor," +
+                    "e2.complemento as complemento_receptor," +
+                    "e2.bairro as bairro_receptor," +
+                    "e2.cep as cep_receptor," +
+                    "e2.endereco_principal as endereco_principal_receptor," +
+                    "e2.numero as numero_receptor," +
+                    "e2.codigo_cidade as codigo_cidade_receptor," +
+                    "e2.email_usuario as email_usuario_receptor," +
+                    "c1.nome as nome_cidade_solicitante," +
+                    "c1.estado as estado_solicitante, " +
+                    "c2.nome as nome_cidade_receptor," +
+                    "c2.estado as estado_receptor, " +
                     "solicitacao.codigo_rastreio_correio, " +
                     "usuario.nome as nome_usuario_solicitante " +
                     "FROM solicitacao " +
-                    "LEFT JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
-                    "LEFT JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
-                    "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "LEFT JOIN solicitacao_endereco se1 ON solicitacao.codigo_solicitacao = se1.codigo_solicitacao AND se1.email_usuario = solicitacao.email_usuario_solicitante " +
+                    "LEFT JOIN solicitacao_endereco se2 ON solicitacao.codigo_solicitacao = se2.codigo_solicitacao AND se2.email_usuario = solicitacao.email_usuario_receptor " +
+                    "LEFT JOIN endereco e1 ON e1.email_usuario = se1.email_usuario AND e1.codigo_endereco = se1.codigo_endereco " +
+                    "LEFT JOIN endereco e2 ON e2.email_usuario = se2.email_usuario AND e2.codigo_endereco = se2.codigo_endereco " +
+                    "LEFT JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
+                    "LEFT JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
                     "LEFT JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 1 " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
@@ -157,23 +185,36 @@ public class SolicitacaoQueries {
                     "null as data_aceite," +
                     "null as hora_aceite," +
                     "null as motivo_recusa," +
-                    "endereco.codigo_endereco," +
-                    "endereco.logradouro," +
-                    "endereco.complemento," +
-                    "endereco.bairro," +
-                    "endereco.cep," +
-                    "endereco.endereco_principal," +
-                    "endereco.numero," +
-                    "endereco.codigo_cidade," +
-                    "endereco.email_usuario," +
-                    "cidade.nome as nome_cidade," +
-                    "cidade.estado, " +
+                    "e1.codigo_endereco as codigo_endereco_solicitante," +
+                    "e1.logradouro as logradouro_solicitante," +
+                    "e1.complemento as complemento_solicitante," +
+                    "e1.bairro as bairro_solicitante," +
+                    "e1.cep as cep_solicitante," +
+                    "e1.endereco_principal as endereco_principal_solicitante," +
+                    "e1.numero as numero_solicitante," +
+                    "e1.codigo_cidade as codigo_cidade_solicitante," +
+                    "e1.email_usuario as email_usuario_solicitante," +
+                    "e2.codigo_endereco as codigo_endereco_receptor," +
+                    "e2.logradouro as logradouro_receptor," +
+                    "e2.complemento as complemento_receptor," +
+                    "e2.bairro as bairro_receptor," +
+                    "e2.cep as cep_receptor," +
+                    "e2.endereco_principal as endereco_principal_receptor," +
+                    "e2.numero as numero_receptor," +
+                    "e2.codigo_cidade as codigo_cidade_receptor," +
+                    "e2.email_usuario as email_usuario_receptor," +
+                    "c1.nome as nome_cidade_solicitante," +
+                    "c1.estado as estado_solicitante, " +
+                    "c2.nome as nome_cidade_receptor," +
+                    "c2.estado as estado_receptor, " +
                     "usuario.nome as nome_usuario_solicitante," +
                     "solicitacao.codigo_rastreio_correio " +
                     "FROM solicitacao " +
-                    "INNER JOIN endereco_solicitacao ON solicitacao.codigo_solicitacao = endereco_solicitacao.codigo_solicitacao " +
-                    "INNER JOIN endereco ON endereco_solicitacao.codigo_endereco = endereco.codigo_endereco " +
-                    "INNER JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
+                    "INNER JOIN solicitacao_endereco ON solicitacao.codigo_solicitacao = solicitacao_endereco.codigo_solicitacao " +
+                    "INNER JOIN endereco e1 ON solicitacao_endereco.email_usuario = solicitacao.email_usuario_solicitante " +
+                    "INNER JOIN endereco e2 ON solicitacao_endereco.email_usuario = solicitacao.email_usuario_receptor " +
+                    "INNER JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
+                    "INNER JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
                     "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 3 " +
                     "OR solicitacao.codigo_status_solicitacao = 4 " +
@@ -228,7 +269,6 @@ public class SolicitacaoQueries {
     public static final String SOLICITACAO_DENTRO_PRAZO_ENTREGA = "SELECT " +
             "COUNT(1) FROM solicitacao " +
             "WHERE (solicitacao.data_entrega >= ? " +
-            "AND solicitacao.hora_entrega <= ? " +
             "AND solicitacao.codigo_solicitacao = ? ) " +
             "OR solicitacao.data_entrega IS NULL";
 

@@ -69,10 +69,10 @@ public class EnderecoQueries {
                     "endereco_principal = VALUES(endereco_principal), " +
                     "numero = VALUES(numero);";
 
-    public static final String INSERIR_ENDERECO_SOLICITACAO = "INSERT INTO endereco_solicitacao(codigo_endereco, codigo_solicitacao, email_usuario) " +
+    public static final String INSERIR_SOLICITACAO_ENDERECO = "INSERT INTO solicitacao_endereco(codigo_endereco, codigo_solicitacao, email_usuario) " +
             "VALUES (?, ?, ?) ";
 
-    public static final String ATUALIZAR_ENDERECO_SOLICITACAO = "UPDATE endereco_solicitacao SET " +
+    public static final String ATUALIZAR_SOLICITACAO_ENDERECO = "UPDATE solicitacao_endereco SET " +
             "codigo_endereco = ?, " +
             "WHERE email_usuario = ? AND codigo_solicitacao = ?;";
 

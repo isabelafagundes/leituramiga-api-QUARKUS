@@ -4,7 +4,6 @@ import br.com.leituramiga.dto.Instituicao.ArquivoInstituicaoDto;
 import br.com.leituramiga.dto.Instituicao.InstituicaoDto;
 import br.com.leituramiga.service.instituicao.InstituicaoService;
 import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;

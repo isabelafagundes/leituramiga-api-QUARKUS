@@ -2,6 +2,7 @@ package br.com.leituramiga.controller.categoria;
 
 import br.com.leituramiga.dto.categoria.CategoriaDto;
 import br.com.leituramiga.service.categoria.CategoriaService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -20,6 +21,7 @@ public class CategoriaController {
 
     @GET
     @Path("/categorias")
+    @PermitAll
     public Response obterCategorias() {
         try {
             List<CategoriaDto> categorias = categoriaService.obterCategorias();

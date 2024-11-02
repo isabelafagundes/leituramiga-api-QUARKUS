@@ -81,8 +81,9 @@ public class AutenticacaoController {
     public Response criarUsuario(CriacaoUsuarioDto dto) {
         try {
             autenticacaoService.criarUsuario(dto);
-            String token = autenticacaoService.obterTokenAlteracao(dto.email);
-            return Response.ok(token).build();
+            String token = autenticacaoService.obterTokenUsuario(dto.email);
+            TokenDto tokenDto = new TokenDto(token);
+            return Response.ok(tokenDto).build();
         } catch (InformacoesInvalidas erro) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (UsuarioExistente erro) {
@@ -96,14 +97,16 @@ public class AutenticacaoController {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Operation(summary = "Solicita a recuperação de senha", description = "Solicita a recuperação de senha a partir do email")
-    @PermitAll
+    @Authenticated
     @Path("/verificar-codigo-seguranca")
     public Response verificarCodigoSeguranca(CodigoDto dto) {
         try {
             autenticacaoService.verificarCodigo(dto.email, dto.codigo, tipoToken);
             return Response.ok().build();
-        } catch (CodigoIncorreto | TokenDeValidacaoInvalido erro) {
+        } catch (CodigoIncorreto erro) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } catch (TokenDeValidacaoInvalido erro) {
+            throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -118,8 +121,9 @@ public class AutenticacaoController {
     public Response iniciarRecuperacaoSenha(IdentificadorUsuarioDto dto) {
         try {
             autenticacaoService.iniciarRecuperacaoDeSenha(dto.email);
-            String token = autenticacaoService.obterTokenAlteracao(dto.email);
-            return Response.ok(token).build();
+            String token = autenticacaoService.obterTokenSenha(dto.email);
+            TokenDto tokenDto = new TokenDto(token);
+            return Response.ok(tokenDto).build();
         } catch (UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (Exception erro) {
@@ -145,4 +149,41 @@ public class AutenticacaoController {
     }
 
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Enviar email com código", description = "Enviar email com código de segurança")
+    @PermitAll
+    @Path("/enviar-codigo-recuperacao")
+    public Response enviarCodigoRecuperacaoSenha(IdentificadorUsuarioDto dto) {
+        try {
+            autenticacaoService.enviarCodigoUsuario(dto.email);
+            String token = autenticacaoService.obterTokenSenha(dto.email);
+            TokenDto tokenDto = new TokenDto(token);
+            return Response.ok(tokenDto).build();
+        } catch (UsuarioNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Enviar email com código", description = "Enviar email com código de segurança")
+    @PermitAll
+    @Path("/enviar-codigo-verificacao")
+    public Response enviarCodigoCriacaoUsuario(IdentificadorUsuarioDto dto) {
+        try {
+            autenticacaoService.enviarCodigoUsuario(dto.email);
+            String token = autenticacaoService.obterTokenUsuario(dto.email);
+            TokenDto tokenDto = new TokenDto(token);
+            return Response.ok(tokenDto).build();
+        } catch (UsuarioNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

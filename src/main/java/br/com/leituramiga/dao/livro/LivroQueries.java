@@ -84,7 +84,7 @@ public class LivroQueries {
             "SELECT COUNT(livro.codigo_livro) FROM livro WHERE numero_livro = ?;";
 
     public static String OBTER_LIVROS_PAGINADOS =
-            "SELECT livro.codigo_livro,\n" +
+            "SELECT DISTINCT livro.codigo_livro,\n" +
                     "       livro.nome,\n" +
                     "       livro.estado_fisico,\n" +
                     "       livro.email_usuario,\n" +
