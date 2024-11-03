@@ -249,7 +249,7 @@ public class SolicitacaoService {
     }
 
     private Integer atualizarEnderecoCadastroSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email, Integer codigoSolicitacao) throws SQLException, EnderecoNaoExistente {
-        Integer numeroEndereco = solicitacao.getEnderecoSolicitante().getCodigoEndereco();
+        Integer numeroEndereco = solicitacao.getEnderecoSolicitante() == null ? null : solicitacao.getEnderecoSolicitante().getCodigoEndereco();
         if (solicitacao.enderecoSolicitante != null && numeroEndereco == null) {
             // Se o endereço for nulo e o número do endereço for nulo, cadastra o endereço da solicitação
             numeroEndereco = cadastrarEnderecoSolicitacao(solicitacao, email, conexao, codigoSolicitacao);
@@ -303,15 +303,39 @@ public class SolicitacaoService {
     }
 
     public void atualizarEnderecoDaSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email) throws SQLException, EnderecoNaoExistente {
-        if (solicitacao.getEnderecoSolicitante().getEnderecoPrincipal() == null || !solicitacao.getEnderecoSolicitante().getEnderecoPrincipal()) {
-            // Se o endereço principal for nulo ou falso, atualiza o endereço da solicitação e o relacionamento do endereço com a solicitação
-            enderecoService.atualizarEnderecoSolicitacao(solicitacao.getEnderecoSolicitante(), conexao, solicitacao.getCodigoSolicitacao(), false);
+        if (email.equals(solicitacao.getEnderecoSolicitante().emailUsuario)) {
+            atualizarEnderecoSolicitante(solicitacao, conexao, email);
         } else {
-            // Se o endereço principal for verdadeiro, atualiza apenas o relacionamento do endereço com a solicitação
-            enderecoService.atualizarVinculoEnderecoSolicitacao(email, solicitacao.getCodigoSolicitacao(), solicitacao.getEnderecoSolicitante().getCodigoEndereco(), conexao);
+            atualizarEnderecoReceptor(solicitacao, conexao, email);
         }
     }
 
+    private void atualizarEnderecoSolicitante(SolicitacaoDto solicitacao, Connection conexao, String email) throws EnderecoNaoExistente, SQLException {
+        EnderecoDto enderecoDto = solicitacao.getEnderecoSolicitante();
+        if (enderecoDto.getEnderecoPrincipal() == null || !enderecoDto.getEnderecoPrincipal()) {
+            atualizarEnderecoSolicitacaoQuandoNaoPrincipal(solicitacao, email, conexao, enderecoDto);
+        } else {
+            enderecoService.atualizarVinculoEnderecoSolicitacao(email, solicitacao.getCodigoSolicitacao(), enderecoDto.getCodigoEndereco(), conexao);
+        }
+    }
+
+    private void atualizarEnderecoReceptor(SolicitacaoDto solicitacao, Connection conexao, String email) throws EnderecoNaoExistente, SQLException {
+        EnderecoDto enderecoDto = solicitacao.getEnderecoReceptor();
+        if (enderecoDto.getEnderecoPrincipal() == null || !enderecoDto.getEnderecoPrincipal()) {
+            atualizarEnderecoSolicitacaoQuandoNaoPrincipal(solicitacao, email, conexao, enderecoDto);
+        } else {
+            enderecoService.atualizarVinculoEnderecoSolicitacao(email, solicitacao.getCodigoSolicitacao(), enderecoDto.getCodigoEndereco(), conexao);
+        }
+    }
+
+    private void atualizarEnderecoSolicitacaoQuandoNaoPrincipal(SolicitacaoDto solicitacao, String email, Connection conexao, EnderecoDto enderecoDto) throws SQLException, EnderecoNaoExistente {
+        EnderecoDto endereco = enderecoService.obterEnderecoPorId(enderecoDto.getCodigoEndereco());
+        if (endereco.enderecoPrincipal) {
+            enderecoService.salvarEnderecoSolicitacaoExistente(enderecoDto, email, solicitacao.getCodigoSolicitacao(), conexao, false);
+        } else {
+            enderecoService.atualizarEnderecoSolicitacao(enderecoDto, conexao, solicitacao.getCodigoSolicitacao(), false);
+        }
+    }
 
     private void validarExistenciaSolicitacao(Integer codigo) throws SQLException, SolicitacaoNaoExistente {
         logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da existência da solicitação de código " + codigo);

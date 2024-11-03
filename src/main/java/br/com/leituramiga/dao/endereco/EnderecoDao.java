@@ -70,8 +70,8 @@ public class EnderecoDao {
     public void atualizarVinculoEnderecoSolicitacao(String email, Integer codigoSolicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_SOLICITACAO_ENDERECO);
         pstmt.setInt(1, codigoEndereco);
-        pstmt.setInt(2, codigoSolicitacao);
-        pstmt.setString(3, email);
+        pstmt.setString(2, email);
+        pstmt.setInt(3, codigoSolicitacao);
         pstmt.executeUpdate();
     }
 

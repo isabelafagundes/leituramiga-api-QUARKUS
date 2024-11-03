@@ -210,12 +210,13 @@ public class SolicitacaoQueries {
                     "usuario.nome as nome_usuario_solicitante," +
                     "solicitacao.codigo_rastreio_correio " +
                     "FROM solicitacao " +
-                    "INNER JOIN solicitacao_endereco ON solicitacao.codigo_solicitacao = solicitacao_endereco.codigo_solicitacao " +
-                    "INNER JOIN endereco e1 ON solicitacao_endereco.email_usuario = solicitacao.email_usuario_solicitante " +
-                    "INNER JOIN endereco e2 ON solicitacao_endereco.email_usuario = solicitacao.email_usuario_receptor " +
-                    "INNER JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
-                    "INNER JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
-                    "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
+                    "LEFT JOIN solicitacao_endereco se1 ON solicitacao.codigo_solicitacao = se1.codigo_solicitacao AND se1.email_usuario = solicitacao.email_usuario_solicitante " +
+                    "LEFT JOIN solicitacao_endereco se2 ON solicitacao.codigo_solicitacao = se2.codigo_solicitacao AND se2.email_usuario = solicitacao.email_usuario_receptor " +
+                    "LEFT JOIN endereco e1 ON e1.email_usuario = se1.email_usuario AND e1.codigo_endereco = se1.codigo_endereco " +
+                    "LEFT JOIN endereco e2 ON e2.email_usuario = se2.email_usuario AND e2.codigo_endereco = se2.codigo_endereco " +
+                    "LEFT JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
+                    "LEFT JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
+                    "LEFT JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
                     "WHERE solicitacao.codigo_status_solicitacao = 3 " +
                     "OR solicitacao.codigo_status_solicitacao = 4 " +
                     "OR solicitacao.codigo_status_solicitacao = 5 " +

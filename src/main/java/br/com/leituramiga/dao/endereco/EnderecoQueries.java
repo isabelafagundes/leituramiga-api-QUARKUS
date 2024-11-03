@@ -73,7 +73,7 @@ public class EnderecoQueries {
             "VALUES (?, ?, ?) ";
 
     public static final String ATUALIZAR_SOLICITACAO_ENDERECO = "UPDATE solicitacao_endereco SET " +
-            "codigo_endereco = ?, " +
+            "codigo_endereco = ? " +
             "WHERE email_usuario = ? AND codigo_solicitacao = ?;";
 
     public static final String EXCLUIR_ENDERECO =

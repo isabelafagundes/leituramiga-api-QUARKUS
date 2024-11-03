@@ -159,6 +159,10 @@ public class SolicitacaoDto {
         return enderecoSolicitante;
     }
 
+    public EnderecoDto getEnderecoReceptor() {
+        return enderecoReceptor;
+    }
+
     public List<LivroSolicitacaoDto> getLivrosUsuarioSolicitante() {
         return livrosUsuarioSolicitante;
     }
