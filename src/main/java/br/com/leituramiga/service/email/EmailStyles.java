@@ -29,7 +29,7 @@ public class EmailStyles {
                     }
                         
                     .header {
-                        background-image: url('./resources/img/logo_leituramiga.svg');
+                        background-image: url('cid:logo_leituramiga.svg');
                         background-size: cover;
                         color: #fff;
                         padding: 50px 20px;

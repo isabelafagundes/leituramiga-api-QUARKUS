@@ -7,6 +7,7 @@ import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,9 +29,27 @@ public class EmailService {
     }
 
     public void enviarEmailBoasVindas(String destinatario, String nome) {
+
         String assunto = "Boas vindas ao LeiturAmiga!";
+        String htmlContent = EmailStyles.MODELO_BOAS_VINDAS.replace("{{nomeUsuario}}", nome);
+        String imageCid = "logo_leituramiga.svg";
+
+        htmlContent = htmlContent.replace(
+                "background-image: url('cid:logo_leituramiga.svg');",
+                "background-image: url('cid:" + imageCid + ".svg');"
+        );
+
+        mailer.send(Mail.withHtml(destinatario, assunto, htmlContent)
+                .addInlineAttachment(imageCid, new File("src/main/resources/img/logo_leituramiga.svg"), "image/svg+xml"));
+
+        //so fiz pra verificar se foi encaminhado com tudo dentro dele
+        logService.sucesso(EmailService.class.getName(), "Email de boas-vindas foi enviado" + destinatario);
+
+
+        /*String assunto = "Boas vindas ao LeiturAmiga!";
         String html = EmailStyles.MODELO_BOAS_VINDAS.replace("{{nomeUsuario}}", nome);
         enviarEmailSimples(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de boas vindas enviado para " + destinatario));
+        */
     }
 
     public void enviarEmailSolicitacaoDeLivros(String destinatario, SolicitacaoDto solicitacao, String nomeUsuarioReceptor, String nomeUsuarioSolicitante) {
