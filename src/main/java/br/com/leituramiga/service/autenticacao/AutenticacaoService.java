@@ -245,13 +245,16 @@ public class AutenticacaoService {
         String md5Email = HashService.obterMd5Email(email);
         try {
             if (!"user".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
-            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de senha do email " + md5Email);
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
             usuarioService.validarIdentificadorUsuario(email);
             boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo, false);
             if (!codigoValido) throw new CodigoIncorreto();
-            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação  do código de senha do email " + md5Email);
+            dao.ativarUsuario(email);
+            Usuario usuario = dao.obterUsuario(email);
+            emailService.enviarEmailBoasVindas(email, usuario.getNome());
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação do código de email " + md5Email);
         } catch (Exception e) {
-            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação  do código de senha do email " + md5Email, e);
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação do código de email " + md5Email, e);
             throw e;
         }
     }
@@ -260,16 +263,13 @@ public class AutenticacaoService {
         String md5Email = HashService.obterMd5Email(email);
         try {
             if (!"password".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
-            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de senha do email " + md5Email);
             usuarioService.validarIdentificadorUsuario(email);
             boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo, true);
             if (!codigoValido) throw new CodigoIncorreto();
-            dao.ativarUsuario(email);
-            Usuario usuario = dao.obterUsuario(email);
-            emailService.enviarEmailBoasVindas(email, usuario.getNome());
-            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação do código de email " + md5Email);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação do código de senha do email " + md5Email);
         } catch (Exception e) {
-            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação do código de email " + md5Email, e);
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação do código desenha do email " + md5Email, e);
             throw e;
         }
     }
