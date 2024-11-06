@@ -96,12 +96,31 @@ public class AutenticacaoController {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Solicita a recuperação de senha", description = "Solicita a recuperação de senha a partir do email")
+    @Operation(summary = "Verifica o código de segurança", description = "Verifica o código de segurança a partir do email e código")
     @Authenticated
     @Path("/verificar-codigo-seguranca")
     public Response verificarCodigoSeguranca(CodigoDto dto) {
         try {
-            autenticacaoService.verificarCodigo(dto.email, dto.codigo, tipoToken);
+            autenticacaoService.verificarCodigoUsuario(dto.email, dto.codigo, tipoToken);
+            return Response.ok().build();
+        } catch (CodigoIncorreto erro) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
+        } catch (TokenDeValidacaoInvalido erro) {
+            throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Verifica o código de recuperação", description = "Verifica o código de recuperação a partir do email e código")
+    @Authenticated
+    @Path("/verificar-codigo-recuperacao")
+    public Response verificarCodigoRecuperacao(CodigoDto dto) {
+        try {
+            autenticacaoService.verificarCodigoSenha(dto.email, dto.codigo, tipoToken);
             return Response.ok().build();
         } catch (CodigoIncorreto erro) {
             throw new WebApplicationException(Response.Status.BAD_REQUEST);

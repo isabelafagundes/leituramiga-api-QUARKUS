@@ -171,12 +171,12 @@ public class UsuarioDao {
         return codigo;
     }
 
-    public Boolean verificarCodigoSeguranca(String identificador, String codigo) throws SQLException, UsuarioNaoExistente {
+    public Boolean verificarCodigoSeguranca(String identificador, String codigo, boolean ativo) throws SQLException, UsuarioNaoExistente {
         String md5Login = HashService.obterMd5Email(identificador);
         logService.iniciar(UsuarioDao.class.getName(), "Iniciando a verificação do código de segurança do usuário de email " + md5Login);
 
         try (Connection conexao = bd.obterConexao()) {
-            Usuario usuario = obterUsuarioPorIdentificador(identificador, conexao, false);
+            Usuario usuario = obterUsuarioPorIdentificador(identificador, conexao, ativo);
             if (usuario == null) throw new UsuarioNaoExistente();
             Boolean codigoCorreto = CodigoUtil.verificarCodigo(usuario.getCodigoAlteracao(), codigo);
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na verificação do código de segurança do usuário de email " + md5Login);

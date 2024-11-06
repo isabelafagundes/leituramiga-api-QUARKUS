@@ -241,13 +241,28 @@ public class AutenticacaoService {
         if (existencia) throw new UsuarioExistente();
     }
 
-    public void verificarCodigo(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
+    public void verificarCodigoUsuario(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
         String md5Email = HashService.obterMd5Email(email);
         try {
             if (!"user".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de senha do email " + md5Email);
+            usuarioService.validarIdentificadorUsuario(email);
+            boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo, false);
+            if (!codigoValido) throw new CodigoIncorreto();
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na verificação  do código de senha do email " + md5Email);
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na verificação  do código de senha do email " + md5Email, e);
+            throw e;
+        }
+    }
+
+    public void verificarCodigoSenha(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
+        String md5Email = HashService.obterMd5Email(email);
+        try {
+            if (!"password".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação do código de email " + md5Email);
             usuarioService.validarIdentificadorUsuario(email);
-            boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo);
+            boolean codigoValido = dao.verificarCodigoSeguranca(email, codigo, true);
             if (!codigoValido) throw new CodigoIncorreto();
             dao.ativarUsuario(email);
             Usuario usuario = dao.obterUsuario(email);
