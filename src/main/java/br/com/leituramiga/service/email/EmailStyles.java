@@ -5,115 +5,94 @@ public class EmailStyles {
 
     public static String MODELO_BOAS_VINDAS = """
             <!DOCTYPE html>
-            <html lang="pt-BR">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1">
-                <title>Bem-vindo ao LeiturAmiga!</title>
-                <style>
-                    body {
-                        margin: 0;
-                        font-family: Arial, sans-serif;
-                        text-align: center;
-                        background-color: #333333;
-                        color: #333;
-                    }
-                        
-                    .container {
-                        max-width: 600px;
-                        margin: 20px auto;
-                        background-color: #ffffff;
-                        border-radius: 8px;
-                        overflow: hidden;
-                        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-                    }
-                        
-                    .header {
-                        background-image: url('cid:logo_leituramiga.svg');
-                        background-size: cover;
-                        color: #fff;
-                        padding: 50px 20px;
-                        font-size: 24px;
-                        font-weight: bold;
-                        position: relative;
-                    }
-                        
-                    .header-link {
-                        text-decoration: none;
-                        color: inherit;
-                    }
-                        
-                    .header h2 {
-                        font-size: 50px;
-                        margin: 10px 0 0;
-                    }
-                        
-                    .header p {
-                        background-color: transparent;
-                        font-size: 14px;
-                        opacity: 0.25;
-                    }
-                        
-                    .content {
-                        padding: 20px;
-                    }
-                        
-                    .content a {
-                        color: #79b791;
-                    }
-                        
-                    .content h2 {
-                        font-size: 22px;
-                        color: #333;
-                    }
-                        
-                    .content p {
-                        font-size: 16px;
-                        color: #555;
-                        margin: 10px 0;
-                    }
-                        
-                    .footer {
-                        padding: 10px;
-                        background: #555555;
-                        font-size: 14px;
-                        color: #666;
-                    }
-                        
-                    .footer h3 {
-                        color: #79b791;
-                        text-decoration: none;
-                    }
-                        
-                    .footer p{
-                        color: white;
-                        opacity: 0.2;
-                    }
-                </style>
-            </head>
-            <body>
-            <div class="container">
-                <!--depois alterar o link-->
-                <a href="https://github.com/KauaTGuedes" target="_blank" class="header-link">
-                    <div class="header">
-                        <h2>LeiturAmiga</h2>
-                        <p>(Clique aqui para voltar ao site)</p>
-                    </div>
-                </a>
-                <div class="content">
-                    <h2>Olá, {{nomeUsuario}}!</h2>
-                    <p>Estamos muito felizes em tê-lo conosco no LeiturAmiga. O nosso aplicativo foi projetado para ajudar você a
-                        superar os obstáculos de acesso à leitura e descobrir novos mundos através dos livros.</p>
-                    <p>Se você tiver alguma dúvida ou precisar de ajuda, não hesite em entrar em contato conosco através do nosso <a
-                            href="mailto:leituramiga.oficial@gmail.com">email de suporte</a>.</p>
-                </div>
-                <div class="footer">
-                    <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.<br>Se você não se inscreveu, pode ignorar este email.
-                    </p>
-                </div>
-            </div>
-            </body>
-            </html>
+                   <html lang="pt-BR">
+                   <head>
+                       <meta charset="UTF-8">
+                       <meta name="viewport" content="width=device-width, initial-scale=1">
+                       <title>Bem-vindo ao LeiturAmiga!</title>
+                       <style>
+                           body {
+                               margin: 0;
+                               font-family: Arial, sans-serif;
+                               text-align: center;
+                               background-color: #333333;
+                               color: #333;
+                           }
+                           .container {
+                               max-width: 600px;
+                               margin: 20px auto;
+                               background-color: #ffffff;
+                               border-radius: 8px;
+                               overflow: hidden;
+                               box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+                           }
+                           .header {
+                               background-color: #79b791;
+                               color: #fff;
+                               padding: 20px;
+                               font-size: 24px;
+                               font-weight: bold;
+                           }
+                           .header img {
+                               width: 100%; /* Ajusta a largura da imagem para ocupar todo o container */
+                               height: auto;
+                               margin-bottom: 20px;
+                           }
+                           .header h2 {
+                               font-size: 28px;
+                               margin: 0;
+                           }
+                           .content {
+                               padding: 20px;
+                           }
+                           .content a {
+                               color: #79b791;
+                           }
+                           .content h2 {
+                               font-size: 22px;
+                               color: #333;
+                           }
+                           .content p {
+                               font-size: 16px;
+                               color: #555;
+                               margin: 10px 0;
+                           }
+                           .footer {
+                               padding: 10px;
+                               background: #555555;
+                               font-size: 14px;
+                               color: #666;
+                           }
+                           .footer h3 {
+                               color: #79b791;
+                               text-decoration: none;
+                           }
+                           .footer p {
+                               color: white;
+                               opacity: 0.2;
+                           }
+                       </style>
+                   </head>
+                   <body>
+                   <div class="container">
+                       <div class="header">
+                           <img src="cid:logo_leituramiga" alt="Logo LeiturAmiga">
+                           <h2>LeiturAmiga</h2>
+                       </div>
+                       <div class="content">
+                           <h2>Olá, {{nomeUsuario}}!</h2>
+                           <p>Estamos muito felizes em tê-lo conosco no LeiturAmiga. O nosso aplicativo foi projetado para ajudar você a
+                               superar os obstáculos de acesso à leitura e descobrir novos mundos através dos livros.</p>
+                           <p>Se você tiver alguma dúvida ou precisar de ajuda, não hesite em entrar em contato conosco através do nosso <a
+                                   href="mailto:leituramiga.oficial@gmail.com">email de suporte</a>.</p>
+                       </div>
+                       <div class="footer">
+                           <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.<br>Se você não se inscreveu, pode ignorar este email.
+                           </p>
+                       </div>
+                   </div>
+                   </body>
+                   </html>
             """;
 
     public static String MODELO_CODIGO_SEGURANCA = """

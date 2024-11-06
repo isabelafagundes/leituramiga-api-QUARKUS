@@ -2,6 +2,7 @@ package br.com.leituramiga.controller.email;
 
 import br.com.leituramiga.service.email.EmailService;
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.PermitAll;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.POST;
@@ -18,7 +19,7 @@ public class EmailController {
     EmailService emailService;
 
     @POST
-    @Authenticated
+    @PermitAll
     @Path("/email")
     public Response enviarEmailSimples() {
         emailService.enviarEmailBoasVindas("isabelahidalgo.2004@gmail.com", "Isabela");

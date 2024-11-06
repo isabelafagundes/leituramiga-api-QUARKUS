@@ -30,26 +30,22 @@ public class EmailService {
 
     public void enviarEmailBoasVindas(String destinatario, String nome) {
 
-        String assunto = "Boas vindas ao LeiturAmiga!";
+        String assunto = "Boas-vindas ao LeiturAmiga!";
         String htmlContent = EmailStyles.MODELO_BOAS_VINDAS.replace("{{nomeUsuario}}", nome);
-        String imageCid = "logo_leituramiga.svg";
 
+        String imageCid = "logo_leituramiga";
+
+        // Substituir o 'cid' no HTML com o nome correto
         htmlContent = htmlContent.replace(
-                "background-image: url('cid:logo_leituramiga.svg');",
-                "background-image: url('cid:" + imageCid + ".svg');"
+                "background-image: url('cid:logo_leituramiga.png');",
+                "background-image: url('cid:" + imageCid + "');"
         );
+        File arquivo = new File("src/main/resources/img/logo_leituramiga.png");
 
-        mailer.send(Mail.withHtml(destinatario, assunto, htmlContent)
-                .addInlineAttachment(imageCid, new File("src/main/resources/img/logo_leituramiga.svg"), "image/svg+xml"));
+        // Adiciona a imagem com o Content-ID correto
+        mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment("logo_leituramiga.png", arquivo, "image/png", "logo_leituramiga"));
 
-        //so fiz pra verificar se foi encaminhado com tudo dentro dele
-        logService.sucesso(EmailService.class.getName(), "Email de boas-vindas foi enviado" + destinatario);
-
-
-        /*String assunto = "Boas vindas ao LeiturAmiga!";
-        String html = EmailStyles.MODELO_BOAS_VINDAS.replace("{{nomeUsuario}}", nome);
-        enviarEmailSimples(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de boas vindas enviado para " + destinatario));
-        */
+        logService.sucesso(EmailService.class.getName(), "Email de boas-vindas enviado para " + destinatario);
     }
 
     public void enviarEmailSolicitacaoDeLivros(String destinatario, SolicitacaoDto solicitacao, String nomeUsuarioReceptor, String nomeUsuarioSolicitante) {
