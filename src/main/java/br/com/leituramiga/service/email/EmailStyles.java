@@ -27,34 +27,30 @@ public class EmailStyles {
                                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
                            }
                            .header {
-                               background-color: #79b791;
+                               background-color: transparent; 
                                color: #fff;
-                               padding: 20px;
+                               padding: 0px;
                                font-size: 24px;
                                font-weight: bold;
                            }
                            .header img {
                                width: 100%; /* Ajusta a largura da imagem para ocupar todo o container */
                                height: auto;
-                               margin-bottom: 20px;
-                           }
-                           .header h2 {
-                               font-size: 28px;
-                               margin: 0;
-                           }
-                           .content {
-                               padding: 20px;
                            }
                            .content a {
                                color: #79b791;
                            }
                            .content h2 {
                                font-size: 22px;
+                               padding: 10px;
+                               padding-left: 10px;
+                               padding-right: 10px;
                                color: #333;
                            }
                            .content p {
                                font-size: 16px;
                                color: #555;
+                               padding: 10px;
                                margin: 10px 0;
                            }
                            .footer {
@@ -62,14 +58,17 @@ public class EmailStyles {
                                background: #555555;
                                font-size: 14px;
                                color: #666;
+                               text-align: center;
                            }
                            .footer h3 {
-                               color: #79b791;
+                               color: white;
                                text-decoration: none;
+                               text-align: center;
                            }
                            .footer p {
                                color: white;
-                               opacity: 0.2;
+                               opacity: 1.0;
+                               text-align: center;
                            }
                        </style>
                    </head>
@@ -77,7 +76,6 @@ public class EmailStyles {
                    <div class="container">
                        <div class="header">
                            <img src="cid:logo_leituramiga" alt="Logo LeiturAmiga">
-                           <h2>LeiturAmiga</h2>
                        </div>
                        <div class="content">
                            <h2>Olá, {{nomeUsuario}}!</h2>
@@ -119,7 +117,7 @@ public class EmailStyles {
                                 box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
                             }
                             .header {
-                                background-image: url('./resources/img/logo_leituramiga.svg);
+                                background-image: transparent;
                                 background-size: cover;
                                 color: #fff;
                                 padding: 50px 20px;
@@ -136,6 +134,12 @@ public class EmailStyles {
                                 font-size: 14px;
                                 opacity: 0.25;
                             }
+                            
+                            .header img {
+                                width: 100%;
+                                height: auto;
+                            }
+                            
                             .content {
                                 padding: 20px;
                             }
@@ -172,6 +176,7 @@ public class EmailStyles {
                                 background: #555555;
                                 font-size: 14px;
                                 color: #666;
+                                text-align: center;
                             }
                             .footer h3 {
                                 color: #79b791;
@@ -179,7 +184,7 @@ public class EmailStyles {
                             }
                             .footer p {
                                 color: white;
-                                opacity: 0.2;
+                                opacity: 1.0;
                             }
                         </style>
                     </head>
@@ -187,8 +192,8 @@ public class EmailStyles {
                     <div class="container">
                         <div class="header">
                         </div>
-                        <div class="content">
-                            <img src="./resources/img/icon_seguranca.svg" alt="icon de segurança">
+                        <div class="content"> 
+                            <img src="cid:icon_seguranca.svg" alt="icon de segurança">
                             <h2>Olá, {{nomeUsuario}}!</h2>
                             <p>Seu código de segurança:</p>
                             <h3 class="codigo-seguranca">{{codigoSeguranca}}</h3>
@@ -232,7 +237,7 @@ public class EmailStyles {
                     }
                         
                     .header {
-                        background-image: url('./resources/img/logo_leituramiga.svg');
+                        background-image: transparent;
                         background-size: cover;
                         color: #fff;
                         padding: 50px 20px;
@@ -251,7 +256,7 @@ public class EmailStyles {
                         font-size: 14px;
                         opacity: 0.25;
                     }
-                        
+                                       
                     .content {
                         padding: 20px;
                     }
@@ -301,12 +306,12 @@ public class EmailStyles {
                         display: inline-block;
                         width: 120px;
                     }
-                        
                     .footer {
                         padding: 10px;
                         background: #555555;
                         font-size: 14px;
                         color: #666;
+                        text-align: center;
                     }
                     .footer h3 {
                         color: #79b791;
@@ -314,7 +319,7 @@ public class EmailStyles {
                     }
                     .footer p{
                         color: white;
-                        opacity: 0.2;
+                        opacity: 0.8;
                     }
                 </style>
             </head>
@@ -323,7 +328,7 @@ public class EmailStyles {
                 <div class="header">
                 </div>
                 <div class="content">
-                    <img src="./resources/img/solicitacao_icon.svg" alt="icone de segurança">
+                    <img src="cid:solicitacao_icon.svg" alt="icone de segurança">
                     <h2>Olá, {{nomeUsuario}}!</h2>
                     <p>Você recebeu uma solicitação de {{nomeSolicitante}}. Logo abaixo estão os detalhes:</p>
                     <div class="details-screen">
@@ -376,7 +381,7 @@ public class EmailStyles {
                            }
                         
                            .header {
-                               background-image: url('./resources/img/logo_leituramiga.svg');
+                               background-image: transparent;
                                background-size: cover;
                                color: #fff;
                                padding: 50px 20px;
@@ -390,7 +395,7 @@ public class EmailStyles {
                                font-size: 14px;
                                opacity: 0.25;
                            }
-                        
+                                                   
                            .content {
                                padding: 20px;
                            }
@@ -435,7 +440,7 @@ public class EmailStyles {
                         
                            .footer p {
                                color: white;
-                               opacity: 0.2;
+                               opacity: 1.0;
                            }
                        </style>
                    </head>
@@ -444,7 +449,7 @@ public class EmailStyles {
                        <div class="header">
                        </div>
                        <div class="content">
-                           <img src="./resources/img/aceito_icon.svg" alt="icone de aceito">
+                           <img src="cdi:aceito_icon.svg" alt="icone de aceito">
                            <h1>Solicitação Aceita - LeiturAmiga</h1>
                            <p>Olá, <strong>{{nomeSolicitante}}!</strong></p>
                            <p>Temos o prazer de informar que sua solicitação foi <strong>aceita</strong> por <strong>{{nomeReceptor}}</strong>.</p>
@@ -481,7 +486,7 @@ public class EmailStyles {
                                             overflow: hidden;
                                         }
                                         .header {
-                                            background-image: url('./resources/img/logo_leituramiga.svg');
+                                            background-image: transparent;
                                             background-size: cover;
                                             background-position: center;
                                             padding: 50px;
@@ -499,6 +504,8 @@ public class EmailStyles {
                                             text-align: center;
                                         }
                                         .content img {
+                                            width: 100%;
+                                            height: auto;
                                             max-width: 200px;
                                         }
                                         .content strong {
@@ -526,7 +533,7 @@ public class EmailStyles {
                                         }
                                         .footer p {
                                             color: white;
-                                            opacity: 0.5;
+                                            opacity: 1.0;
                                             margin: 5px 0 0;
                                         }
                                     </style>
@@ -537,7 +544,7 @@ public class EmailStyles {
                                     </div>
                                     <div class="content">
                                         <h1>Solicitação <strong>{{status}}</strong> - LeiturAmiga</h1>
-                                        <img src="./resources/img/recusado_icon.svg" alt="icon recusada">
+                                        <img src="cdi:recusado_icon.svg" alt="icon recusada">
                                         <p>Olá, <strong>{{nomeUsuario}}</strong>!</p>
                                         <p>A solicitação criada por {{nomeSolicitante}} foi <strong>{{status}}</strong>.</p>
                                         <div class="details-screen">
