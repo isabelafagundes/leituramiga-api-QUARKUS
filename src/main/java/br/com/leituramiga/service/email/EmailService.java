@@ -25,7 +25,7 @@ public class EmailService {
     public void enviarEmailCodigoVerificacao(String destinatario, String codigo, String nome) {
         String assunto = "Código de verificação do LeiturAmiga";
         String html = EmailStyles.MODELO_CODIGO_SEGURANCA.replace("{{codigoSeguranca}}", codigo).replace("{{nomeUsuario}}", nome);
-        enviarEmailComIcone(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de código de verificação enviado para " + destinatario));
+        enviarEmailComIconeSeguranca(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de código de verificação enviado para " + destinatario));
     }
 
     public void enviarEmailBoasVindas(String destinatario, String nome) {
@@ -107,7 +107,7 @@ public class EmailService {
         }, executor);
     }
 
-    private CompletableFuture<Void> enviarEmailComIcone(String destinatario, String assunto, String html){
+    private CompletableFuture<Void> enviarEmailComIconeSeguranca(String destinatario, String assunto, String html){
         return CompletableFuture.runAsync(() -> {
             try {
                 logService.iniciar(EmailService.class.getName(), "Iniciando envio de email para " + destinatario);
