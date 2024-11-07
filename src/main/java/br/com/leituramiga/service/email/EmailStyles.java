@@ -193,7 +193,7 @@ public class EmailStyles {
                         <div class="header">
                         </div>
                         <div class="content"> 
-                            <img src="cid:icon_seguranca.svg" alt="icon de segurança">
+                            <img src="cid:icon_seguranca.pngg" alt="icon de segurança">
                             <h2>Olá, {{nomeUsuario}}!</h2>
                             <p>Seu código de segurança:</p>
                             <h3 class="codigo-seguranca">{{codigoSeguranca}}</h3>
@@ -328,7 +328,7 @@ public class EmailStyles {
                 <div class="header">
                 </div>
                 <div class="content">
-                    <img src="cid:solicitacao_icon.svg" alt="icone de segurança">
+                    <img src="cid:solicitacao_icon.png" alt="icone de segurança">
                     <h2>Olá, {{nomeUsuario}}!</h2>
                     <p>Você recebeu uma solicitação de {{nomeSolicitante}}. Logo abaixo estão os detalhes:</p>
                     <div class="details-screen">
@@ -449,7 +449,7 @@ public class EmailStyles {
                        <div class="header">
                        </div>
                        <div class="content">
-                           <img src="cdi:aceito_icon.svg" alt="icone de aceito">
+                           <img src="cid:aceito_icon.png" alt="icone de aceito">
                            <h1>Solicitação Aceita - LeiturAmiga</h1>
                            <p>Olá, <strong>{{nomeSolicitante}}!</strong></p>
                            <p>Temos o prazer de informar que sua solicitação foi <strong>aceita</strong> por <strong>{{nomeReceptor}}</strong>.</p>
@@ -544,7 +544,7 @@ public class EmailStyles {
                                     </div>
                                     <div class="content">
                                         <h1>Solicitação <strong>{{status}}</strong> - LeiturAmiga</h1>
-                                        <img src="cdi:recusado_icon.svg" alt="icon recusada">
+                                        <img src="cid:recusado_icon.png" alt="icon recusada">
                                         <p>Olá, <strong>{{nomeUsuario}}</strong>!</p>
                                         <p>A solicitação criada por {{nomeSolicitante}} foi <strong>{{status}}</strong>.</p>
                                         <div class="details-screen">
