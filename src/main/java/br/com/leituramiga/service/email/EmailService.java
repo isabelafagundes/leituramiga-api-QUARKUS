@@ -25,13 +25,17 @@ public class EmailService {
     public void enviarEmailCodigoVerificacao(String destinatario, String codigo, String nome) {
         String assunto = "Código de verificação do LeiturAmiga";
         String html = EmailStyles.MODELO_CODIGO_SEGURANCA.replace("{{codigoSeguranca}}", codigo).replace("{{nomeUsuario}}", nome);
-        enviarEmailComIconeSeguranca(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de código de verificação enviado para " + destinatario));
+        String logo = "icon_seguranca.png";
+        String cid = "icon_seguranca";
+        enviarEmailComIcone(destinatario, assunto, html, logo, cid).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de código de verificação enviado para " + destinatario));
     }
 
     public void enviarEmailBoasVindas(String destinatario, String nome) {
         String assunto = "Boas-vindas ao LeiturAmiga!";
         String htmlContent = EmailStyles.MODELO_BOAS_VINDAS.replace("{{nomeUsuario}}", nome);
-        enviarEmailSimplesComLogo(destinatario, assunto, htmlContent).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de boas vindas enviado para " + destinatario));
+        String logo = "logo_leituramiga.png";
+        String cid = "logo_leituramiga";
+        enviarEmailComIcone(destinatario, assunto, htmlContent, logo, cid).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de boas vindas enviado para " + destinatario));
         logService.sucesso(EmailService.class.getName(), "Email de boas-vindas enviado para " + destinatario);
     }
 
@@ -87,37 +91,48 @@ public class EmailService {
         enviarEmailSimples(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de solicitação cancelada enviado para " + destinatario));
     }
 
-    private CompletableFuture<Void> enviarEmailSimplesComLogo(String destinatario, String assunto, String html) {
+//    private CompletableFuture<Void> enviarEmailSimplesComLogo(String destinatario, String assunto, String html) {
+//        return CompletableFuture.runAsync(() -> {
+//            try {
+//                logService.iniciar(EmailService.class.getName(), "Iniciando envio de email para " + destinatario);
+//                String htmlContent = html;
+//                String logo = "logo_leituramiga.png";
+//                String cid = "logo_leituramiga";
+//                File arquivoLogo = new File("src/main/resources/img/logo_leituramiga.png");
+//
+//                mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment(logo, arquivoLogo, "image/png", cid));
+//                logService.sucesso(EmailService.class.getName(), "Email enviado para " + destinatario);
+//            } catch (Exception e) {
+//                logService.erro(EmailService.class.getName(), "Ocorreu um erro no envio de email para " + destinatario, e);
+//                throw e;
+//            }
+//        }, executor);
+//    }
+//
+//    private CompletableFuture<Void> enviarEmailComIconeSeguranca(String destinatario, String assunto, String html) {
+//        return CompletableFuture.runAsync(() -> {
+//            try {
+//                logService.iniciar(EmailService.class.getName(), "Iniciando envio de email para " + destinatario);
+//                String htmlContent = html;
+//                String logo = "icon_seguranca.png";
+//                String cid = "icon_seguranca";
+//                File arquivoLogo = new File("src/main/resources/img/icon_seguranca.png");
+//
+//                mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment(logo, arquivoLogo, "image/png", cid));
+//                logService.sucesso(EmailService.class.getName(), "Email enviado para " + destinatario);
+//            } catch (Exception e) {
+//                logService.erro(EmailService.class.getName(), "Ocorreu um erro no envio de email para " + destinatario, e);
+//                throw e;
+//            }
+//        }, executor);
+//    }
+
+    private CompletableFuture<Void> enviarEmailComIcone(String destinatario, String assunto, String html, String logo, String cid) {
         return CompletableFuture.runAsync(() -> {
             try {
                 logService.iniciar(EmailService.class.getName(), "Iniciando envio de email para " + destinatario);
                 String htmlContent = html;
-                String imageCid = "logo_leituramiga";
-                String logo = "logo_leituramiga.png";
-                String cid = "logo_leituramiga";
-                htmlContent = htmlContent.replace("background-image: url('cid:logo_leituramiga.png');", "background-image: url('cid:" + imageCid + "');");
-                File arquivoLogo = new File("src/main/resources/img/logo_leituramiga.png");
-
-                mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment(logo, arquivoLogo, "image/png", cid));
-                logService.sucesso(EmailService.class.getName(), "Email enviado para " + destinatario);
-            } catch (Exception e) {
-                logService.erro(EmailService.class.getName(), "Ocorreu um erro no envio de email para " + destinatario, e);
-                throw e;
-            }
-        }, executor);
-    }
-
-    private CompletableFuture<Void> enviarEmailComIconeSeguranca(String destinatario, String assunto, String html){
-        return CompletableFuture.runAsync(() -> {
-            try {
-                logService.iniciar(EmailService.class.getName(), "Iniciando envio de email para " + destinatario);
-                String htmlContent = html;
-                String imageCid = "icon_seguranca.png";
-                String logo = "icon_seguranca.png";
-                String cid = "icon_seguranca.png";
-                htmlContent = htmlContent.replace("background-image: url('cid:logo_seguranca.png');", "background-image: url('cid:" + imageCid + "');");
-                File arquivoLogo = new File("src/main/resources/img/icon_seguranca.png");
-
+                File arquivoLogo = new File("src/main/resources/img/" + logo);
                 mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment(logo, arquivoLogo, "image/png", cid));
                 logService.sucesso(EmailService.class.getName(), "Email enviado para " + destinatario);
             } catch (Exception e) {

@@ -117,10 +117,10 @@ public class EmailStyles {
                                 box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
                             }
                             .header {
-                                background-image: transparent;
+                                background-image: url('cid:icon_seguranca');
                                 background-size: cover;
                                 color: #fff;
-                                padding: 50px 20px;
+                                padding: 20px 20px;
                                 font-size: 24px;
                                 font-weight: bold;
                                 position: relative;
@@ -134,20 +134,13 @@ public class EmailStyles {
                                 font-size: 14px;
                                 opacity: 0.25;
                             }
-                            
                             .header img {
-                                width: 100%;
-                                height: auto;
-                            }
-                            
-                            .content {
-                                padding: 20px;
-                            }
-                            .content img {
-                                padding: 5px;
                                 max-width: 100%;
                                 height: auto;
                                 width: 50%;
+                            }
+                            .content {
+                                padding: 20px;
                             }
                             .content a {
                                 color: #79b791;
@@ -155,6 +148,9 @@ public class EmailStyles {
                             .content h2 {
                                 font-size: 22px;
                                 color: #333;
+                            }
+                             .content h23{
+                                color: white;
                             }
                             .content p {
                                 font-size: 14px;
@@ -168,7 +164,7 @@ public class EmailStyles {
                                 border-radius: 5px;
                                 background-color: #666666;
                                 font-size: 24px;
-                                color: #333;
+                                color: white;
                                 font-weight: bold;
                             }
                             .footer {
@@ -190,10 +186,10 @@ public class EmailStyles {
                     </head>
                     <body>
                     <div class="container">
-                        <div class="header">
+                        <div class="header" style="display: grid; place-items: center;">
+                              <img src="cid:icon_seguranca" alt="icon de segurança" style="display: block; margin: 0 auto;">
                         </div>
                         <div class="content"> 
-                            <img src="cid:icon_seguranca.pngg" alt="icon de segurança">
                             <h2>Olá, {{nomeUsuario}}!</h2>
                             <p>Seu código de segurança:</p>
                             <h3 class="codigo-seguranca">{{codigoSeguranca}}</h3>
