@@ -45,6 +45,9 @@ public class EmailService {
         String dataEntrega = solicitacao.getDataEntrega() == null ? "" : "<li><strong>Data de Entrega:</strong> " + solicitacao.dataEntregaFormatada() + "</li>";
         String informacoesAdicionais = solicitacao.getInformacoesAdicionais() == null || solicitacao.getInformacoesAdicionais().isEmpty() ? "" : "<li><strong>Informações Adicionais:</strong> " + solicitacao.getInformacoesAdicionais() + "</li>";
 
+        String logo = "solicitacao_icon";
+        String cid = "solicitacao_icon";
+
         String html = EmailStyles.EMAIL_SOLICITACAO_RECEBIDA.replace("{{nomeReceptor}}", nomeUsuarioReceptor)
                 .replace("{{nomeSolicitante}}", nomeUsuarioSolicitante)
                 .replace("{{emailSolicitante}}", solicitacao.getEmailUsuarioSolicitante())
@@ -60,6 +63,8 @@ public class EmailService {
         String assunto = "Solicitação de livros aceita";
         String html = EmailStyles.EMAIL_SOLICITACAO_ACEITA.replace("{{nomeSolicitante}}", nomeUsuarioSolicitante)
                 .replace("{{nomeReceptor}}", nomeUsuarioReceptor);
+        String logo = "aceito_icon";
+        String cid = "aceito_icon";
 
         enviarEmailSimples(destinatario, assunto, html).thenRun(() -> logService.sucesso(EmailService.class.getName(), "Email de solicitação aceita enviado para " + destinatario));
     }
@@ -68,6 +73,10 @@ public class EmailService {
         String motivoFormatado = motivo == null || motivo.isEmpty() || motivo.isBlank() ? "Motivo não informado" : "Motivo: " + motivo;
         String nomeSolicitante = nomeUsuario.equals(nomeUsuarioSolicitante) ? "você" : nomeUsuarioSolicitante;
         String assunto = "Solicitação de livros recusada";
+
+        String logo = "recusado_icon";
+        String cid = "recusado_icon";
+
         String html = EmailStyles.EMAIL_SOLICITACAO_RECUSADA.replace("{{nomeSolicitante}}", nomeSolicitante)
                 .replace("{{nomeReceptor}}", nomeUsuarioReceptor)
                 .replace("{{nomeUsuario}}", nomeUsuario)
@@ -80,6 +89,9 @@ public class EmailService {
     public void enviarEmailSolicitacaoCancelada(String destinatario, String motivo, String nomeUsuarioReceptor, String nomeUsuarioSolicitante, String nomeUsuario) {
         String motivoFormatado = motivo == null || motivo.isEmpty() || motivo.isBlank() ? "Motivo não informado" : "Motivo: " + motivo;
         String nomeSolicitante = nomeUsuario.equals(nomeUsuarioSolicitante) ? "você" : nomeUsuarioSolicitante;
+
+        String logo = "recusado_icon";
+        String cid = "recusado_icon";
 
         String assunto = "Solicitação de livros cancelada";
         String html = EmailStyles.EMAIL_SOLICITACAO_RECUSADA.replace("{{nomeSolicitante}}", nomeSolicitante)
