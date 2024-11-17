@@ -1,6 +1,3 @@
-use leituramiga;
-
-
 insert into cidade (codigo_ibge, nome, estado) values ('1100015','Alta Floresta D''Oeste', 'RO');
 insert into cidade (codigo_ibge, nome, estado) values ('1100023','Ariquemes', 'RO');
 insert into cidade (codigo_ibge, nome, estado) values ('1100031','Cabixi', 'RO');

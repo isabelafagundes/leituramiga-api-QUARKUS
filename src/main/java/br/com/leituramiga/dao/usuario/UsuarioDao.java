@@ -73,10 +73,12 @@ public class UsuarioDao {
         try (Connection conexao = bd.obterConexao()) {
             PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_USUARIO);
             pstmt.setString(1, usuario.nome);
-            pstmt.setString(2, usuario.celular);
+            if (usuario.celular == null) pstmt.setNull(2, java.sql.Types.VARCHAR);
+            else pstmt.setString(2, usuario.celular);
             pstmt.setString(3, usuario.descricao);
             pstmt.setString(4, usuario.imagem);
-            pstmt.setInt(5, usuario.codigoInstituicao);
+            if (usuario.codigoInstituicao == null) pstmt.setNull(5, java.sql.Types.INTEGER);
+            else pstmt.setInt(5, usuario.codigoInstituicao);
             pstmt.setString(6, usuario.email);
             pstmt.executeUpdate();
         }

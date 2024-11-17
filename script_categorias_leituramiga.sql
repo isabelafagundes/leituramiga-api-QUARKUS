@@ -1,5 +1,3 @@
-se leituramiga;
-
 INSERT INTO categoria (descricao) VALUES ('Fantasia');
 INSERT INTO categoria (descricao) VALUES ('Ficção Científica');
 INSERT INTO categoria (descricao) VALUES ('Romance');

@@ -129,8 +129,8 @@ public class SolicitacaoService {
         }
     }
 
-    public void finalizarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, UsuarioNaoPertenceASolicitacao {
-        try {
+    public void finalizarSolicitacao(Integer codigo, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, UsuarioNaoPertenceASolicitacao, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
+        try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
             if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo))
                 throw new SolicitacaoExcedeuPrazoEntrega();
@@ -138,6 +138,10 @@ public class SolicitacaoService {
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
             solicitacaoDao.finalizarSolicitacao(codigo);
+            SolicitacaoDto solicitacaoDto = obterSolicitacao(codigo);
+            if (solicitacaoDto.codigoTipoSolicitacao == TipoSolicitacao.EMPRESTIMO.id) {
+                atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
+            }
             logService.sucesso(SolicitacaoService.class.getName(), "Finalização de solicitação finalizada de código " + codigo);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na finalização de solicitação de código " + codigo, e);

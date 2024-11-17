@@ -133,7 +133,7 @@ public class EmailService {
 //                mailer.send(Mail.withHtml(destinatario, assunto, htmlContent).addInlineAttachment(logo, arquivoLogo, "image/png", cid));
 //                logService.sucesso(EmailService.class.getName(), "Email enviado para " + destinatario);
 //            } catch (Exception e) {
-//                logService.erro(EmailService.class.getName(), "Ocorreu um erro no envio de email para " + destinatario, e);
+//                logService.erro(EmailService.class.getName(), "Ocorreu um erro no envio          de email para " + destinatario, e);
 //                throw e;
 //            }
 //        }, executor);
