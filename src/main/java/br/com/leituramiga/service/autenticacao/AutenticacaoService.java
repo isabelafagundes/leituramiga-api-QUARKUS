@@ -4,6 +4,7 @@ import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.endereco.EnderecoDao;
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
+import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioAutenticadoDto;
 import br.com.leituramiga.model.exception.*;
 import br.com.leituramiga.model.usuario.Usuario;
@@ -13,6 +14,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -158,7 +160,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente {
+    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente, IOException {
         String md5Email = HashService.obterMd5Email(usuarioDto.email);
         Connection conexao = null;
         try {
@@ -184,7 +186,7 @@ public class AutenticacaoService {
         }
     }
 
-    private void salvarCodigoAlteracaoUsuario(String email, String nome, Connection conexao) throws SQLException {
+    private void salvarCodigoAlteracaoUsuario(String email, String nome, Connection conexao) throws SQLException, IOException {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de salvar o código de alteração do usuário de email " + md5Email);
@@ -197,7 +199,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void enviarCodigoUsuario(String email) throws SQLException, UsuarioNaoExistente {
+    public void enviarCodigoUsuario(String email) throws SQLException, UsuarioNaoExistente, IOException {
         String md5Email = HashService.obterMd5Email(email);
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de envio do código de criação do usuário de email " + md5Email);
@@ -241,7 +243,7 @@ public class AutenticacaoService {
         if (existencia) throw new UsuarioExistente();
     }
 
-    public void verificarCodigoUsuario(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido {
+    public void verificarCodigoUsuario(String email, String codigo, String tipoToken) throws SQLException, CodigoIncorreto, UsuarioNaoExistente, TokenDeValidacaoInvalido, IOException {
         String md5Email = HashService.obterMd5Email(email);
         try {
             if (!"user".equals(tipoToken)) throw new TokenDeValidacaoInvalido();
@@ -274,7 +276,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void iniciarRecuperacaoDeSenha(String email) throws SQLException, UsuarioNaoExistente {
+    public void iniciarRecuperacaoDeSenha(String email) throws SQLException, UsuarioNaoExistente, IOException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(AutenticacaoService.class.getName(), "Sucesso no processo de recuperação de senha do usuário de email " + email);
             usuarioService.validarIdentificadorUsuario(email);
@@ -298,6 +300,17 @@ public class AutenticacaoService {
             usuarioService.atualizarSenhaUsuario(email, senhaCriptografada);
         } catch (Exception e) {
             logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro no processo de validação da senha do usuário", e);
+            throw e;
+        }
+    }
+
+    public void validarExistenciaIdentificadorUsuario(IdentificadorUsuarioDto login) throws SQLException, UsuarioExistente {
+        try {
+            logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a validação do identificador do usuário");
+            usuarioService.validarExistenciaIdentificadorUsuario(login);
+            logService.sucesso(AutenticacaoService.class.getName(), "Sucesso na validação do identificador do usuário");
+        } catch (Exception e) {
+            logService.erro(AutenticacaoService.class.getName(), "Ocorreu um erro na validação do identificador do usuário", e);
             throw e;
         }
     }

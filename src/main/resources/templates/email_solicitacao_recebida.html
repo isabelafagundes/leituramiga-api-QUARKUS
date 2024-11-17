@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação Recebida - LeiturAmiga</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333333;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background-image: url('cid:solicitacao_icon');
+            background-size: cover;
+            color: #fff;
+            padding: 20px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .header h2 {
+            font-size: 50px;
+            margin: 10px 0 0;
+        }
+
+        .header p {
+            background-color: transparent;
+            font-size: 14px;
+            opacity: 0.25;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content img {
+            padding: 5px;
+            max-width: 100%;
+            height: auto;
+            width: 60%
+        }
+
+        .content a {
+            color: #79b791;
+        }
+
+        .content h2 {
+            font-size: 22px;
+            color: #333;
+        }
+
+        .content p {
+            font-size: 14px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .details-screen {
+            background-color: #79b791;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin: 10px 0;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        ul li strong {
+            color: #333;
+            display: inline-block;
+            width: 120px;
+        }
+
+        .footer {
+            padding: 10px;
+            background: #555555;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer h3 {
+            color: #79b791;
+            text-decoration: none;
+        }
+
+        .footer p {
+            color: white;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+    </div>
+    <div class="content" style="display: grid; place-items: center;">
+        <img src="cid:solicitacao_icon" alt="ícone de solicitação" style="display: block; margin: 0 auto;">
+        <h2>Olá, {{nomeUsuario}}!</h2>
+        <p>Você recebeu uma solicitação de {{nomeSolicitante}}. Logo abaixo estão os detalhes:</p>
+        <div class="details-screen">
+            <ul>
+                <li><strong>Email:</strong> {{emailSolicitante}}</li>
+                <li><strong>Endereço:</strong> {{endereco}}</li>
+                <li><strong>Livros Solicitados:</strong> {{livros}}</li>
+                <li><strong>Data de entrega:</strong> {{dataEntrega}}</li>
+                <li><strong>Data de devolução:</strong> {{dataDevolucao}}</li>
+                <li><strong>informações adicionais:</strong> {{informacoesAdicionais}}</li>
+            </ul>
+        </div>
+        <br>
+        <p>Acesse a plataforma LeiturAmiga para obter mais detalhes, e seja deseja recusar ou aceitar a proposta.</p>
+    </div>
+    <br>
+    <div class="footer">
+        <h3>LeiturAmiga</h3>
+        <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.<br>Se você não se inscreveu, pode ignorar este email.
+        </p>
+    </div>
+</div>
+</body>
+</html>

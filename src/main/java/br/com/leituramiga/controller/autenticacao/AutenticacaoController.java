@@ -205,4 +205,21 @@ public class AutenticacaoController {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @PermitAll
+    @Path("/validar-identificador")
+    @Operation(summary = "Valida o identificador do usuário", description = "Valida o identificador do usuário a partir do email")
+    public Response validarIdentificador(IdentificadorUsuarioDto dto) {
+        try {
+            autenticacaoService.validarExistenciaIdentificadorUsuario(dto);
+            return Response.ok().build();
+        } catch (UsuarioExistente erro) {
+            throw new WebApplicationException(Response.Status.CONFLICT);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

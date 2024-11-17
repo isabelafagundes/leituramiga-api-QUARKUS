@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Código de Segurança - LeiturAmiga</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333333;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            background-image: url('cid:icon_seguranca');
+            background-size: cover;
+            color: #fff;
+            padding: 20px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .header h2 {
+            font-size: 50px;
+            margin: 10px 0 0;
+        }
+
+        .header p {
+            background-color: transparent;
+            font-size: 14px;
+            opacity: 0.25;
+        }
+
+        .header img {
+            max-width: 100%;
+            height: auto;
+            width: 50%;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content a {
+            color: #79b791;
+        }
+
+        .content h2 {
+            font-size: 22px;
+            color: #333;
+        }
+
+        .content h3 {
+            color: white;
+        }
+
+        .content p {
+            font-size: 14px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .codigo-seguranca {
+            display: inline-block;
+            padding: 10px;
+            border: 2px solid #333333;
+            border-radius: 5px;
+            background-color: #666666;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .footer {
+            padding: 10px;
+            background: #555555;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer h3 {
+            color: #79b791;
+            text-decoration: none;
+        }
+
+        .footer p {
+            color: white;
+            opacity: 1.0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header" style="display: grid; place-items: center;">
+        <img src="cid:icon_seguranca" alt="icon de segurança" style="display: block; margin: 0 auto;">
+    </div>
+    <div class="content">
+        <h2>Olá, {{nomeUsuario}}!</h2>
+        <p>Seu código de segurança:</p>
+        <h3 class="codigo-seguranca">{{codigoSeguranca}}</h3>
+        <p>Não compartilhe com ninguém.
+            <br><br>
+            Se você não solicitou este código, por favor, ignore este email! Obrigado pela atenção.
+        </p>
+    </div>
+    <div class="footer">
+        <h3>LeiturAmiga</h3>
+        <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.<br>Se você não se inscreveu, pode ignorar este email.
+        </p>
+    </div>
+</div>
+</body>
+</html>

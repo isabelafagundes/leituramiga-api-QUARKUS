@@ -10,6 +10,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
+import java.io.IOException;
+
 @RequestScoped
 @Path("/api")
 @Tag(name = "Email", description = "Controller responsável por enviar emails")
@@ -21,7 +23,7 @@ public class EmailController {
     @POST
     @PermitAll
     @Path("/email")
-    public Response enviarEmailSimples() {
+    public Response enviarEmailSimples() throws IOException {
         emailService.enviarEmailBoasVindas("isabelahidalgo.2004@gmail.com", "Isabela");
         return Response.ok("Email enviado com sucesso").build();
     }

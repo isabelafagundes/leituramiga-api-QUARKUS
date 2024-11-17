@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bem-vindo ao LeiturAmiga!</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333333;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .header {
+            background-color: transparent;
+            color: #fff;
+            padding: 0px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header img {
+            width: 100%;
+            height: auto;
+        }
+        .content a {
+            color: #79b791;
+        }
+        .content h2 {
+            font-size: 22px;
+            padding: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            color: #333;
+        }
+        .content p {
+            font-size: 16px;
+            color: #555;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .footer {
+            padding: 10px;
+            background: #555555;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .footer h3 {
+            color: white;
+            text-decoration: none;
+            text-align: center;
+        }
+        .footer p {
+            color: white;
+            opacity: 1.0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <img src="cid:logo_leituramiga" alt="Logo LeiturAmiga">
+    </div>
+    <div class="content">
+        <h2>Olá, {{nomeUsuario}}!</h2>
+        <p>Estamos muito felizes em tê-lo conosco no LeiturAmiga. O nosso aplicativo foi projetado para ajudar você a
+            superar os obstáculos de acesso à leitura e descobrir novos mundos através dos livros.</p>
+        <p>Se você tiver alguma dúvida ou precisar de ajuda, não hesite em entrar em contato conosco através do nosso <a
+                    href="mailto:leituramiga.oficial@gmail.com">email de suporte</a>.</p>
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.<br>Se você não se inscreveu, pode ignorar este email.
+        </p>
+    </div>
+</div>
+</body>
+</html>

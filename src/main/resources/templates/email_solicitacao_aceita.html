@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação Aceita - LeiturAmiga</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #333333;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background-image: url('cid:aceito_icon');
+            background-size: cover;
+            color: #fff;
+            padding: 50px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .header p {
+            background-color: transparent;
+            font-size: 14px;
+            opacity: 0.25;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content img {
+            padding: 5px;
+            max-width: 100%;
+            height: auto;
+            width: 50%;
+        }
+
+        .content a {
+            color: #79b791;
+        }
+
+        .content h1 {
+            font-size: 28px;
+            margin: 20px 0;
+        }
+
+        .content p {
+            font-size: 14px;
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .content strong {
+            color: #79b791;
+        }
+
+        .footer {
+            padding: 10px;
+            background: #555555;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .footer h3 {
+            color: #79b791;
+            text-decoration: none;
+        }
+
+        .footer p {
+            color: white;
+            opacity: 1.0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+    </div>
+    <div class="content" style="display: grid; place-items: center;">
+        <img src="cid:aceito_icon" alt="icone de aceito" style="display: block; margin: 0 auto;">
+        <h1>Solicitação Aceita - LeiturAmiga</h1>
+        <p>Olá, <strong>{{nomeSolicitante}}!</strong></p>
+        <p>Temos o prazer de informar que sua solicitação foi <strong>aceita</strong> por <strong>{{nomeReceptor}}</strong>.</p>
+        <p>Acesse o LeiturAmiga para mais detalhes!</p>
+    </div>
+    <div class="footer">
+        <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.</p>
+    </div>
+</div>
+</body>
+</html>

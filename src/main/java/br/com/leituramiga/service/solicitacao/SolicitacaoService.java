@@ -29,6 +29,7 @@ import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -57,7 +58,7 @@ public class SolicitacaoService {
     @Inject
     FabricaDeConexoes bd;
 
-    public void aceitarSolicitacao(Integer codigo, AceiteSolicitacaoDto aceiteSolicitacaoDto, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, EnderecoNaoExistente {
+    public void aceitarSolicitacao(Integer codigo, AceiteSolicitacaoDto aceiteSolicitacaoDto, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, EnderecoNaoExistente, IOException {
         Connection conexao = bd.obterConexao();
         try {
             conexao.setAutoCommit(false);
@@ -95,13 +96,13 @@ public class SolicitacaoService {
         }
     }
 
-    private void enviarEmailSolicitacaoAceita(SolicitacaoDto solicitacao) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente {
+    private void enviarEmailSolicitacaoAceita(SolicitacaoDto solicitacao) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, IOException {
         UsuarioDto usuarioReceptor = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioReceptor());
         UsuarioDto usuarioSolicitante = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioSolicitante());
         emailService.enviarEmailSolicitacaoAceita(solicitacao.getEmailUsuarioSolicitante(), usuarioReceptor.nome, usuarioSolicitante.nome);
     }
 
-    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente {
+    public void recusarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoPendente, SolicitacaoExcedeuPrazoEntrega, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, IOException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando a validação da data de entrega da solicitação " + codigo);
             if (!solicitacaoDao.validarSolicitacaoDentroPrazoEntrega(codigo))
@@ -119,7 +120,7 @@ public class SolicitacaoService {
         }
     }
 
-    private void enviarEmailSolicitacaoRecusada(SolicitacaoDto solicitacao, String email, String motivoRecusa) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente {
+    private void enviarEmailSolicitacaoRecusada(SolicitacaoDto solicitacao, String email, String motivoRecusa) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, IOException {
         UsuarioDto usuarioReceptor = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioReceptor());
         UsuarioDto usuarioSolicitante = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioSolicitante());
         if (email.equals(solicitacao.getEmailUsuarioSolicitante())) {
@@ -149,7 +150,7 @@ public class SolicitacaoService {
         }
     }
 
-    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente {
+    public void cancelarSolicitacao(Integer codigo, String motivoRecusa, String email) throws SQLException, SolicitacaoNaoExistente, SolicitacaoNaoAberta, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, IOException {
         try (Connection conexao = bd.obterConexao()) {
             validarExistenciaSolicitacao(codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validacao do status aberto da solicitação de código " + codigo);
@@ -167,7 +168,7 @@ public class SolicitacaoService {
         }
     }
 
-    private void enviarCancelamentoSolicitacao(SolicitacaoDto solicitacao, String email, String motivoRecusa) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente {
+    private void enviarCancelamentoSolicitacao(SolicitacaoDto solicitacao, String email, String motivoRecusa) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, IOException {
         UsuarioDto usuarioReceptor = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioReceptor());
         UsuarioDto usuarioSolicitante = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioSolicitante());
         if (email.equals(solicitacao.getEmailUsuarioSolicitante())) {
@@ -214,7 +215,7 @@ public class SolicitacaoService {
         }
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, EnderecoNaoExistente {
+    public void cadastrarSolicitacao(SolicitacaoDto solicitacao, String email) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, EnderecoNaoExistente, IOException {
         Connection conexao = null;
         try {
             conexao = bd.obterConexao();
@@ -237,7 +238,7 @@ public class SolicitacaoService {
         }
     }
 
-    private void enviarEmailSolicitacao(SolicitacaoDto solicitacao, Integer endereco) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente {
+    private void enviarEmailSolicitacao(SolicitacaoDto solicitacao, Integer endereco) throws SQLException, UsuarioNaoAtivo, UsuarioNaoExistente, IOException {
         UsuarioDto usuarioReceptor = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioReceptor());
         UsuarioDto usuarioSolicitante = usuarioService.obterUsuarioPorIdentificador(solicitacao.getEmailUsuarioSolicitante());
         EnderecoDto enderecoDto = enderecoService.obterEnderecoPorId(endereco);

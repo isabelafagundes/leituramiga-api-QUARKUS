@@ -1,8 +1,10 @@
 package br.com.leituramiga.service;
 
 import br.com.leituramiga.dao.usuario.UsuarioDao;
+import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.UsuarioBloqueado;
+import br.com.leituramiga.model.exception.UsuarioExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
@@ -91,6 +93,12 @@ public class UsuarioService {
         logService.iniciar(UsuarioService.class.getName(), "Verificando a existência do usuário de login " + login);
         boolean existenciaUsuario = dao.validarExistencia(login, null);
         if (!existenciaUsuario) throw new UsuarioNaoExistente();
+    }
+
+    public void validarExistenciaIdentificadorUsuario(IdentificadorUsuarioDto login) throws UsuarioExistente, SQLException {
+        logService.iniciar(UsuarioService.class.getName(), "Verificando a existência do usuário de login " + login);
+        boolean existenciaUsuario = dao.validarExistencia(login.email, login.username);
+        if (existenciaUsuario) throw new UsuarioExistente();
     }
 
     public void atualizarUsuario(UsuarioDto usuarioDto) throws SQLException, UsuarioNaoExistente {

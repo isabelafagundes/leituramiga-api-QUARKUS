@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitação {{status}} - LeiturAmiga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-image: transparent;
+            background-size: cover;
+            background-position: center;
+            padding: 50px;
+            text-align: center;
+            color: white;
+        }
+
+        .content h1 strong {
+            margin: 0;
+            color: #79b791;
+            font-size: 24px;
+        }
+
+        .content {
+            padding: 20px;
+            background: #ffffff;
+            text-align: center;
+        }
+
+        .content img {
+            width: 100%;
+            height: auto;
+            max-width: 200px;
+        }
+
+        .content strong {
+            color: #79b791;
+        }
+
+        .details-screen {
+            background-color: #79b791;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+
+        .footer {
+            padding: 10px;
+            background: #555555;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        .footer h3 {
+            color: #79b791;
+            margin: 0;
+        }
+
+        .footer p {
+            color: white;
+            opacity: 1.0;
+            margin: 5px 0 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+    </div>
+    <div class="content">
+        <h1>Solicitação <strong>{{status}}</strong> - LeiturAmiga</h1>
+        <img src="cid:recusado_icon" alt="icon recusada">
+        <p>Olá, <strong>{{nomeUsuario}}</strong>!</p>
+        <p>A solicitação criada por {{nomeSolicitante}} foi <strong>{{status}}</strong>.</p>
+        <div class="details-screen">
+            <p>{{motivo}}</p>
+        </div>
+    </div>
+    <div class="footer">
+        <h3>LeiturAmiga</h3>
+        <p>&copy; 2024 LeiturAmiga. Todos os direitos reservados.</p>
+    </div>
+</div>
+</body>
+</html>
