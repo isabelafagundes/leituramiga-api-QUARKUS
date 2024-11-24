@@ -95,8 +95,7 @@ public class SolicitacaoDto {
     public String dataEntregaFormatada() {
         try {
             if (dataEntrega == null || dataEntrega.isEmpty()) return null;
-            System.out.println(dataEntrega + horaEntrega);
-            return DataHora.deString(dataEntrega + horaEntrega).formatar();
+            return DataHora.deString(dataEntrega + " " + horaEntrega).formatar();
         } catch (Exception e) {
             return dataEntrega;
         }
@@ -105,7 +104,7 @@ public class SolicitacaoDto {
     public String dataDevolucaoFormatada() {
         try {
             if (dataDevolucao == null || dataDevolucao.isEmpty()) return null;
-            return DataHora.deString(dataDevolucao + horaDevolucao).formatar();
+            return DataHora.deString(dataDevolucao + " " + horaDevolucao).formatar();
         } catch (Exception e) {
             return dataDevolucao;
         }
