@@ -1,8 +1,11 @@
 package br.com.leituramiga.controller.usuario;
 
 import br.com.leituramiga.dto.livro.FiltrosDto;
-import br.com.leituramiga.dto.usuario.*;
-import br.com.leituramiga.model.exception.*;
+import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
+import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
+import br.com.leituramiga.dto.usuario.UsuarioDto;
+import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
+import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.AutenticacaoService;
 import io.quarkus.security.Authenticated;
@@ -141,4 +144,20 @@ public class UsuarioController {
     }
 
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @PermitAll
+    @Operation(summary = "Obtem identificador do usuário", description = "Obtem identificador do usuário a partir do email")
+    @Path("/identificador")
+    public Response obterIdentificador(IdentificadorUsuarioDto dto) {
+        try {
+            IdentificadorUsuarioDto identificador = usuarioService.obterIdentificadorUsuario(dto.email, dto.username);
+            return Response.ok(identificador).build();
+        } catch (UsuarioNaoExistente erro) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        } catch (Exception erro) {
+            throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

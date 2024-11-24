@@ -101,6 +101,19 @@ public class UsuarioService {
         if (existenciaUsuario) throw new UsuarioExistente();
     }
 
+    public IdentificadorUsuarioDto obterIdentificadorUsuario(String email, String username) throws SQLException, UsuarioNaoExistente {
+        try {
+            logService.iniciar(UsuarioService.class.getName(), "Obtendo o identificador do usuário de email " + email);
+            validarIdentificadorUsuario(username == null ? email : username);
+            IdentificadorUsuarioDto identificadorUsuario = dao.obterIdentificadorUsuario(email);
+            logService.sucesso(UsuarioService.class.getName(), "Sucesso na obtenção do identificador do usuário de email " + email);
+            return identificadorUsuario;
+        } catch (Exception e) {
+            logService.erro(UsuarioService.class.getName(), "Ocorreu um erro na obtenção do identificador do usuário de email " + email, e);
+            throw e;
+        }
+    }
+
     public void atualizarUsuario(UsuarioDto usuarioDto) throws SQLException, UsuarioNaoExistente {
         try {
             validarIdentificadorUsuario(usuarioDto.email);

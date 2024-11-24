@@ -30,7 +30,7 @@ public class UsuarioQueries {
                     "AND (usuario.email_usuario = ? " +
                     "OR usuario.username = ?); ";
 
-    public static final String OBTER_USUARIO_POR_EMAIL =
+    public static final String OBTER_USUARIO_POR_EMAIL_USERNAME =
             "SELECT usuario.nome, " +
                     "usuario.username, " +
                     "usuario.email_usuario, " +
@@ -54,7 +54,7 @@ public class UsuarioQueries {
                     "LEFT JOIN endereco ON usuario.email_usuario = endereco.email_usuario AND endereco.endereco_principal = 1 " +
                     "LEFT JOIN cidade ON endereco.codigo_cidade = cidade.codigo_cidade " +
                     "LEFT JOIN instituicao ON usuario.codigo_instituicao = instituicao.codigo_instituicao " +
-                    "WHERE usuario.email_usuario = ?; ";
+                    "WHERE usuario.email_usuario = ? OR usuario.username = ?; ";
 
     public static final String VERIFICAR_EXISTENCIA =
             "SELECT COUNT(usuario.email_usuario) FROM usuario "
@@ -108,6 +108,9 @@ public class UsuarioQueries {
             "AND (endereco.codigo_cidade = ? OR ? IS NULL)" +
             ") " +
             "LIMIT ? OFFSET ?;";
+
+    public static final String OBTER_IDENTIFICADORES_USUARIO =
+            "SELECT usuario.email_usuario, usuario.username FROM usuario WHERE email_usuario = ? OR username = ?;";
 
     public static final String OBTER_SENHA =
             "SELECT usuario.senha FROM usuario WHERE email_usuario = ? OR username = ?";

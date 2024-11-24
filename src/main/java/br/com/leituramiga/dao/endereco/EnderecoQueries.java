@@ -77,7 +77,7 @@ public class EnderecoQueries {
             "WHERE email_usuario = ? AND codigo_solicitacao = ?;";
 
     public static final String EXCLUIR_ENDERECO =
-            "UPDATE endereco SET ativo = 0 WHERE codigo_endereco = ?;";
+            "UPDATE endereco SET ativo = 0, endereco_principal = 0 WHERE codigo_endereco = ?;";
 
     public static final String VALIDAR_EXISTENCIA_ENDERECO_EMAIL =
             "SELECT COUNT(endereco.codigo_endereco) FROM endereco WHERE endereco.email_usuario = ? AND endereco_principal = 1;";

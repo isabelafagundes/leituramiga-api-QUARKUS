@@ -2,6 +2,7 @@ package br.com.leituramiga.dao.usuario;
 
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
+import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
@@ -45,8 +46,9 @@ public class UsuarioDao {
         String md5Email = HashService.obterMd5Email(email);
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(UsuarioDao.class.getName(), "Iniciando a obtenção do usuário de email " + md5Email);
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL);
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_USUARIO_POR_EMAIL_USERNAME);
             pstmt.setString(1, email);
+            pstmt.setString(2, email);
             ResultSet resultado = pstmt.executeQuery();
             logService.sucesso(UsuarioDao.class.getName(), "Sucesso na obtenção do usuário de email " + md5Email);
             return resultado.next() ? obterUsuarioDeResultSet(resultado) : null;
@@ -284,6 +286,21 @@ public class UsuarioDao {
             List<Usuario> usuarios = new ArrayList<>();
             while (resultado.next()) usuarios.add(obterUsuarioResumidoDeResultSet(resultado));
             return usuarios;
+        }
+    }
+
+    public IdentificadorUsuarioDto obterIdentificadorUsuario(String identificador) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.OBTER_IDENTIFICADORES_USUARIO);
+            pstmt.setString(1, identificador);
+            pstmt.setString(2, identificador);
+            ResultSet resultado = pstmt.executeQuery();
+            if (resultado.next()) {
+                String email = resultado.getString(1);
+                String username = resultado.getString(2);
+                return new IdentificadorUsuarioDto(username, email);
+            }
+            return null;
         }
     }
 

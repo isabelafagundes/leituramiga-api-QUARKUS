@@ -67,8 +67,9 @@ public class SolicitacaoService {
             validarUsuarioPertenceSolicitacao(solicitacao, email);
             atualizarLivrosDoAceite(aceiteSolicitacaoDto, codigo, conexao, solicitacao, email);
             solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
+            solicitacao.enderecoReceptor = aceiteSolicitacaoDto.endereco;
             if (aceiteSolicitacaoDto.endereco != null)
-                atualizarEnderecoCadastroSolicitacao(solicitacao, conexao, email, solicitacao.codigoSolicitacao);
+                enderecoService.salvarEnderecoSolicitacao(aceiteSolicitacaoDto.endereco, email, codigo, conexao, aceiteSolicitacaoDto.endereco.enderecoPrincipal);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, conexao);
             conexao.commit();
