@@ -20,6 +20,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.smallrye.mutiny.vertx.codegen.methods.MutinyMethodGenerator.sanitize;
+
 @ApplicationScoped
 public class SolicitacaoDao {
 
@@ -50,9 +52,14 @@ public class SolicitacaoDao {
         }
     }
 
-    public List<Solicitacao> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email) throws SQLException {
+    public List<Solicitacao> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email, DataHora dataInicio, DataHora dataFim) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_HISTORICO_SOLICITACOES_PAGINADAS);
+            String filtroQuery = obterFiltroData(dataInicio, dataFim);
+            String query = SolicitacaoQueries.OBTER_HISTORICO_SOLICITACOES_PAGINADAS.replaceAll("DATA_HORA", filtroQuery);
+
+
+            PreparedStatement ps = conexao.prepareStatement(query);
+
             ps.setString(1, email);
             ps.setString(2, email);
             ps.setInt(3, quantidade);
@@ -63,6 +70,17 @@ public class SolicitacaoDao {
             while (rs.next()) solicitacoes.add(obterSolicitacaoDeResult(rs, true));
             return solicitacoes;
         }
+    }
+
+
+    private String obterFiltroData(DataHora dataInicio, DataHora dataFim) {
+        if (dataInicio == null || dataFim == null) return "";
+
+        String dataInicioFormatada = sanitize(dataInicio.dataFormatada("yyyy-MM-dd"));
+        String dataFimFormatada = sanitize(dataFim.dataFormatada("yyyy-MM-dd"));
+
+        return " AND solicitacao.data_criacao >= '" + dataInicioFormatada + "' AND solicitacao.data_criacao <= '" + dataFimFormatada + "' ";
+
     }
 
     public String concatenarCodigosLivros(List<LivroSolicitacaoDto> livros) {

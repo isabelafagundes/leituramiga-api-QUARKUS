@@ -217,10 +217,9 @@ public class SolicitacaoQueries {
                     "LEFT JOIN cidade c1 ON e1.codigo_cidade = c1.codigo_cidade " +
                     "LEFT JOIN cidade c2 ON e2.codigo_cidade = c2.codigo_cidade " +
                     "LEFT JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +
-                    "WHERE solicitacao.codigo_status_solicitacao = 3 " +
-                    "OR solicitacao.codigo_status_solicitacao = 4 " +
-                    "OR solicitacao.codigo_status_solicitacao = 5 " +
+                    "WHERE solicitacao.codigo_status_solicitacao IN(3,4,5) " +
                     "AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) " +
+                    "DATA_HORA " +
                     "ORDER BY solicitacao.data_criacao ASC, solicitacao.hora_criacao ASC " +
                     "LIMIT ? OFFSET ? ";
 

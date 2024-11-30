@@ -1,10 +1,8 @@
 package br.com.leituramiga.controller.solicitacao;
 
 import br.com.leituramiga.dto.livro.FiltrosDto;
-import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
-import br.com.leituramiga.dto.solicitacao.MotivoRecusaDto;
-import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
-import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
+import br.com.leituramiga.dto.solicitacao.*;
+import br.com.leituramiga.model.DataHora;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoPertenceASolicitacao;
 import br.com.leituramiga.model.exception.solicitacao.SolicitacaoExcedeuPrazoEntrega;
@@ -152,10 +150,12 @@ public class SolicitacaoController {
     @Authenticated
     @Path("/solicitacoes/historico")
     @Operation(summary = "Retorna as solicitações do usuário", description = "Retorna as solicitações do usuário do token de autenticação")
-    public Response obterHistoricoSolicitacoesPaginadas(FiltrosDto dto) {
+    public Response obterHistoricoSolicitacoesPaginadas(FiltrosSolicitacaoDto dto) {
         try {
-            List<SolicitacaoDto> solicitacoes = service.obterHistoricoSolicitacoesPaginadas(dto.numeroPagina, dto.tamanhoPagina, email);
+            List<SolicitacaoDto> solicitacoes = service.obterHistoricoSolicitacoesPaginadas(dto.numeroPagina, dto.tamanhoPagina, email, dto.dataInicio, dto.dataFim);
             return Response.ok(solicitacoes).build();
+        } catch (DataHora.DataInvalida erro) {
+            throw new WebApplicationException(Response.Status.BAD_REQUEST);
         } catch (Exception erro) {
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }

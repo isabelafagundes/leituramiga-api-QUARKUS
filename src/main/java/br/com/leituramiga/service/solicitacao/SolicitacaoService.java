@@ -7,6 +7,7 @@ import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
+import br.com.leituramiga.model.DataHora;
 import br.com.leituramiga.model.exception.EnderecoNaoExistente;
 import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
@@ -204,10 +205,12 @@ public class SolicitacaoService {
         }
     }
 
-    public List<SolicitacaoDto> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer tamanhoPagina, String email) throws SQLException {
+    public List<SolicitacaoDto> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer tamanhoPagina, String email, String dataInicio, String dataFim) throws SQLException, DataHora.DataInvalida {
         try {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca do histórico de solicitações paginadas");
-            List<Solicitacao> solicitacoes = solicitacaoDao.obterHistoricoSolicitacoesPaginadas(pagina, tamanhoPagina, email);
+            DataHora dataInicioFormatada = dataInicio != null ? DataHora.deString(dataInicio, "yyyy-MM-dd") : null;
+            DataHora dataFimFormatada = dataFim != null ? DataHora.deString(dataFim, "yyyy-MM-dd") : null;
+            List<Solicitacao> solicitacoes = solicitacaoDao.obterHistoricoSolicitacoesPaginadas(pagina, tamanhoPagina, email, dataInicioFormatada, dataFimFormatada);
             logService.sucesso(SolicitacaoService.class.getName(), "Busca do histórico de solicitações paginadas finalizada");
             return solicitacoes.stream().map(SolicitacaoDto::deModel).toList();
         } catch (Exception e) {
