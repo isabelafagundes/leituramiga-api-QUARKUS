@@ -112,6 +112,25 @@ public class LivroDao {
         }
     }
 
+    public void atualzarCodigoUltimaSolicitacao(List<LivroSolicitacaoDto> livros, Integer codigoSolicitacao, Connection conexao) throws SQLException {
+        logService.iniciar(LivroDao.class.getName(), "Iniciando a atualização do código da última solicitação");
+        String query = LivroQueries.ATUALIZAR_CODIGO_ULTIMA_SOLICITACAO.replaceAll("CODIGOS_LIVROS", obterIdLivrosConcatenados(livros));
+        PreparedStatement pstmt = conexao.prepareStatement(query);
+        pstmt.setInt(1, codigoSolicitacao);
+        pstmt.executeUpdate();
+        logService.sucesso(LivroDao.class.getName(), "Atualização do código da última solicitação finalizada");
+    }
+
+
+    private String obterIdLivrosConcatenados(List<LivroSolicitacaoDto> livroSolicitacaoDtos) {
+        StringBuilder ids = new StringBuilder();
+        for (LivroSolicitacaoDto livroSolicitacaoDto : livroSolicitacaoDtos) {
+            ids.append(livroSolicitacaoDto.codigoLivro);
+            ids.append(",");
+        }
+        return ids.substring(0, ids.length() - 1);
+    }
+
     public boolean validarExistenciaLivro(int numeroLivro) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação da existência do livro");
         try (Connection conexao = bd.obterConexao()) {

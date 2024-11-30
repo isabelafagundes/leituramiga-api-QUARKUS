@@ -99,6 +99,73 @@ public class ImagemService {
         }
     }
 
+    public String salvarImagemUsuario(String arquivoBase64, String email) throws IOException {
+        try {
+            logService.iniciar(ImagemService.class.getName(), "Iniciando a salvar a imagem do usuário");
+            if(!arquivoBase64.contains(",")) return null;
+            String arquivoBase64SemCabecalho = arquivoBase64.split(",")[1];
+            byte[] arquivo = Base64.getDecoder().decode(arquivoBase64SemCabecalho);
+
+            String diretorio = System.getProperty("user.home") + "/" + NOME_ARQUIVO_PAI + "/" + NOME_ARQUIVO_USUARIO;
+
+            File pastaDestino = new File(diretorio);
+
+            if (!pastaDestino.exists()) {
+                boolean pastaCriada = pastaDestino.mkdirs();
+                if (!pastaCriada) {
+                    throw new IOException("Falha ao criar diretório: " + diretorio);
+                }
+            }
+
+            String emailUsuario = HashService.obterMd5(email);
+            String extensao = identificarExtensao(arquivoBase64);
+            String nomeArquivo = emailUsuario + "." + extensao;
+            File arquivoImagemUsuario = new File(diretorio, nomeArquivo);
+
+            logService.iniciar(ImagemService.class.getName(), "Salvando a imagem do usuário no diretório: " + arquivoImagemUsuario.getAbsolutePath());
+
+            try (OutputStream outputStream = new FileOutputStream(arquivoImagemUsuario)) {
+                outputStream.write(arquivo);
+            }
+
+            return arquivoImagemUsuario.getAbsolutePath();
+
+        } catch (Exception e) {
+            logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao salvar a imagem do usuário", e);
+            throw e;
+        }
+    }
+
+    public String obterImagemUsuario(String path) throws IOException {
+        try {
+            logService.iniciar(ImagemService.class.getName(), "Iniciando a obter a imagem do usuário");
+
+            if (path == null || path.isEmpty()) return null;
+
+            File arquivoImagem = new File(path);
+
+            if (!arquivoImagem.exists()) {
+                return null;
+            }
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try (FileInputStream fileInputStream = new FileInputStream(arquivoImagem)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                    baos.write(buffer, 0, bytesRead);
+                }
+            }
+
+            byte[] arquivo = baos.toByteArray();
+            String imagemBase64 = Base64.getEncoder().encodeToString(arquivo);
+            return imagemBase64;
+        } catch (Exception e) {
+            logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao obter a imagem do usuário", e);
+            throw e;
+        }
+    }
+
 
 
 }

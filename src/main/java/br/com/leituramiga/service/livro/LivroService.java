@@ -217,4 +217,15 @@ public class LivroService {
             throw e;
         }
     }
+
+    public void atualizarCodigoUltimaSolicitacao(List<LivroSolicitacaoDto> livros, Integer codigoSolicitacao, Connection conexao) throws SQLException {
+        try {
+            logService.iniciar(LivroService.class.getName(), "Iniciando a atualização do código da última solicitação dos livros");
+            dao.atualzarCodigoUltimaSolicitacao(livros, codigoSolicitacao, conexao);
+            logService.sucesso(LivroService.class.getName(), "Sucesso na atualização do código da última solicitação dos livros");
+        } catch (Exception e) {
+            logService.erro(LivroService.class.getName(), "Ocorreu um erro na atualização do código da última solicitação dos livros", e);
+            throw e;
+        }
+    }
 }

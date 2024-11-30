@@ -131,4 +131,6 @@ public class LivroQueries {
 
     public static String LIVRO_EXISTE = "SELECT COUNT(1) FROM livro WHERE livro.codigo_livro = ?;";
 
+    public static String ATUALIZAR_CODIGO_ULTIMA_SOLICITACAO = "UPDATE livro SET codigo_ultima_solicitacao = ? WHERE codigo_livro IN(CODIGOS_LIVROS);";
+
 }
