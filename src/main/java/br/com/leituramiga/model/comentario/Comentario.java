@@ -6,11 +6,10 @@ public class Comentario {
     private String descricao;
     private String dataCriacao;
     private String horaCriacao;
-
     private String emailUsuarioCriador;
     private String emailUsuarioPerfil;
-
     private String nomeUsuarioCriador;
+    private String imagem;
 
     public Comentario() {
 
@@ -23,7 +22,8 @@ public class Comentario {
             String horaCriacao,
             String emailUsuarioCriador,
             String emailUsuarioPerfil,
-            String nomeUsuarioCriador
+            String nomeUsuarioCriador,
+            String imagem
 
     ) {
         Comentario comentario = new Comentario();
@@ -34,6 +34,7 @@ public class Comentario {
         comentario.emailUsuarioCriador = emailUsuarioCriador;
         comentario.emailUsuarioPerfil = emailUsuarioPerfil;
         comentario.nomeUsuarioCriador = nomeUsuarioCriador;
+        comentario.imagem = imagem;
         return comentario;
     }
 
@@ -99,5 +100,21 @@ public class Comentario {
 
     public void setNomeUsuarioCriador(String nomeUsuarioCriador) {
         this.nomeUsuarioCriador = nomeUsuarioCriador;
+    }
+
+    public void setEmailUsuarioCriador(String emailUsuarioCriador) {
+        this.emailUsuarioCriador = emailUsuarioCriador;
+    }
+
+    public void setEmailUsuarioPerfil(String emailUsuarioPerfil) {
+        this.emailUsuarioPerfil = emailUsuarioPerfil;
+    }
+
+    public String getImagem() {
+        return imagem;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
     }
 }

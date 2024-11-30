@@ -9,6 +9,7 @@ public class ComentarioQueries {
                     "          comentario.data_criacao,\n" +
                     "          comentario.hora_criacao,\n" +
                     "          usuario.nome as nome_usuario_criador,\n" +
+                    "          usuario.imagem as imagem,\n" +
                     "          comentario.email_usuario_criador,\n" +
                     "          comentario.email_usuario_perfil\n" +
                     "FROM comentario\n" +

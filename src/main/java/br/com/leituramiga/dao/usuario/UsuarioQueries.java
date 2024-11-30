@@ -62,7 +62,7 @@ public class UsuarioQueries {
                     + "OR username = ?;";
 
     public static final String SALVAR_USUARIO =
-            "INSERT INTO usuario (nome, username, email_usuario, tipo_usuario, senha, celular, descricao, imagem, codigo_instituicao, ativo, codigo_alteracao)" +
+            "INSERT INTO usuario (nome, username, email_usuario, tipo_usuario, senha, celular, descricao, codigo_instituicao, ativo, codigo_alteracao)" +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL) " +
                     "ON DUPLICATE KEY UPDATE " +
                     "    nome = VALUES(nome)," +
@@ -71,14 +71,12 @@ public class UsuarioQueries {
                     "    senha = VALUES(senha)," +
                     "    celular = VALUES(celular)," +
                     "    descricao = VALUES(descricao)," +
-                    "    imagem = VALUES(imagem)," +
                     "    codigo_instituicao = VALUES(codigo_instituicao);";
 
 
     public static final String ATUALIZAR_USUARIO = "UPDATE usuario SET nome = ?, " +
             "celular = ?, " +
             "descricao = ?, " +
-            "imagem = ?, " +
             "codigo_instituicao = ? " +
             "WHERE usuario.email_usuario = ?; ";
 
@@ -137,5 +135,11 @@ public class UsuarioQueries {
 
     public static final String VERIFICAR_USERNAME =
             "SELECT COUNT(usuario.username) FROM usuario WHERE usuario.username = ?;";
+
+    public static final String USUARIO_POSSUI_IMAGEM =
+            "SELECT COUNT(usuario.imagem) FROM usuario WHERE usuario.email_usuario = ?;";
+
+    public static final String ATUALIZAR_IMAGEM_USUARIO =
+            "UPDATE usuario SET imagem = ? WHERE email_usuario = ?;";
 
 }

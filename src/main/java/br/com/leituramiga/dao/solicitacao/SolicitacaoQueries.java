@@ -285,7 +285,7 @@ public class SolicitacaoQueries {
             "codigo_status_solicitacao " +
             ") VALUES ";
 
-    public static final String OBTER_LIVROS_SOLICITACAO = "SELECT " +
+    public static final String OBTER_LIVROS_SOLICITACAO_EMAIL = "SELECT " +
             "livro_solicitacao.codigo_livro, " +
             "livro.nome, " +
             "livro.autor, " +
@@ -296,10 +296,21 @@ public class SolicitacaoQueries {
             "WHERE livro_solicitacao.codigo_solicitacao = ? " +
             "AND livro_solicitacao.email_usuario = ?";
 
+    public static final String OBTER_LIVROS_SOLICITACAO = "SELECT " +
+            "livro_solicitacao.codigo_livro, " +
+            "livro.nome, " +
+            "livro.autor, " +
+            "livro_solicitacao.email_usuario, " +
+            "livro_solicitacao.codigo_livro_solicitacao " +
+            "FROM livro_solicitacao " +
+            "INNER JOIN livro ON livro.codigo_livro = livro_solicitacao.codigo_livro " +
+            "WHERE livro_solicitacao.codigo_solicitacao = ? ";
+
 
     public static final String OBTER_NOTIFICACOES_SOLICITACAO = "SELECT " +
             "solicitacao.email_usuario_solicitante," +
             "solicitacao.codigo_solicitacao," +
+            "usuario.imagem, " +
             "usuario.nome " +
             "FROM solicitacao " +
             "INNER JOIN usuario ON solicitacao.email_usuario_solicitante = usuario.email_usuario " +

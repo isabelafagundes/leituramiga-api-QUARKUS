@@ -51,8 +51,9 @@ public class CriacaoUsuarioDto {
                 EnderecoDto.paraModel(dto.endereco),
                 null,
                 null,
-                0
-        );
+                0,
+                dto.imagem
+                );
     }
 
     public CriacaoUsuarioDto() {

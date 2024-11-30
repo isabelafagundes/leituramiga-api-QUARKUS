@@ -16,6 +16,7 @@ public class Usuario {
     private String celular;
     private String descricao;
     private String imagem;
+    public String caminhoImagem;
     private Integer codigoInstituicao;
     private Integer quantidadeLivros;
     private Endereco endereco;
@@ -34,7 +35,8 @@ public class Usuario {
             Integer codigoInstituicao,
             String nomeCidade,
             String nomeInstituicao,
-            Integer quantidadeLivros
+            Integer quantidadeLivros,
+            String caminhoImagem
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -46,6 +48,7 @@ public class Usuario {
         usuario.nomeCidade = nomeCidade;
         usuario.nomeInstituicao = nomeInstituicao;
         usuario.quantidadeLivros = quantidadeLivros;
+        usuario.caminhoImagem = caminhoImagem;
         return usuario;
     }
 
@@ -66,7 +69,8 @@ public class Usuario {
             Endereco endereco,
             String nomeCidade,
             String nomeInstituicao,
-            Integer quantidadeLivros
+            Integer quantidadeLivros,
+            String caminhoImagem
     ) {
         Usuario usuario = new Usuario();
         usuario.nome = nome;
@@ -86,11 +90,68 @@ public class Usuario {
         usuario.nomeCidade = nomeCidade;
         usuario.nomeInstituicao = nomeInstituicao;
         usuario.quantidadeLivros = quantidadeLivros;
+        usuario.caminhoImagem = caminhoImagem;
         return usuario;
     }
 
     public Boolean getAtivo() {
         return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public void setBloqueado(Boolean bloqueado) {
+        this.bloqueado = bloqueado;
+    }
+
+    public void setTentativas(Integer tentativas) {
+        this.tentativas = tentativas;
+    }
+
+    public void setCodigoAlteracao(String codigoAlteracao) {
+        this.codigoAlteracao = codigoAlteracao;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setImagem(String imagem) {
+        this.imagem = imagem;
+    }
+
+    public String getCaminhoImagem() {
+        return caminhoImagem;
+    }
+
+    public void setCaminhoImagem(String caminhoImagem) {
+        this.caminhoImagem = caminhoImagem;
+    }
+
+    public void setCodigoInstituicao(Integer codigoInstituicao) {
+        this.codigoInstituicao = codigoInstituicao;
+    }
+
+    public void setQuantidadeLivros(Integer quantidadeLivros) {
+        this.quantidadeLivros = quantidadeLivros;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
+
+    public void setNomeCidade(String nomeCidade) {
+        this.nomeCidade = nomeCidade;
+    }
+
+    public void setNomeInstituicao(String nomeInstituicao) {
+        this.nomeInstituicao = nomeInstituicao;
     }
 
     public Boolean getBloqueado() {

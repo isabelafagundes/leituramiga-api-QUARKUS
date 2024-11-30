@@ -98,7 +98,8 @@ public class ComentarioDao {
                 resultado.getString("hora_criacao"),
                 resultado.getString("email_usuario_criador"),
                 resultado.getString("email_usuario_perfil"),
-                resultado.getString("nome_usuario_criador")
+                resultado.getString("nome_usuario_criador"),
+                resultado.getString("imagem")
         );
     }
 

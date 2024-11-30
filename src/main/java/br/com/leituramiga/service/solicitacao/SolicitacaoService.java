@@ -3,6 +3,7 @@ package br.com.leituramiga.service.solicitacao;
 import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.solicitacao.SolicitacaoDao;
 import br.com.leituramiga.dto.endereco.EnderecoDto;
+import br.com.leituramiga.dto.livro.LivroSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.AceiteSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.NotificacaoSolicitacaoDto;
 import br.com.leituramiga.dto.solicitacao.SolicitacaoDto;
@@ -26,6 +27,7 @@ import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import br.com.leituramiga.service.email.EmailService;
 import br.com.leituramiga.service.endereco.EnderecoService;
+import br.com.leituramiga.service.imagem.ImagemService;
 import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -57,6 +59,9 @@ public class SolicitacaoService {
     LogService logService;
 
     @Inject
+    ImagemService imagemService;
+
+    @Inject
     FabricaDeConexoes bd;
 
     public void aceitarSolicitacao(Integer codigo, AceiteSolicitacaoDto aceiteSolicitacaoDto, String email) throws SQLException, SolicitacaoExcedeuPrazoEntrega, SolicitacaoNaoExistente, SolicitacaoNaoPendente, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente, UsuarioNaoPertenceASolicitacao, UsuarioNaoAtivo, ClassNotFoundException, UsuarioNaoExistente, EnderecoNaoExistente, IOException {
@@ -73,6 +78,7 @@ public class SolicitacaoService {
                 enderecoService.salvarEnderecoSolicitacao(aceiteSolicitacaoDto.endereco, email, codigo, conexao, aceiteSolicitacaoDto.endereco.enderecoPrincipal);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, conexao);
+            atualizarCodigoUltimaSolicitacaoLivros(codigo, conexao);
             conexao.commit();
             enviarEmailSolicitacaoAceita(solicitacao);
             logService.sucesso(SolicitacaoService.class.getName(), "Aceitação de solicitação finalizada de código " + codigo);
@@ -84,6 +90,11 @@ public class SolicitacaoService {
             bd.desconectar(conexao);
         }
 
+    }
+
+    private void atualizarCodigoUltimaSolicitacaoLivros(Integer codigoSolicitacao, Connection conexao) throws SQLException {
+        List<LivroSolicitacaoDto> livros = obterLivrosSolicitacao(codigoSolicitacao, conexao);
+        livroService.atualizarCodigoUltimaSolicitacao(livros, codigoSolicitacao, conexao);
     }
 
     private void atualizarLivrosDoAceite(AceiteSolicitacaoDto aceiteSolicitacaoDto, Integer codigo, Connection conexao, SolicitacaoDto solicitacao, String email) throws SQLException, LivroNaoDisponivel, LivroJaDesativado, LivroNaoExistente {
@@ -189,6 +200,18 @@ public class SolicitacaoService {
             return SolicitacaoDto.deModel(solicitacao);
         } catch (Exception e) {
             logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca de solicitação de código " + codigo, e);
+            throw e;
+        }
+    }
+
+    private List<LivroSolicitacaoDto> obterLivrosSolicitacao(Integer codigo, Connection conexao) throws SQLException {
+        try {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de livros da solicitação de código " + codigo);
+            List<LivroSolicitacaoDto> livros = solicitacaoDao.obterLivrosSolicitacao(codigo, conexao);
+            logService.sucesso(SolicitacaoService.class.getName(), "Busca de livros da solicitação finalizada de código " + codigo);
+            return livros;
+        } catch (Exception e) {
+            logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na busca de livros da solicitação de código " + codigo, e);
             throw e;
         }
     }
@@ -360,10 +383,14 @@ public class SolicitacaoService {
     }
 
 
-    public List<NotificacaoSolicitacaoDto> obterNotificacoesSolicitacao(String email) throws SQLException {
+    public List<NotificacaoSolicitacaoDto> obterNotificacoesSolicitacao(String email) throws SQLException, IOException {
         try {
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de notificações de solicitação para o email " + email);
             List<NotificacaoSolicitacao> notificacoes = solicitacaoDao.obterNotificacoesUsuario(email);
+            for (NotificacaoSolicitacao notificacao : notificacoes) {
+                String imagem = imagemService.obterImagemUsuario(notificacao.getImagem());
+                notificacao.setImagem(imagem);
+            }
             logService.sucesso(SolicitacaoService.class.getName(), "Busca de notificações de solicitação finalizada para o email " + email);
             return notificacoes.stream().map(NotificacaoSolicitacaoDto::deModel).toList();
         } catch (Exception e) {

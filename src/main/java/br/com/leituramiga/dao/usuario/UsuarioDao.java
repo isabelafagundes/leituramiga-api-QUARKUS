@@ -71,19 +71,16 @@ public class UsuarioDao {
         }
     }
 
-    public void atualizarUsuario(UsuarioDto usuario) throws SQLException {
-        try (Connection conexao = bd.obterConexao()) {
-            PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_USUARIO);
-            pstmt.setString(1, usuario.nome);
-            if (usuario.celular == null) pstmt.setNull(2, java.sql.Types.VARCHAR);
-            else pstmt.setString(2, usuario.celular);
-            pstmt.setString(3, usuario.descricao);
-            pstmt.setString(4, usuario.imagem);
-            if (usuario.codigoInstituicao == null) pstmt.setNull(5, java.sql.Types.INTEGER);
-            else pstmt.setInt(5, usuario.codigoInstituicao);
-            pstmt.setString(6, usuario.email);
-            pstmt.executeUpdate();
-        }
+    public void atualizarUsuario(UsuarioDto usuario, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_USUARIO);
+        pstmt.setString(1, usuario.nome);
+        if (usuario.celular == null) pstmt.setNull(2, java.sql.Types.VARCHAR);
+        else pstmt.setString(2, usuario.celular);
+        pstmt.setString(3, usuario.descricao);
+        if (usuario.codigoInstituicao == null) pstmt.setNull(4, java.sql.Types.INTEGER);
+        else pstmt.setInt(4, usuario.codigoInstituicao);
+        pstmt.setString(5, usuario.email);
+        pstmt.executeUpdate();
     }
 
     public void definirParametros(PreparedStatement pstmt, CriacaoUsuarioDto usuario) throws SQLException {
@@ -95,9 +92,8 @@ public class UsuarioDao {
         if (usuario.celular == null) pstmt.setNull(6, java.sql.Types.VARCHAR);
         else pstmt.setString(6, usuario.celular);
         pstmt.setString(7, usuario.descricao != null ? usuario.descricao : "");
-        pstmt.setString(8, usuario.imagem != null ? usuario.imagem : "");
-        if (usuario.codigoInstituicao == null) pstmt.setNull(9, java.sql.Types.INTEGER);
-        else pstmt.setInt(9, usuario.codigoInstituicao);
+        if (usuario.codigoInstituicao == null) pstmt.setNull(8, java.sql.Types.INTEGER);
+        else pstmt.setInt(8, usuario.codigoInstituicao);
     }
 
     public void desativarUsuario(String email) throws SQLException {
@@ -304,6 +300,12 @@ public class UsuarioDao {
         }
     }
 
+    public void atualizarImagemUsuario(String email, String imagem, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(UsuarioQueries.ATUALIZAR_IMAGEM_USUARIO);
+        pstmt.setString(1, imagem);
+        pstmt.setString(2, email);
+        pstmt.executeUpdate();
+    }
 
     private Usuario obterUsuarioResumidoDeResultSet(ResultSet resultado) throws SQLException {
         return Usuario.carregarResumo(
@@ -315,7 +317,8 @@ public class UsuarioDao {
                 resultado.getInt("codigo_instituicao"),
                 resultado.getString("nome_cidade"),
                 resultado.getString("nome_instituicao"),
-                resultado.getInt("quantidade_livros")
+                resultado.getInt("quantidade_livros"),
+                resultado.getString("imagem")
         );
     }
 
@@ -338,7 +341,8 @@ public class UsuarioDao {
                 null,
                 resultado.getString("nome_cidade"),
                 resultado.getString("nome_instituicao"),
-                resultado.getInt("quantidade_livros")
+                resultado.getInt("quantidade_livros"),
+                resultado.getString("imagem")
         );
     }
 }

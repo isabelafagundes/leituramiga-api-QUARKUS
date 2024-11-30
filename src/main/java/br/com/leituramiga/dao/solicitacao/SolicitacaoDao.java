@@ -216,6 +216,23 @@ public class SolicitacaoDao {
         }
     }
 
+    public List<LivroSolicitacaoDto> obterLivrosSolicitacao(Integer codigoSolicitacao, Connection conexao) throws SQLException {
+        logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + codigoSolicitacao);
+        PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_LIVROS_SOLICITACAO);
+        ps.setInt(1, codigoSolicitacao);
+        ResultSet rs = ps.executeQuery();
+        List<LivroSolicitacaoDto> livros = new ArrayList<>();
+        while (rs.next()) {
+            LivroSolicitacaoDto livro = new LivroSolicitacaoDto();
+            livro.codigoLivro = rs.getInt("codigo_livro");
+            livro.emailUsuario = rs.getString("email_usuario");
+            livros.add(livro);
+        }
+        logService.sucesso(SolicitacaoDao.class.getName(), "Livros da solicitação " + codigoSolicitacao + " obtidos com sucesso");
+        return livros;
+
+    }
+
 
     public void recusarSolicitacao(Integer codigo, String motivoRecusa) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
@@ -275,7 +292,7 @@ public class SolicitacaoDao {
     private List<LivroSolicitacao> obterLivrosSolicitacaoUsuarioCriador(String emailUsuario, Integer codigoSolicitacao) throws SQLException {
         try (Connection conexao = bd.obterConexao()) {
             logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a obtenção dos livros da solicitação " + codigoSolicitacao + " do usuário " + emailUsuario);
-            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_LIVROS_SOLICITACAO);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.OBTER_LIVROS_SOLICITACAO_EMAIL);
             ps.setInt(1, codigoSolicitacao);
             ps.setString(2, emailUsuario);
             ResultSet rs = ps.executeQuery();
@@ -438,7 +455,8 @@ public class SolicitacaoDao {
         return NotificacaoSolicitacao.criar(
                 result.getInt("codigo_solicitacao"),
                 result.getString("nome"),
-                result.getString("email_usuario_solicitante")
+                result.getString("email_usuario_solicitante"),
+                result.getString("imagem")
         );
     }
 

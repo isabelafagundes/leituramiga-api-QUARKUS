@@ -33,8 +33,6 @@ public class SolicitacaoController {
     @Claim("email")
     String email;
 
-
-    //todo: adicionar mais informações na solicitação
     @GET
     @Authenticated
     @Path("/solicitacao/{id}")

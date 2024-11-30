@@ -11,7 +11,7 @@ public class ComentarioDto {
     public String horaCriacao;
     public String emailUsuarioCriador;
     public String emailUsuarioPerfil;
-
+    public String imagem;
     public String nomeUsuarioCriador;
 
     public static ComentarioDto deModel(
@@ -25,6 +25,7 @@ public class ComentarioDto {
         dto.descricao = comentario.getDescricao();
         dto.dataCriacao = comentario.getdataCriacao();
         dto.horaCriacao = comentario.gethoraCriacao();
+        dto.imagem = comentario.getImagem();
 
         return dto;
     }
@@ -32,6 +33,13 @@ public class ComentarioDto {
     public ComentarioDto() {
     }
 
+    public String getImagem() {
+        return imagem;
+    }
+
+    public String getNomeUsuarioCriador() {
+        return nomeUsuarioCriador;
+    }
 
     public Integer getCodigoComentario() {
         return codigoComentario;

@@ -1,5 +1,6 @@
 package br.com.leituramiga.service;
 
+import br.com.leituramiga.dao.FabricaDeConexoes;
 import br.com.leituramiga.dao.usuario.UsuarioDao;
 import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
@@ -10,9 +11,13 @@ import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
+import br.com.leituramiga.service.imagem.ImagemService;
+import br.com.leituramiga.service.livro.LivroService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,15 +28,23 @@ public class UsuarioService {
     LogService logService;
 
     @Inject
+    ImagemService imagemService;
+
+    @Inject
     UsuarioDao dao;
 
-    public UsuarioDto obterUsuarioPorIdentificador(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException {
+    @Inject
+    FabricaDeConexoes bd;
+
+    public UsuarioDto obterUsuarioPorIdentificador(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, IOException {
         String md5Email = HashService.obterMd5Email(identificador);
         try {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção do usuário de identificador " + md5Email);
             validarIdentificadorUsuario(identificador);
             Usuario usuario = obterUsuario(identificador);
             validarUsuarioAtivo(usuario);
+            String imagem = imagemService.obterImagemUsuario(usuario.getCaminhoImagem());
+            usuario.setImagem(imagem);
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na obtenção do usuário de identificador " + md5Email);
             return UsuarioDto.deModel(usuario);
         } catch (Exception e) {
@@ -40,10 +53,14 @@ public class UsuarioService {
         }
     }
 
-    public List<UsuarioDto> obterUsuariosPaginados(Integer numeroCidade, Integer numeroInstituicao, String pesquisa, Integer pagina, Integer tamanhoPagina) throws SQLException {
+    public List<UsuarioDto> obterUsuariosPaginados(Integer numeroCidade, Integer numeroInstituicao, String pesquisa, Integer pagina, Integer tamanhoPagina) throws SQLException, IOException {
         try {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção dos usuários paginados");
             List<Usuario> usuarios = dao.obterUsuariosPaginados(numeroCidade, numeroInstituicao, pesquisa, pagina, tamanhoPagina);
+            for (Usuario usuario : usuarios) {
+                String imagem = imagemService.obterImagemUsuario(usuario.getCaminhoImagem());
+                usuario.setImagem(imagem);
+            }
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na obtenção dos usuários paginados");
             return usuarios.stream().map(UsuarioDto::deModel).toList();
         } catch (Exception e) {
@@ -52,12 +69,14 @@ public class UsuarioService {
         }
     }
 
-    public Usuario obterUsuario(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException {
+    public Usuario obterUsuario(String identificador) throws UsuarioNaoAtivo, UsuarioNaoExistente, SQLException, IOException {
         String md5Identificador = HashService.obterMd5Email(identificador);
         try {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção do usuário de identificador " + md5Identificador);
             validarIdentificadorUsuario(identificador);
             Usuario usuario = dao.obterUsuario(identificador);
+            String imagem = imagemService.obterImagemUsuario(usuario.getCaminhoImagem());
+            usuario.setImagem(imagem);
             validarUsuarioAtivo(usuario);
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na obtenção do usuário de identificador " + md5Identificador);
             return usuario;
@@ -114,15 +133,33 @@ public class UsuarioService {
         }
     }
 
-    public void atualizarUsuario(UsuarioDto usuarioDto) throws SQLException, UsuarioNaoExistente {
+    public void salvarImagemUsuario(UsuarioDto usuario, String email, Connection conexao) throws IOException, SQLException {
+        logService.iniciar(ImagemService.class.getName(), "Iniciando o salvamento da imagem do usuário");
+        String caminhoImagem;
+        if (usuario.imagem != null) {
+            caminhoImagem = imagemService.salvarImagemUsuario(usuario.imagem, email);
+            if (caminhoImagem == null) return;
+            dao.atualizarImagemUsuario(email, caminhoImagem, conexao);
+            logService.iniciar(LivroService.class.getName(), "Sucesso em atualizar a imagem do usuário de email " + email);
+        }
+    }
+
+    public void atualizarUsuario(UsuarioDto usuarioDto) throws SQLException, UsuarioNaoExistente, IOException {
+        validarIdentificadorUsuario(usuarioDto.email);
+        Connection conexao = bd.obterConexao();
         try {
-            validarIdentificadorUsuario(usuarioDto.email);
+            conexao.setAutoCommit(false);
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a atualização do usuário de email " + usuarioDto.email);
-            dao.atualizarUsuario(usuarioDto);
+            dao.atualizarUsuario(usuarioDto, conexao);
+            salvarImagemUsuario(usuarioDto, usuarioDto.email, conexao);
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na atualização do usuário de email " + usuarioDto.email);
+            conexao.commit();
         } catch (Exception e) {
+            conexao.rollback();
             logService.erro(UsuarioService.class.getName(), "Ocorreu um erro na atualização do usuário de email  " + usuarioDto.email, e);
             throw e;
+        } finally {
+            conexao.close();
         }
     }
 

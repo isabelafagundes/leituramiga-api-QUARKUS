@@ -6,12 +6,12 @@ import br.com.leituramiga.dao.comentario.ComentarioDao;
 import br.com.leituramiga.dto.comentario.ComentarioDto;
 import br.com.leituramiga.model.comentario.Comentario;
 import br.com.leituramiga.model.exception.ComentarioNaoExistente;
-import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
+import br.com.leituramiga.service.imagem.ImagemService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import java.sql.Connection;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -25,14 +25,20 @@ public class ComentarioService {
     ComentarioDao comentarioDao;
 
     @Inject
+    ImagemService imagemService;
+
+    @Inject
     FabricaDeConexoes bd;
 
-    public List<ComentarioDto> obterComentarioPorUsuario(String emailComentario) throws SQLException, ComentarioNaoExistente {
+    public List<ComentarioDto> obterComentarioPorUsuario(String emailComentario) throws SQLException, ComentarioNaoExistente, IOException {
         try {
             logService.iniciar(ComentarioService.class.getName(), "Iniciando busca de comentários por email " + emailComentario);
 
             List<Comentario> comentarios = comentarioDao.obterComentarioPorPerfilUsuario(emailComentario);
-
+            for (Comentario comentario : comentarios) {
+                String imagem = imagemService.obterImagemUsuario(comentario.getImagem());
+                comentario.setImagem(imagem);
+            }
             logService.sucesso(ComentarioService.class.getName(), "Busca de comentáriod por email " + emailComentario + " concluído");
             return comentarios.stream().map(ComentarioDto::deModel).toList();
         } catch (Exception e) {

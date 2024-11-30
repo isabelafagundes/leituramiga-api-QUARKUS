@@ -21,6 +21,15 @@ public class DataHora {
         }
     }
 
+    public static DataHora deString(String data, String pattern) throws DataInvalida {
+        try {
+            Date dateTime = new SimpleDateFormat(pattern).parse(data);
+            return new DataHora(dateTime);
+        } catch (ParseException e) {
+            throw new DataInvalida();
+        }
+    }
+
     public String formatar(String formato) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(formato);
         return dateFormat.format(valor);

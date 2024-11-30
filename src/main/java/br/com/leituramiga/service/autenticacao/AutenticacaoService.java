@@ -160,7 +160,7 @@ public class AutenticacaoService {
         }
     }
 
-    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, ClassNotFoundException, UsernameExiste, UsuarioNaoExistente, IOException {
+    public void criarUsuario(CriacaoUsuarioDto usuarioDto) throws UsuarioExistente, InformacoesInvalidas, SQLException, UsernameExiste, UsuarioNaoExistente, IOException {
         String md5Email = HashService.obterMd5Email(usuarioDto.email);
         Connection conexao = null;
         try {
