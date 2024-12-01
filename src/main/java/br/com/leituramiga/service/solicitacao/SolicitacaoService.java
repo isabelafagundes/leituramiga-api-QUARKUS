@@ -72,9 +72,12 @@ public class SolicitacaoService {
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
             atualizarLivrosDoAceite(aceiteSolicitacaoDto, codigo, conexao, solicitacao, email);
-            solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
+            solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao, conexao);
+            if (aceiteSolicitacaoDto.livros != null)
+                solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(aceiteSolicitacaoDto.livros, solicitacao.codigoSolicitacao, conexao);
             solicitacao.enderecoReceptor = aceiteSolicitacaoDto.endereco;
-            if (aceiteSolicitacaoDto.endereco != null) atualizarEnderecoAceiteSolicitacao(solicitacao, conexao, email, codigo);
+            if (aceiteSolicitacaoDto.endereco != null)
+                atualizarEnderecoAceiteSolicitacao(solicitacao, conexao, email, codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, conexao);
             atualizarCodigoUltimaSolicitacaoLivros(codigo, conexao);
@@ -294,7 +297,7 @@ public class SolicitacaoService {
     }
 
     private Integer atualizarEnderecoAceiteSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email, Integer codigoSolicitacao) throws SQLException, EnderecoNaoExistente {
-        Integer numeroEndereco = solicitacao.getEnderecoSolicitante() == null ? null : solicitacao.getEnderecoSolicitante().getCodigoEndereco();
+        Integer numeroEndereco = solicitacao.getEnderecoReceptor() == null ? null : solicitacao.getEnderecoReceptor().getCodigoEndereco();
         if (solicitacao.getEnderecoReceptor() != null && numeroEndereco == null) {
             // Se o endereço for nulo e o número do endereço for nulo, cadastra o endereço da solicitação
             numeroEndereco = cadastrarEnderecoSolicitacaoReceptor(solicitacao, email, conexao, codigoSolicitacao);
@@ -416,6 +419,19 @@ public class SolicitacaoService {
             throw e;
         }
     }
+
+    public boolean validarUsuarioPossuiSolicitacaoAberta(String email) throws SQLException {
+        try {
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando validação de solicitação aberta para o email " + email);
+            boolean possuiSolicitacaoAberta = solicitacaoDao.validarUsuarioPossuiSolicitacao(email);
+            logService.sucesso(SolicitacaoService.class.getName(), "Validação de solicitação aberta finalizada para o email " + email);
+            return possuiSolicitacaoAberta;
+        } catch (Exception e) {
+            logService.erro(SolicitacaoService.class.getName(), "Ocorreu um erro na validação de solicitação aberta para o email " + email, e);
+            throw e;
+        }
+    }
+
 
 
 }

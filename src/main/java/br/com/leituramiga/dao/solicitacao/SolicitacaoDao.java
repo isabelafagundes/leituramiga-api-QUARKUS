@@ -42,14 +42,12 @@ public class SolicitacaoDao {
         }
     }
 
-    public void recusarSolicitacoesComLivroIndisponivel(List<LivroSolicitacaoDto> livrosIndisponiveis, Integer codigo) throws SQLException {
-        try (Connection conexao = bd.obterConexao()) {
+    public void recusarSolicitacoesComLivroIndisponivel(List<LivroSolicitacaoDto> livrosIndisponiveis, Integer codigo, Connection conexao) throws SQLException {
             String codigosLivros = concatenarCodigosLivros(livrosIndisponiveis);
             String query = SolicitacaoQueries.RECUSAR_SOLICITACOES_COM_LIVRO.replace("CODIGOS_LIVROS", codigosLivros);
             PreparedStatement ps = conexao.prepareStatement(query);
             ps.setInt(1, codigo);
             ps.executeUpdate();
-        }
     }
 
     public List<Solicitacao> obterHistoricoSolicitacoesPaginadas(Integer pagina, Integer quantidade, String email, DataHora dataInicio, DataHora dataFim) throws SQLException {
@@ -155,6 +153,20 @@ public class SolicitacaoDao {
         }
     }
 
+
+    public boolean validarUsuarioPossuiSolicitacao(String email) throws SQLException {
+        try (Connection conexao = bd.obterConexao()) {
+            logService.iniciar(SolicitacaoDao.class.getName(), "Iniciando a validação da existência de solicitação do usuário " + email);
+            PreparedStatement ps = conexao.prepareStatement(SolicitacaoQueries.USUARIO_POSSUI_SOLICITACAO_ABERTA);
+            ps.setString(1, email);
+            ps.setString(2, email);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            boolean existe = rs.getInt(1) > 0;
+            logService.sucesso(SolicitacaoDao.class.getName(), "Sucesso na validação da existência de solicitação do usuário " + email);
+            return existe;
+        }
+    }
     private void definirParametrosSolicitacao(SolicitacaoDto solicitacao, PreparedStatement pstmt) throws SQLException {
         DataHora dataHora = DataHora.hoje();
         pstmt.setString(1, dataHora.dataFormatada("yyyy-MM-dd"));

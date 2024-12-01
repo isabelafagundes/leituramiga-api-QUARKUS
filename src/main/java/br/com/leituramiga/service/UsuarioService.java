@@ -42,6 +42,7 @@ public class UsuarioService {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção do usuário de identificador " + md5Email);
             validarIdentificadorUsuario(identificador);
             Usuario usuario = obterUsuario(identificador);
+            if (usuario == null) throw new UsuarioNaoExistente();
             validarUsuarioAtivo(usuario);
             String imagem = imagemService.obterImagemUsuario(usuario.getCaminhoImagem());
             usuario.setImagem(imagem);
@@ -75,8 +76,6 @@ public class UsuarioService {
             logService.iniciar(UsuarioService.class.getName(), "Iniciando a obtenção do usuário de identificador " + md5Identificador);
             validarIdentificadorUsuario(identificador);
             Usuario usuario = dao.obterUsuario(identificador);
-            String imagem = imagemService.obterImagemUsuario(usuario.getCaminhoImagem());
-            usuario.setImagem(imagem);
             validarUsuarioAtivo(usuario);
             logService.sucesso(UsuarioService.class.getName(), "Sucesso na obtenção do usuário de identificador " + md5Identificador);
             return usuario;

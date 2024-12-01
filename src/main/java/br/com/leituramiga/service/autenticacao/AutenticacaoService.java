@@ -10,6 +10,7 @@ import br.com.leituramiga.model.exception.*;
 import br.com.leituramiga.model.usuario.Usuario;
 import br.com.leituramiga.service.UsuarioService;
 import br.com.leituramiga.service.email.EmailService;
+import br.com.leituramiga.service.solicitacao.SolicitacaoService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -41,6 +42,9 @@ public class AutenticacaoService {
 
     @Inject
     FabricaDeConexoes bd;
+
+    @Inject
+    SolicitacaoService solicitacaoService;
 
     @Inject
     UsuarioService usuarioService;
@@ -98,10 +102,11 @@ public class AutenticacaoService {
         }
     }
 
-    public void desativarUsuario(String email) throws UsuarioNaoExistente, SQLException {
+    public void desativarUsuario(String email) throws UsuarioNaoExistente, SQLException, UsuarioComSolicitacaoAberta {
         String md5Email = HashService.obterMd5Email(email);
         try {
             logService.iniciar(AutenticacaoService.class.getName(), "Iniciando o processo de exclusão do usuário de email " + md5Email);
+            if(solicitacaoService.validarUsuarioPossuiSolicitacaoAberta(email)) throw new UsuarioComSolicitacaoAberta();
             usuarioService.validarIdentificadorUsuario(email);
             dao.desativarUsuario(email);
             logService.sucesso(AutenticacaoService.class.getName(), "Sucesso no processo de exclusão do usuário de email " + md5Email);

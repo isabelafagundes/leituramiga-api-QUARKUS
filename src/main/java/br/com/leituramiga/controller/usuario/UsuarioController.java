@@ -4,6 +4,7 @@ import br.com.leituramiga.dto.livro.FiltrosDto;
 import br.com.leituramiga.dto.usuario.CriacaoUsuarioDto;
 import br.com.leituramiga.dto.usuario.IdentificadorUsuarioDto;
 import br.com.leituramiga.dto.usuario.UsuarioDto;
+import br.com.leituramiga.model.exception.UsuarioComSolicitacaoAberta;
 import br.com.leituramiga.model.exception.UsuarioNaoAtivo;
 import br.com.leituramiga.model.exception.UsuarioNaoExistente;
 import br.com.leituramiga.service.UsuarioService;
@@ -136,6 +137,8 @@ public class UsuarioController {
         try {
             autenticacaoService.desativarUsuario(email);
             return Response.ok().build();
+        } catch (UsuarioComSolicitacaoAberta erro) {
+            throw new WebApplicationException(Response.Status.PRECONDITION_FAILED);
         } catch (UsuarioNaoExistente erro) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         } catch (Exception erro) {
