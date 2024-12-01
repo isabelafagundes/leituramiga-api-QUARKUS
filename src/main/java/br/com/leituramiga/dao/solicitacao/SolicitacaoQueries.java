@@ -163,8 +163,9 @@ public class SolicitacaoQueries {
     public static final String RECUSAR_SOLICITACOES_COM_LIVRO = "UPDATE solicitacao SET codigo_status_solicitacao = 5 " +
             "WHERE ( " +
             "SELECT livro_solicitacao.codigo_livro FROM livro_solicitacao " +
-            "WHERE livro_solicitacao.codigo_livro IN (CODIGOS_LIVROS) LIMIT 1) " +
-            "AND solicitacao.codigo_solicitacao != ?; ";
+            "WHERE livro_solicitacao.codigo_livro IN (CODIGOS_LIVROS) LIMIT 1" +
+            ") " +
+            "AND solicitacao.codigo_solicitacao != ? AND solicitacao.codigo_status_solicitacao = 2; ";
 
     public static final String OBTER_HISTORICO_SOLICITACOES_PAGINADAS =
             "SELECT solicitacao.codigo_solicitacao," +
@@ -277,13 +278,6 @@ public class SolicitacaoQueries {
             "WHERE solicitacao.data_devolucao >= ? " +
             "AND solicitacao.hora_devolucao <= ? " +
             "AND solicitacao.codigo_solicitacao = ?";
-
-
-    public static final String CADASTRAR_LIVRO_SOLICITACAO = "INSERT INTO livro_solicitacao (" +
-            "codigo_solicitacao, " +
-            "codigo_livro, " +
-            "codigo_status_solicitacao " +
-            ") VALUES ";
 
     public static final String OBTER_LIVROS_SOLICITACAO_EMAIL = "SELECT " +
             "livro_solicitacao.codigo_livro, " +

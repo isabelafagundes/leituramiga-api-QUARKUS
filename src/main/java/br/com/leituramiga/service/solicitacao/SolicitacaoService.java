@@ -74,8 +74,7 @@ public class SolicitacaoService {
             atualizarLivrosDoAceite(aceiteSolicitacaoDto, codigo, conexao, solicitacao, email);
             solicitacaoDao.recusarSolicitacoesComLivroIndisponivel(solicitacao.getLivrosUsuarioSolicitante(), solicitacao.codigoSolicitacao);
             solicitacao.enderecoReceptor = aceiteSolicitacaoDto.endereco;
-            if (aceiteSolicitacaoDto.endereco != null)
-                enderecoService.salvarEnderecoSolicitacao(aceiteSolicitacaoDto.endereco, email, codigo, conexao, aceiteSolicitacaoDto.endereco.enderecoPrincipal);
+            if (aceiteSolicitacaoDto.endereco != null) atualizarEnderecoAceiteSolicitacao(solicitacao, conexao, email, codigo);
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando aceitação de solicitação de código " + codigo);
             solicitacaoDao.aceitarSolicitacao(codigo, conexao);
             atualizarCodigoUltimaSolicitacaoLivros(codigo, conexao);
@@ -152,8 +151,7 @@ public class SolicitacaoService {
             SolicitacaoDto solicitacao = obterSolicitacao(codigo);
             validarUsuarioPertenceSolicitacao(solicitacao, email);
             solicitacaoDao.finalizarSolicitacao(codigo);
-            SolicitacaoDto solicitacaoDto = obterSolicitacao(codigo);
-            if (solicitacaoDto.codigoTipoSolicitacao == TipoSolicitacao.EMPRESTIMO.id) {
+            if (solicitacao.codigoTipoSolicitacao == TipoSolicitacao.EMPRESTIMO.id) {
                 atualizarLivrosDisponiveisSolicitacao(solicitacao, codigo, email, conexao);
             }
             logService.sucesso(SolicitacaoService.class.getName(), "Finalização de solicitação finalizada de código " + codigo);
@@ -284,7 +282,7 @@ public class SolicitacaoService {
         Integer numeroEndereco = solicitacao.getEnderecoSolicitante() == null ? null : solicitacao.getEnderecoSolicitante().getCodigoEndereco();
         if (solicitacao.enderecoSolicitante != null && numeroEndereco == null) {
             // Se o endereço for nulo e o número do endereço for nulo, cadastra o endereço da solicitação
-            numeroEndereco = cadastrarEnderecoSolicitacao(solicitacao, email, conexao, codigoSolicitacao);
+            numeroEndereco = cadastrarEnderecoSolicitacaoSolicitante(solicitacao, email, conexao, codigoSolicitacao);
         } else if (enderecoService.validarExistenciaPorEmail(email)) {
             // Se o endereço do usuário já existir, atualiza o endereço da solicitação e o relacionamento do endereço com a solicitação
             logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de endereço do usuário de email " + email);
@@ -295,7 +293,27 @@ public class SolicitacaoService {
         return numeroEndereco;
     }
 
-    private Integer cadastrarEnderecoSolicitacao(SolicitacaoDto solicitacao, String email, Connection conexao, Integer codigoSolicitacao) throws SQLException {
+    private Integer atualizarEnderecoAceiteSolicitacao(SolicitacaoDto solicitacao, Connection conexao, String email, Integer codigoSolicitacao) throws SQLException, EnderecoNaoExistente {
+        Integer numeroEndereco = solicitacao.getEnderecoSolicitante() == null ? null : solicitacao.getEnderecoSolicitante().getCodigoEndereco();
+        if (solicitacao.getEnderecoReceptor() != null && numeroEndereco == null) {
+            // Se o endereço for nulo e o número do endereço for nulo, cadastra o endereço da solicitação
+            numeroEndereco = cadastrarEnderecoSolicitacaoReceptor(solicitacao, email, conexao, codigoSolicitacao);
+        } else if (enderecoService.validarExistenciaPorEmail(email)) {
+            // Se o endereço do usuário já existir, atualiza o endereço da solicitação e o relacionamento do endereço com a solicitação
+            logService.iniciar(SolicitacaoService.class.getName(), "Iniciando busca de endereço do usuário de email " + email);
+            EnderecoDto endereco = enderecoService.obterEnderecoUsuario(email);
+            enderecoService.vincularEnderecoSolicitacao(endereco.codigoEndereco, codigoSolicitacao, email, conexao);
+            numeroEndereco = endereco.codigoEndereco;
+        }
+        return numeroEndereco;
+    }
+
+    private Integer cadastrarEnderecoSolicitacaoReceptor(SolicitacaoDto solicitacao, String email, Connection conexao, Integer codigoSolicitacao) throws SQLException {
+        logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
+        return enderecoService.salvarEnderecoSolicitacao(solicitacao.getEnderecoReceptor(), email, codigoSolicitacao, conexao, false);
+    }
+
+    private Integer cadastrarEnderecoSolicitacaoSolicitante(SolicitacaoDto solicitacao, String email, Connection conexao, Integer codigoSolicitacao) throws SQLException {
         logService.iniciar(SolicitacaoService.class.getName(), "Iniciando cadastro de endereço do usuário de email " + solicitacao.getEmailUsuarioSolicitante());
         return enderecoService.salvarEnderecoSolicitacao(solicitacao.getEnderecoSolicitante(), email, codigoSolicitacao, conexao, false);
     }

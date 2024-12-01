@@ -37,12 +37,15 @@ public class LivroService {
     @Inject
     FabricaDeConexoes bd;
 
-    public LivroDto obterLivro(Integer numero) throws SQLException, LivroNaoExistente, IOException {
+    public LivroDto obterLivro(Integer numero, String email) throws SQLException, LivroNaoExistente, IOException, LivroNaoDisponivel {
         try {
             logService.iniciar(LivroService.class.getName(), "Iniciando a validação da existência do livro de número " + numero);
             if (!dao.verificarExistenciaLivro(numero)) throw new LivroNaoExistente();
             logService.iniciar(LivroService.class.getName(), "Iniciando a obtenção do livro de número " + numero);
             Livro livro = dao.obterLivroPorNumero(numero);
+            if (!dao.verificarStatusDisponivel(numero) && !livro.getEmailUsuario().equals(email)) {
+                throw new LivroNaoDisponivel();
+            }
             String imagemLivro = imagemService.obterImagemLivro(livro.getCaminhoImagem());
             livro.setImagem(imagemLivro);
             return LivroDto.deModel(livro);

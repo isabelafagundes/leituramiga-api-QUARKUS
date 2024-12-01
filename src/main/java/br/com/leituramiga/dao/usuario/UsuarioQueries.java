@@ -63,7 +63,7 @@ public class UsuarioQueries {
 
     public static final String SALVAR_USUARIO =
             "INSERT INTO usuario (nome, username, email_usuario, tipo_usuario, senha, celular, descricao, codigo_instituicao, ativo, codigo_alteracao)" +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, NULL) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NULL) " +
                     "ON DUPLICATE KEY UPDATE " +
                     "    nome = VALUES(nome)," +
                     "    username = VALUES(username)," +

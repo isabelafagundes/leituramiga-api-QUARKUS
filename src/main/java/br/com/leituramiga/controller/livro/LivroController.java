@@ -40,10 +40,12 @@ public class LivroController {
     @Operation(summary = "Retorna um livro", description = "Retorna um livro a partir do seu código de identificação")
     public Response obterLivro(@PathParam("id") Integer numero) {
         try {
-            LivroDto dto = livroService.obterLivro(numero);
+            LivroDto dto = livroService.obterLivro(numero, email);
             return Response.ok(dto).build();
         } catch (LivroNaoExistente e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (LivroNaoDisponivel e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }
@@ -137,6 +139,8 @@ public class LivroController {
             return Response.ok("Livro deletado com sucesso!").build();
         } catch (LivroNaoExistente e) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+        } catch (LivroNaoDisponivel e) {
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         }

@@ -78,7 +78,10 @@ public class LivroQueries {
                     "WHERE codigo_livro = ? AND email_usuario = ?;";
 
     public static final String DELETAR_LIVRO =
-            "UPDATE livro SET codigo_status_livro = 4 WHERE livro.codigo_livro = ? AND livro.email_usuario = ?;";
+            "UPDATE livro SET codigo_status_livro = 4 WHERE livro.codigo_livro = ? " +
+                    "AND livro.email_usuario = ? " +
+                    "AND codigo_status_livro <> 2 " +
+                    "AND codigo_status_livro <> 3;";
 
     public static final String VALIDAR_EXISTENCIA =
             "SELECT COUNT(livro.codigo_livro) FROM livro WHERE numero_livro = ?;";
