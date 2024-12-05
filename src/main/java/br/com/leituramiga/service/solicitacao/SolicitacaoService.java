@@ -374,6 +374,7 @@ public class SolicitacaoService {
 
     private void atualizarEnderecoReceptor(SolicitacaoDto solicitacao, Connection conexao, String email) throws EnderecoNaoExistente, SQLException {
         EnderecoDto enderecoDto = solicitacao.getEnderecoReceptor();
+        if(enderecoDto == null) return;
         if (enderecoDto.getEnderecoPrincipal() == null || !enderecoDto.getEnderecoPrincipal()) {
             atualizarEnderecoSolicitacaoQuandoNaoPrincipal(solicitacao, email, conexao, enderecoDto);
         } else {
