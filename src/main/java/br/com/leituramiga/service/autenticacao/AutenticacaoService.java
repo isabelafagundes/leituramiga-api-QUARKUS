@@ -139,6 +139,7 @@ public class AutenticacaoService {
         dao.atualizarTentativas(login, false);
     }
 
+    //TODO: Criptografia de senhas
     public boolean verificarSenha(String senhaEnviada, String senhaSalva) {
         logService.iniciar(AutenticacaoService.class.getName(), "Iniciando a verificação das senhas");
 

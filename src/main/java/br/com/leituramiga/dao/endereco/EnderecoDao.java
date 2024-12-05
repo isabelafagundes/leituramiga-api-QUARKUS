@@ -52,6 +52,14 @@ public class EnderecoDao {
 
     public Integer salvarEndereco(EnderecoDto endereco, Connection conexao, String email, Boolean enderecoPrincipal) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando salvamento de endereço");
+
+        if (enderecoPrincipal && validarSePossuiEnderecoPrincipal(email, conexao)) {
+            Integer codigoEnderecoPrincipal = obterCodigoEnderecoPrincipal(email);
+            endereco.setCodigoEndereco(codigoEnderecoPrincipal);
+            atualizarEndereco(endereco, enderecoPrincipal);
+            return codigoEnderecoPrincipal;
+        }
+
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.INSERIR_ENDERECO, PreparedStatement.RETURN_GENERATED_KEYS);
         definirParametrosDeSalvamento(pstmt, endereco, email, enderecoPrincipal);
         int linhasAfetadas = pstmt.executeUpdate();
@@ -65,6 +73,30 @@ public class EnderecoDao {
             }
         }
         return null;
+    }
+
+    public boolean validarSePossuiEnderecoPrincipal(String email, Connection conexao) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando validação de existência de endereço principal");
+        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.VALIDAR_SE_POSSUI_ENDERECO_PRINCIPAL);
+        pstmt.setString(1, email);
+        ResultSet resultado = pstmt.executeQuery();
+        resultado.next();
+        int quantidade = resultado.getInt(1);
+        logService.sucesso(EnderecoDao.class.getName(), "Validação de existência de endereço principal finalizada");
+        return quantidade > 0;
+    }
+
+    public Integer obterCodigoEnderecoPrincipal(String email) throws SQLException {
+        logService.iniciar(EnderecoDao.class.getName(), "Iniciando busca de código de endereço principal");
+        try (Connection conexao = bd.obterConexao()) {
+            PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.OBTER_CODIGO_ENDERECO_PRINCIPAL);
+            pstmt.setString(1, email);
+            ResultSet resultado = pstmt.executeQuery();
+            resultado.next();
+            int codigoEndereco = resultado.getInt(1);
+            logService.sucesso(EnderecoDao.class.getName(), "Busca de código de endereço principal finalizada");
+            return codigoEndereco;
+        }
     }
 
     public void atualizarVinculoEnderecoSolicitacao(String email, Integer codigoSolicitacao, Integer codigoEndereco, Connection conexao) throws SQLException {
@@ -86,6 +118,10 @@ public class EnderecoDao {
     public void atualizarEnderecoSolicitacao(EnderecoDto endereco, Connection conexao, Boolean enderecoPrincipal) throws SQLException {
         logService.iniciar(EnderecoDao.class.getName(), "Iniciando atualização de endereço da solicitação");
         PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.ATUALIZAR_ENDERECO);
+
+        Integer codigoEndereco = endereco.getCodigoEndereco();
+        if (enderecoPrincipal) codigoEndereco = obterCodigoEnderecoPrincipal(endereco.getEmailUsuario());
+
         pstmt.setString(1, endereco.getLogradouro());
         pstmt.setString(2, endereco.getComplemento());
         pstmt.setString(3, endereco.getBairro());
@@ -93,9 +129,21 @@ public class EnderecoDao {
         pstmt.setInt(5, endereco.getCodigoCidade());
         pstmt.setBoolean(6, enderecoPrincipal);
         pstmt.setString(7, endereco.getNumero());
-        pstmt.setInt(8, endereco.getCodigoEndereco());
+        pstmt.setInt(8, codigoEndereco);
+
+        if (enderecoPrincipal) removerEnderecosPrincipais(endereco.getEmailUsuario(), endereco.getCodigoEndereco(), conexao);
+
         pstmt.executeUpdate();
+
         logService.sucesso(EnderecoDao.class.getName(), "Atualização de endereço da solicitação finalizada");
+    }
+
+
+    public void removerEnderecosPrincipais(String email, Integer codigoEndereco, Connection conexao) throws SQLException {
+        PreparedStatement pstmt = conexao.prepareStatement(EnderecoQueries.REMOVER_ENDERECOS_PRINCIPAIS);
+        pstmt.setString(1, email);
+        pstmt.setInt(2, codigoEndereco);
+        pstmt.executeUpdate();
     }
 
     public void atualizarEndereco(EnderecoDto endereco, Boolean enderecoPrincipal) throws SQLException {

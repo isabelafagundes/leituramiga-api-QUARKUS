@@ -4,6 +4,7 @@ import br.com.leituramiga.service.autenticacao.HashService;
 import br.com.leituramiga.service.autenticacao.LogService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import net.coobird.thumbnailator.Thumbnails;
 
 import java.io.*;
 import java.util.Base64;
@@ -22,12 +23,12 @@ public class ImagemService {
     public String salvarImagemLivro(String arquivoBase64, String email, Integer numeroLivro) throws IOException {
         try {
             logService.iniciar(ImagemService.class.getName(), "Iniciando a salvar a imagem do livro");
-            if(!arquivoBase64.contains(",")) return null;
+
+            if (!arquivoBase64.contains(",")) return null;
             String arquivoBase64SemCabecalho = arquivoBase64.split(",")[1];
             byte[] arquivo = Base64.getDecoder().decode(arquivoBase64SemCabecalho);
 
             String diretorio = System.getProperty("user.home") + "/" + NOME_ARQUIVO_PAI + "/" + NOME_ARQUIVO_LIVROS;
-
             File pastaDestino = new File(diretorio);
 
             if (!pastaDestino.exists()) {
@@ -44,17 +45,27 @@ public class ImagemService {
 
             logService.iniciar(ImagemService.class.getName(), "Salvando a imagem do livro no diretório: " + arquivoImagemLivro.getAbsolutePath());
 
-            try (OutputStream outputStream = new FileOutputStream(arquivoImagemLivro)) {
+            File originalImageFile = new File(System.getProperty("java.io.tmpdir"), nomeArquivo);
+            try (OutputStream outputStream = new FileOutputStream(originalImageFile)) {
                 outputStream.write(arquivo);
             }
 
-            return arquivoImagemLivro.getAbsolutePath();
+            ImageResizer imageResizer = new ImageResizer();
+            File resizedImageFile = imageResizer.resizeImage(originalImageFile, 600, 400);
+
+            File destinoFinal = new File(diretorio, nomeArquivo);
+            if (!resizedImageFile.renameTo(destinoFinal)) {
+                throw new IOException("Falha ao mover a imagem redimensionada para o diretório de destino.");
+            }
+
+            return destinoFinal.getAbsolutePath();
 
         } catch (Exception e) {
             logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao salvar a imagem do livro", e);
             throw e;
         }
     }
+
 
     public String identificarExtensao(String base64String) {
         if (base64String.startsWith("data:image/jpeg")) {
@@ -102,7 +113,7 @@ public class ImagemService {
     public String salvarImagemUsuario(String arquivoBase64, String email) throws IOException {
         try {
             logService.iniciar(ImagemService.class.getName(), "Iniciando a salvar a imagem do usuário");
-            if(!arquivoBase64.contains(",")) return null;
+            if (!arquivoBase64.contains(",")) return null;
             String arquivoBase64SemCabecalho = arquivoBase64.split(",")[1];
             byte[] arquivo = Base64.getDecoder().decode(arquivoBase64SemCabecalho);
 
@@ -124,11 +135,20 @@ public class ImagemService {
 
             logService.iniciar(ImagemService.class.getName(), "Salvando a imagem do usuário no diretório: " + arquivoImagemUsuario.getAbsolutePath());
 
-            try (OutputStream outputStream = new FileOutputStream(arquivoImagemUsuario)) {
+            File originalImageFile = new File(System.getProperty("java.io.tmpdir"), nomeArquivo);
+            try (OutputStream outputStream = new FileOutputStream(originalImageFile)) {
                 outputStream.write(arquivo);
             }
 
-            return arquivoImagemUsuario.getAbsolutePath();
+            ImageResizer imageResizer = new ImageResizer();
+            File resizedImageFile = imageResizer.resizeImage(originalImageFile, 600, 400);
+
+            File destinoFinal = new File(diretorio, nomeArquivo);
+            if (!resizedImageFile.renameTo(destinoFinal)) {
+                throw new IOException("Falha ao mover a imagem redimensionada para o diretório de destino.");
+            }
+
+            return destinoFinal.getAbsolutePath();
 
         } catch (Exception e) {
             logService.erro(ImagemService.class.getName(), "Ocorreu um erro ao salvar a imagem do usuário", e);
@@ -166,6 +186,23 @@ public class ImagemService {
         }
     }
 
+
+    public class ImageResizer {
+
+        public File resizeImage(File inputImageFile, int width, int height) throws IOException {
+            // Cria um arquivo temporário para armazenar a imagem redimensionada
+            File resizedImageFile = File.createTempFile("resized_", ".jpg");
+            resizedImageFile.deleteOnExit(); // Garante que o arquivo temporário seja deletado ao final
+
+            // Redimensiona e salva a imagem no arquivo temporário
+            Thumbnails.of(inputImageFile)
+                    .size(width, height)
+                    .outputFormat("jpg") // Pode mudar o formato caso necessário
+                    .toFile(resizedImageFile);
+
+            return resizedImageFile; // Retorna o arquivo redimensionado
+        }
+    }
 
 
 }

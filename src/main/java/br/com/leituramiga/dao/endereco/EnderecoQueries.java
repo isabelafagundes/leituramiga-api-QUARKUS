@@ -19,7 +19,7 @@ public class EnderecoQueries {
                     "INNER JOIN cidade ON cidade.codigo_cidade = endereco.codigo_cidade " +
                     "WHERE codigo_endereco = ? AND endereco.ativo = 1;";
 
-    public static final String OBTER_CIDADES_POR_UF ="SELECT DISTINCT cidade.codigo_cidade, " +
+    public static final String OBTER_CIDADES_POR_UF = "SELECT DISTINCT cidade.codigo_cidade, " +
             "cidade.nome, " +
             "cidade.estado " +
             "FROM cidade WHERE cidade.estado = ? " +
@@ -57,6 +57,8 @@ public class EnderecoQueries {
             "numero = ? " +
             "WHERE endereco.codigo_endereco = ?;";
 
+    public static String REMOVER_ENDERECOS_PRINCIPAIS = "UPDATE endereco SET endereco_principal = 0 WHERE email_usuario = ? and codigo_endereco != ?;";
+
     public static final String SALVAR_ENDERECO =
             "INSERT INTO endereco (logradouro, complemento, bairro, cep, codigo_cidade, email_usuario, endereco_principal, numero) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?) " +
@@ -84,4 +86,10 @@ public class EnderecoQueries {
 
     public static final String VALIDAR_EXISTENCIA_ENDERECO_ID =
             "SELECT COUNT(endereco.codigo_endereco) FROM endereco WHERE endereco.codigo_endereco = ?;";
+
+    public static final String VALIDAR_SE_POSSUI_ENDERECO_PRINCIPAL =
+            "SELECT COUNT(endereco.codigo_endereco) FROM endereco WHERE endereco.email_usuario = ? AND endereco_principal = 1;";
+
+    public static final String OBTER_CODIGO_ENDERECO_PRINCIPAL =
+            "SELECT endereco.codigo_endereco FROM endereco WHERE endereco.email_usuario = ? AND endereco_principal = 1;";
 }

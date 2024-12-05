@@ -227,6 +227,7 @@ public class SolicitacaoQueries {
                     "    AND (solicitacao.email_usuario_solicitante = ? OR solicitacao.email_usuario_receptor = ?) \n" +
                     "    AND u1.ativo = 1 \n" +
                     "    AND u2.ativo = 1\n" +
+                    "    DATA_HORA\n" +
                     "ORDER BY \n" +
                     "    solicitacao.data_criacao ASC, \n" +
                     "    solicitacao.hora_criacao ASC \n" +
